@@ -12,6 +12,7 @@
 		66E5F16D2971A88200A4938F /* libglfw.3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 66E5F16B2971A88200A4938F /* libglfw.3.dylib */; };
 		66E5F16E2971A88200A4938F /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 66E5F16C2971A88200A4938F /* libglfw3.a */; };
 		66E5F1712971A96700A4938F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66E5F1702971A96700A4938F /* OpenGL.framework */; };
+		E2434B6C2971AE5F00DADB69 /* libglfw.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 66E5F16B2971A88200A4938F /* libglfw.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -23,6 +24,17 @@
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 1;
+		};
+		E2434B6D2971AE5F00DADB69 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				E2434B6C2971AE5F00DADB69 /* libglfw.3.dylib in Embed Libraries */,
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
@@ -139,6 +151,7 @@
 				66E5F1542971A76F00A4938F /* Sources */,
 				66E5F1552971A76F00A4938F /* Frameworks */,
 				66E5F1562971A76F00A4938F /* CopyFiles */,
+				E2434B6D2971AE5F00DADB69 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
