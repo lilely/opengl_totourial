@@ -440,6 +440,8 @@
 		E2B2EB0C297642F5004304BC /* fragment_core_2.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragment_core_2.glsl; sourceTree = "<group>"; };
 		E2B2EB0D2976FDF2004304BC /* Shader.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Shader.hpp; sourceTree = "<group>"; };
 		E2B2EB0E2976FDF2004304BC /* Shader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
+		E2B2EB10297784AB004304BC /* image2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image2.png; sourceTree = "<group>"; };
+		E2B2EB11297784AB004304BC /* image1.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image1.jpeg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -987,6 +989,8 @@
 		E2B2EB05297581F3004304BC /* asset */ = {
 			isa = PBXGroup;
 			children = (
+				E2B2EB10297784AB004304BC /* image2.png */,
+				E2B2EB11297784AB004304BC /* image1.jpeg */,
 				E2B2EB0729758237004304BC /* vertex_core.glsl */,
 				E2B2EB092975827D004304BC /* fragment_core.glsl */,
 				E2B2EB0C297642F5004304BC /* fragment_core_2.glsl */,
