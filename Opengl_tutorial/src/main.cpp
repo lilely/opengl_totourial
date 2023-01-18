@@ -10,9 +10,9 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-//#include <glm/glm.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
-//#include <glm/gtc/type_ptr.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 //#include <stb/stb_image.h>
 
 #include <fstream>
@@ -20,14 +20,11 @@
 #include <streambuf>
 #include <string>
 
-std::string loadShaderSrc(const char* filename);
+#include "Shader.hpp"
 
 int main(int argc, char **argv){
     using std::cout;    using std::endl;
-    
-    int success;
-    char infoLog[512];
-    
+
     //glm test
 //    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
 //    glm::mat4 trans = glm::mat4(1.0f);
@@ -84,100 +81,17 @@ int main(int argc, char **argv){
     /* shaders
      
      */
-    //compile vertex shader
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    std::string vertShaderSrc = loadShaderSrc("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/vertex_core.glsl");
-    const GLchar *vertShader = vertShaderSrc.c_str();
-    glShaderSource(vertexShader, 1, &vertShader, NULL);
-    glCompileShader(vertexShader);
-    
-    // catch error
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if(!success) {
-        glGetShaderInfoLog(vertexShader,512,NULL,infoLog);
-        std::cout << "Error with vertext shader comp.:" << std::endl << infoLog << std::endl;
-    }
-    
-    // comple fragment shader
-    unsigned int fragmentShader[2];
-    
-    // fragment 1
-    fragmentShader[0] = glCreateShader(GL_FRAGMENT_SHADER);
-    std::string fragShaderSrc = loadShaderSrc("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/fragment_core.glsl");
-    const GLchar* fragShader = fragShaderSrc.c_str();
-    glShaderSource(fragmentShader[0],1,&fragShader,NULL);
-    glCompileShader(fragmentShader[0]);
-    
-    //catch error
-    glGetShaderiv(fragmentShader[0], GL_COMPILE_STATUS, &success);
-    if(!success) {
-        glGetShaderInfoLog(fragmentShader[0],512,NULL,infoLog);
-        std::cout<< "Error with fragment shader comp.:" << std::endl << infoLog << std::endl;
-    }
-    
-    //catch error
-    glGetShaderiv(fragmentShader[0], GL_COMPILE_STATUS, &success);
-    if(!success) {
-        glGetShaderInfoLog(fragmentShader[0],512,NULL,infoLog);
-        std::cout<< "Error with fragment 0 shader comp.:" << std::endl << infoLog << std::endl;
-    }
-    
-    // fragment 2
-    fragmentShader[1] = glCreateShader(GL_FRAGMENT_SHADER);
-    fragShaderSrc = loadShaderSrc("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/fragment_core_2.glsl");
-    fragShader = fragShaderSrc.c_str();
-    glShaderSource(fragmentShader[1],1,&fragShader,NULL);
-    glCompileShader(fragmentShader[1]);
-    
-    //catch error
-    glGetShaderiv(fragmentShader[1], GL_COMPILE_STATUS, &success);
-    if(!success) {
-        glGetShaderInfoLog(fragmentShader[1],512,NULL,infoLog);
-        std::cout<< "Error with fragment 1 shader comp.:" << std::endl << infoLog << std::endl;
-    }
-    
-    // create program
-    unsigned int shaderProgram[2];
-    
+    Shader shader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/vertex_core.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/fragment_core.glsl");
+    Shader shader2("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/vertex_core.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/fragment_core_2.glsl");
     // shader program 0
-    shaderProgram[0] = glCreateProgram();
-    glAttachShader(shaderProgram[0],vertexShader);
-    glAttachShader(shaderProgram[0],fragmentShader[0]);
-    glBindAttribLocation(shaderProgram[0], 0, "aPos");
-    glLinkProgram(shaderProgram[0]);
-    
-    //catch errors
-    glGetProgramiv(shaderProgram[0], GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shaderProgram[0],512,NULL,infoLog);
-        std::cout<< "Error with shader program comp.:" << std::endl << infoLog << std::endl;
-    }
-    
-    
-    // shader program 1
-    shaderProgram[1] = glCreateProgram();
-    glAttachShader(shaderProgram[1],vertexShader);
-    glAttachShader(shaderProgram[1],fragmentShader[1]);
-    glBindAttribLocation(shaderProgram[1], 0, "aPos");
-    glLinkProgram(shaderProgram[1]);
-    
-    //catch errors
-    glGetProgramiv(shaderProgram[1], GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shaderProgram[1],512,NULL,infoLog);
-        std::cout<< "Error with shader program comp.:" << std::endl << infoLog << std::endl;
-    }
-    
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader[0]);
-    glDeleteShader(fragmentShader[1]);
+//    glBindAttribLocation(shaderProgram[0], 0, "aPos");
 
     float vertics[] = {
-        0.5f, 0.5f, 0.0f,
-        -0.5f, 0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
+        // vertics                   // colors
+        0.5f, 0.5f, 0.0f,          0.3f, 0.7f, 0.5f,
+        -0.5f, 0.5f, 0.0f,         0.5f, 0.2f, 0.75f,
+        -0.5f, -0.5f, 0.0f,        0.6f, 0.5f, 0.2f,
+        0.5f, -0.5f, 0.0f,         1.0f, 0.2f, 1.0f,
     };
     
     unsigned int indices[] = {
@@ -198,13 +112,30 @@ int main(int argc, char **argv){
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertics),vertics,GL_STATIC_DRAW);
     
-    // set attribute pointer
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(GL_FLOAT),(void *)0);
+    // set vertex attribute pointer
+    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,6*sizeof(GL_FLOAT),(void *)0);
     glEnableVertexAttribArray(0);
+    
+    // set color attribute pointer
+    glVertexAttribPointer(1,3,GL_FLOAT,GL_FALSE,6*sizeof(GL_FLOAT),(void *)(3 * sizeof(GL_FLOAT)));
+    glEnableVertexAttribArray(1);
     
     // set up EBO
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    
+    glm::mat4 trans = glm::mat4(1.0f);
+    trans = glm::rotate(trans, glm::radians(45.0f), glm::vec3(0.0f,0.0f,1.0f));
+    shader.setMat4("transform", trans);
+    shader.activate();
+    
+    
+    glm::mat4 trans2 = glm::mat4(1.0f);
+    trans2 = glm::scale(trans,glm::vec3(1.5f));
+    trans2 = glm::rotate(trans2, glm::radians(45.f),glm::vec3(0.0f,0.0f,1.0f));
+    shader2.setMat4("transform", trans2);
+    shader2.activate();
+    
     
 //   为了防止 渲染的图像一出现就退出 我们使用while 循环 。我们可以称之为Render Loop
 //    glfwWindowShouldClose 每次循环开始前检查一次GLFW 是否被要求退出 是true 的话渲染便结束了。
@@ -217,16 +148,24 @@ int main(int argc, char **argv){
 //        我们可以使用glClear   GL_COLOR_BUFFER_BIT，GL_DEPTH_BUFFER_BIT和GL_STENCIL_BUFFER_BIT。 我们清空颜色 。
         glClearColor(0.5f, 0.1f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        
         // draw shapes
         glBindVertexArray(VAO);
-        glUseProgram(shaderProgram[0]);
-//        glDrawArrays(GL_TRIANGLES,0,6);
-        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0);
         
-        glUseProgram(shaderProgram[1]);
+//        trans = glm::rotate(trans, glm::radians((float)glfwGetTime() / 5.f), glm::vec3(0.0f,0.0f,1.0f));
+        trans = glm::rotate(trans, glm::radians(0.1f), glm::vec3(0.0f,0.0f,1.0f));
+        shader.setMat4("transform", trans);
+        shader.activate();
 //        glDrawArrays(GL_TRIANGLES,0,6);
-        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,(void *)(3*sizeof(unsigned int)));
+        glDrawElements(GL_TRIANGLES,3,GL_UNSIGNED_INT,0);
+        
+        trans2 = glm::rotate(trans2, glm::radians(-0.1f), glm::vec3(0.0f,0.0f,1.0f));
+        shader2.setMat4("transform", trans2);
+        shader2.activate();
+        glDrawElements(GL_TRIANGLES,3,GL_UNSIGNED_INT,(void *)(3*sizeof(GLuint)));
+        
+//        glUseProgram(shaderProgram[1]);
+//        glDrawArrays(GL_TRIANGLES,0,6);
+//        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,(void *)(3*sizeof(unsigned int)));
         
         glfwSwapBuffers(window);
 //        glfwPollEvents 检查函数有没有触发什么事件 键盘输入 鼠标移动 并调用对应函数
@@ -251,21 +190,4 @@ void processInput(GLFWwindow *window)
 {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
-}
-
-std::string loadShaderSrc(const char* filename) {
-    std::ifstream file;
-    std::stringstream buf;
-    
-    std::string ret = "";
-    file.open(filename);
-    if(file.is_open()){
-        buf << file.rdbuf();
-        ret = buf.str();
-    } else {
-        std::cout << "Could not open " << filename << std::endl;
-    }
-    file.close();
-    
-    return ret;
 }

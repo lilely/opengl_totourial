@@ -17,6 +17,7 @@
 		E2B2EB04297559B6004304BC /* stb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB02297559B6004304BC /* stb.cpp */; };
 		E2B2EB0829758237004304BC /* vertex_core.glsl in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB0729758237004304BC /* vertex_core.glsl */; };
 		E2B2EB0A2975827D004304BC /* fragment_core.glsl in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB092975827D004304BC /* fragment_core.glsl */; };
+		E2B2EB0F2976FDF2004304BC /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB0E2976FDF2004304BC /* Shader.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -437,6 +438,8 @@
 		E2B2EB092975827D004304BC /* fragment_core.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fragment_core.glsl; sourceTree = "<group>"; };
 		E2B2EB0B2975AD5A004304BC /* Opengl_tutorial.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Opengl_tutorial.entitlements; sourceTree = "<group>"; };
 		E2B2EB0C297642F5004304BC /* fragment_core_2.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragment_core_2.glsl; sourceTree = "<group>"; };
+		E2B2EB0D2976FDF2004304BC /* Shader.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Shader.hpp; sourceTree = "<group>"; };
+		E2B2EB0E2976FDF2004304BC /* Shader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -498,6 +501,8 @@
 			isa = PBXGroup;
 			children = (
 				66E5F15B2971A76F00A4938F /* main.cpp */,
+				E2B2EB0D2976FDF2004304BC /* Shader.hpp */,
+				E2B2EB0E2976FDF2004304BC /* Shader.cpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -1052,6 +1057,7 @@
 				E2B2EB0A2975827D004304BC /* fragment_core.glsl in Sources */,
 				66E5F15C2971A76F00A4938F /* main.cpp in Sources */,
 				66E5F1652971A7B000A4938F /* glad.c in Sources */,
+				E2B2EB0F2976FDF2004304BC /* Shader.cpp in Sources */,
 				E2B2EB0829758237004304BC /* vertex_core.glsl in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
