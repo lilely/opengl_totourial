@@ -249,6 +249,24 @@ void processInput(GLFWwindow *window)
     }
     
     mainJ.update();
+    
+//    float lx = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_STICK_X);
+//    float ly = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_STICK_Y);
+//    if(std::abs(lx) > 0.05f) {
+//        transform = glm::translate(transform, glm::vec3(lx/10, 0.0f, 0.0f));
+//    }
+//    if(std::abs(ly) > 0.05f) {
+//        transform = glm::translate(transform, glm::vec3(0.0f, ly/10, 0.0f));
+//    }
+//    float rt = mainJ.axesState(GLFW_JOYSTICK_AXES_RIGHT_TRIGGER) / 2 + 0.5;
+//    if(std::abs(rt) > 0.05f) {
+//        transform = glm::scale(transform, glm::vec3(1 + rt/10, 1 + rt/10, 0.0f));
+//    }
+//    float lt = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_TRIGGER) / 2 + 0.5;
+//    if(std::abs(lt) > 0.05f) {
+//        transform = glm::scale(transform, glm::vec3(1 + lt/10, 1 + lt/10, 0.0f));
+//    }
+//    std::cout << lx << ":" << ly << std::endl;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
