@@ -12,14 +12,18 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+unsigned int SCR_WIDTH = 800;
+unsigned int SCR_HEIGHT = 600;
 
 float mixVal = 0.5f;
 
 glm::mat4 transform = glm::mat4(1.0f);
 
 Joystick mainJ(0);
+
+float Theta = 45.0f;
+
+float x,y,z;
 
 int main()
 {
@@ -51,7 +55,7 @@ int main()
     glfwSetMouseButtonCallback(window, Mouse::mouseButtonCallback);
     glfwSetCursorPosCallback(window, Mouse::cursorPosCallback);
     glfwSetScrollCallback(window, Mouse::mouseWheelCallback);
-
+    
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -59,7 +63,7 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    
+    glEnable(GL_DEPTH_TEST);
     // build and compile our shader zprogram
     // ------------------------------------
     Shader ourShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/vertex_core.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/fragment_core.glsl");
@@ -188,12 +192,17 @@ int main()
     // or set it via the texture class
     ourShader.setInt("texture1", 0);
     ourShader.setInt("texture2", 1);
-    ourShader.setMat4("transform", transform);
-
+//    transform = glm::rotate(transform, glm::radians(45.f), glm::vec3(1.0, 0.0f, 0.0f));
+//    transform = glm::rotate(transform, glm::radians(45.f), glm::vec3(0.0, 1.0f, 0.0f));
+//    ourShader.setMat4("transform", transform);
+    
     if(mainJ.isPresent()) {
         mainJ.update();
         std::cout << "joystick is preseted!" << std::endl;
     }
+    x = 0.0f;
+    y = 0.0f;
+    z = 3.0f;
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -205,7 +214,7 @@ int main()
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
@@ -213,13 +222,25 @@ int main()
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
         glBindVertexArray(VAO);
+        
+        glm::mat4 model = glm::mat4(1.0f);
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 projection = glm::mat4(1.0f);
+        
+        model = glm::rotate(model,(float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f));
+        view = glm::translate(view, glm::vec3(-x,-y,-z));
+        projection = glm::perspective(glm::radians(Theta),(float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
+        
         // render container
         ourShader.activate();
+        ourShader.setMat4("model", model);
+        ourShader.setMat4("view", view);
+        ourShader.setMat4("projection", projection);
         ourShader.setFloat("mixVal", mixVal);
+        transform = glm::rotate(transform, glm::radians(0.5f), glm::vec3(1.0, 0.0f, 0.0f));
         ourShader.setMat4("transform", transform);
         
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        
         //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -255,25 +276,31 @@ void processInput(GLFWwindow *window)
             mixVal = 0.0f;
         }
     } else if(Keyboard::key(GLFW_KEY_W)) {
-        transform = glm::translate(transform, glm::vec3(0.0f, 0.1f, 0.0f));
+        y -= 0.1f;
+//        transform = glm::translate(transform, glm::vec3(0.0f, 0.1f, 0.0f));
     } else if(Keyboard::key(GLFW_KEY_S)) {
-        transform = glm::translate(transform, glm::vec3(0.0f, -0.1f, 0.0f));
+        y += 0.1f;
+//        transform = glm::translate(transform, glm::vec3(0.0f, -0.1f, 0.0f));
     } else if(Keyboard::key(GLFW_KEY_A)) {
-        transform = glm::translate(transform, glm::vec3(-0.1f, 0.0f, 0.0f));
+        x += 0.1f;
+//        transform = glm::translate(transform, glm::vec3(-0.1f, 0.0f, 0.0f));
     } else if(Keyboard::key(GLFW_KEY_D)) {
-        transform = glm::translate(transform, glm::vec3(0.1f, 0.0f, 0.0f));
+        x -= 0.1f;
+//        transform = glm::translate(transform, glm::vec3(0.1f, 0.0f, 0.0f));
     }
-    
-    if(Mouse::buttonWentUp(GLFW_MOUSE_BUTTON_1)) {
-        mixVal += 0.05f;
-        if(mixVal > 1.0f) {
-            mixVal = 1.0f;
-        }
-    } else if(Mouse::buttonWentUp(GLFW_MOUSE_BUTTON_2)) {
-        mixVal -= 0.05f;
-        if(mixVal < 0.0f) {
-            mixVal = 0.0f;
-        }
+
+    if(Mouse::button(GLFW_MOUSE_BUTTON_1)) {
+//        mixVal += 0.05f;
+//        if(mixVal > 1.0f) {
+//            mixVal = 1.0f;
+//        }
+        Theta += 1.0f;
+    } else if(Mouse::button(GLFW_MOUSE_BUTTON_2)) {
+//        mixVal -= 0.05f;
+//        if(mixVal < 0.0f) {
+//            mixVal = 0.0f;
+//        }
+        Theta -= 1.0f;
     }
     
     mainJ.update();
@@ -304,4 +331,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
     glViewport(0, 0, width, height);
+    SCR_WIDTH = width;
+    SCR_HEIGHT = height;
 }
