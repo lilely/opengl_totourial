@@ -21,6 +21,7 @@
 		E2B2EB15297A269F004304BC /* keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB13297A269F004304BC /* keyboard.cpp */; };
 		E2B2EB18297A26B7004304BC /* mouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB16297A26B7004304BC /* mouse.cpp */; };
 		E2B2EB1B297A26C7004304BC /* joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB19297A26C7004304BC /* joystick.cpp */; };
+		E2B2EB1E297AD78A004304BC /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB1C297AD78A004304BC /* camera.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -451,6 +452,8 @@
 		E2B2EB17297A26B7004304BC /* mouse.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mouse.hpp; sourceTree = "<group>"; };
 		E2B2EB19297A26C7004304BC /* joystick.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = joystick.cpp; sourceTree = "<group>"; };
 		E2B2EB1A297A26C7004304BC /* joystick.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = joystick.hpp; sourceTree = "<group>"; };
+		E2B2EB1C297AD78A004304BC /* camera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = camera.cpp; sourceTree = "<group>"; };
+		E2B2EB1D297AD78A004304BC /* camera.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = camera.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1017,6 +1020,8 @@
 				E2B2EB17297A26B7004304BC /* mouse.hpp */,
 				E2B2EB19297A26C7004304BC /* joystick.cpp */,
 				E2B2EB1A297A26C7004304BC /* joystick.hpp */,
+				E2B2EB1C297AD78A004304BC /* camera.cpp */,
+				E2B2EB1D297AD78A004304BC /* camera.hpp */,
 			);
 			path = io;
 			sourceTree = "<group>";
@@ -1082,6 +1087,7 @@
 				E2B2EAFD2972F0DE004304BC /* glm.cpp in Sources */,
 				E2B2EB04297559B6004304BC /* stb.cpp in Sources */,
 				E2B2EB18297A26B7004304BC /* mouse.cpp in Sources */,
+				E2B2EB1E297AD78A004304BC /* camera.cpp in Sources */,
 				E2B2EB0A2975827D004304BC /* fragment_core.glsl in Sources */,
 				66E5F15C2971A76F00A4938F /* main.cpp in Sources */,
 				66E5F1652971A7B000A4938F /* glad.c in Sources */,

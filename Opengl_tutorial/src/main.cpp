@@ -6,10 +6,11 @@
 #include "io/keyboard.hpp"
 #include "io/mouse.hpp"
 #include "io/joystick.hpp"
+#include "io/camera.hpp"
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, float delta);
 
 // settings
 unsigned int SCR_WIDTH = 800;
@@ -20,6 +21,13 @@ float mixVal = 0.5f;
 glm::mat4 transform = glm::mat4(1.0f);
 
 Joystick mainJ(0);
+
+Camera cameras[] = {
+    Camera(glm::vec3(0.0f, 0.0f, 3.0f)),
+    Camera(glm::vec3(0.0f, 0.0f, 7.0f)),
+};
+
+int activeCamera = 0;
 
 float Theta = 45.0f;
 
@@ -37,7 +45,7 @@ int main()
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-
+    float lastTime = glfwGetTime();
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
@@ -207,9 +215,12 @@ int main()
     // -----------
     while (!glfwWindowShouldClose(window))
     {
+        float currentTime = glfwGetTime();
+        float delta = currentTime - lastTime;
+        lastTime = currentTime;
         // input
         // -----
-        processInput(window);
+        processInput(window, delta);
 
         // render
         // ------
@@ -228,9 +239,9 @@ int main()
         glm::mat4 projection = glm::mat4(1.0f);
         
         model = glm::rotate(model,(float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f));
-        view = glm::translate(view, glm::vec3(-x,-y,-z));
-        projection = glm::perspective(glm::radians(Theta),(float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
-        
+//        view = glm::translate(view, glm::vec3(-x,-y,-z));
+        view = cameras[activeCamera].getViewMatrix();
+        projection = glm::perspective(cameras[activeCamera].getZoom(),(float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
         // render container
         ourShader.activate();
         ourShader.setMat4("model", model);
@@ -261,7 +272,7 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window)
+void processInput(GLFWwindow *window, float delta)
 {
     if(Keyboard::keyWentUp(GLFW_KEY_ESCAPE)) {
         glfwSetWindowShouldClose(window, true);
@@ -276,18 +287,36 @@ void processInput(GLFWwindow *window)
             mixVal = 0.0f;
         }
     } else if(Keyboard::key(GLFW_KEY_W)) {
-        y -= 0.1f;
+        
+        cameras[activeCamera].updateCameraPos(CameraDirection::UP, delta);
+//        y -= 0.1f;
 //        transform = glm::translate(transform, glm::vec3(0.0f, 0.1f, 0.0f));
     } else if(Keyboard::key(GLFW_KEY_S)) {
-        y += 0.1f;
+        cameras[activeCamera].updateCameraPos(CameraDirection::DOWN, delta);
+//        y += 0.1f;
 //        transform = glm::translate(transform, glm::vec3(0.0f, -0.1f, 0.0f));
     } else if(Keyboard::key(GLFW_KEY_A)) {
-        x += 0.1f;
+        cameras[activeCamera].updateCameraPos(CameraDirection::LEFT, delta);
+//        x += 0.1f;
 //        transform = glm::translate(transform, glm::vec3(-0.1f, 0.0f, 0.0f));
     } else if(Keyboard::key(GLFW_KEY_D)) {
-        x -= 0.1f;
+        cameras[activeCamera].updateCameraPos(CameraDirection::RIGHT, delta);
+//        x -= 0.1f;
 //        transform = glm::translate(transform, glm::vec3(0.1f, 0.0f, 0.0f));
+    } else if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
+        activeCamera += activeCamera == 0 ? 1 : -1;
     }
+    
+    double dx = Mouse::getDX(), dy = Mouse::getDY();
+    if(dx != 0 && dy != 0) {
+        cameras[activeCamera].updateCameraDirection(dx, dy);
+    }
+
+//    double scrollDy = Mouse::getScrollDY();
+//    if(scrollDy != 0) {
+//        std::cout << scrollDy << std::endl;
+//        camera.updateCameraZoom(scrollDy);
+//    }
 
     if(Mouse::button(GLFW_MOUSE_BUTTON_1)) {
 //        mixVal += 0.05f;
