@@ -18,6 +18,9 @@
 		E2B2EB0829758237004304BC /* vertex_core.glsl in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB0729758237004304BC /* vertex_core.glsl */; };
 		E2B2EB0A2975827D004304BC /* fragment_core.glsl in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB092975827D004304BC /* fragment_core.glsl */; };
 		E2B2EB0F2976FDF2004304BC /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB0E2976FDF2004304BC /* Shader.cpp */; };
+		E2B2EB15297A269F004304BC /* keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB13297A269F004304BC /* keyboard.cpp */; };
+		E2B2EB18297A26B7004304BC /* mouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB16297A26B7004304BC /* mouse.cpp */; };
+		E2B2EB1B297A26C7004304BC /* joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB19297A26C7004304BC /* joystick.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -442,6 +445,12 @@
 		E2B2EB0E2976FDF2004304BC /* Shader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
 		E2B2EB10297784AB004304BC /* image2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image2.png; sourceTree = "<group>"; };
 		E2B2EB11297784AB004304BC /* image1.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image1.jpeg; sourceTree = "<group>"; };
+		E2B2EB13297A269F004304BC /* keyboard.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = keyboard.cpp; sourceTree = "<group>"; };
+		E2B2EB14297A269F004304BC /* keyboard.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = keyboard.hpp; sourceTree = "<group>"; };
+		E2B2EB16297A26B7004304BC /* mouse.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mouse.cpp; sourceTree = "<group>"; };
+		E2B2EB17297A26B7004304BC /* mouse.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mouse.hpp; sourceTree = "<group>"; };
+		E2B2EB19297A26C7004304BC /* joystick.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = joystick.cpp; sourceTree = "<group>"; };
+		E2B2EB1A297A26C7004304BC /* joystick.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = joystick.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -502,6 +511,7 @@
 		66E5F1632971A78A00A4938F /* src */ = {
 			isa = PBXGroup;
 			children = (
+				E2B2EB12297A267A004304BC /* io */,
 				66E5F15B2971A76F00A4938F /* main.cpp */,
 				E2B2EB0D2976FDF2004304BC /* Shader.hpp */,
 				E2B2EB0E2976FDF2004304BC /* Shader.cpp */,
@@ -998,6 +1008,19 @@
 			path = asset;
 			sourceTree = "<group>";
 		};
+		E2B2EB12297A267A004304BC /* io */ = {
+			isa = PBXGroup;
+			children = (
+				E2B2EB13297A269F004304BC /* keyboard.cpp */,
+				E2B2EB14297A269F004304BC /* keyboard.hpp */,
+				E2B2EB16297A26B7004304BC /* mouse.cpp */,
+				E2B2EB17297A26B7004304BC /* mouse.hpp */,
+				E2B2EB19297A26C7004304BC /* joystick.cpp */,
+				E2B2EB1A297A26C7004304BC /* joystick.hpp */,
+			);
+			path = io;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1058,10 +1081,13 @@
 			files = (
 				E2B2EAFD2972F0DE004304BC /* glm.cpp in Sources */,
 				E2B2EB04297559B6004304BC /* stb.cpp in Sources */,
+				E2B2EB18297A26B7004304BC /* mouse.cpp in Sources */,
 				E2B2EB0A2975827D004304BC /* fragment_core.glsl in Sources */,
 				66E5F15C2971A76F00A4938F /* main.cpp in Sources */,
 				66E5F1652971A7B000A4938F /* glad.c in Sources */,
 				E2B2EB0F2976FDF2004304BC /* Shader.cpp in Sources */,
+				E2B2EB1B297A26C7004304BC /* joystick.cpp in Sources */,
+				E2B2EB15297A269F004304BC /* keyboard.cpp in Sources */,
 				E2B2EB0829758237004304BC /* vertex_core.glsl in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

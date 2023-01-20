@@ -3,7 +3,9 @@
 #include <stb/stb_image.h>
 
 #include "Shader.hpp"
-
+#include "io/keyboard.hpp"
+#include "io/mouse.hpp"
+#include "io/joystick.hpp"
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -12,6 +14,12 @@ void processInput(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+
+float mixVal = 0.5f;
+
+glm::mat4 transform = glm::mat4(1.0f);
+
+Joystick mainJ(0);
 
 int main()
 {
@@ -37,6 +45,12 @@ int main()
     }
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    
+    // key pressed
+    glfwSetKeyCallback(window, Keyboard::keyCallback);
+    glfwSetMouseButtonCallback(window, Mouse::mouseButtonCallback);
+    glfwSetCursorPosCallback(window, Mouse::cursorPosCallback);
+    glfwSetScrollCallback(window, Mouse::mouseWheelCallback);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -147,9 +161,12 @@ int main()
     // or set it via the texture class
     ourShader.setInt("texture1", 0);
     ourShader.setInt("texture2", 1);
+    ourShader.setMat4("transform", transform);
 
-
-
+    if(mainJ.isPresent()) {
+        mainJ.update();
+        std::cout << "joystick is preseted!" << std::endl;
+    }
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -168,12 +185,13 @@ int main()
         glBindTexture(GL_TEXTURE_2D, texture1);
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, texture2);
-
+        glBindVertexArray(VAO);
         // render container
         ourShader.activate();
-        glBindVertexArray(VAO);
+        ourShader.setFloat("mixVal", mixVal);
+        ourShader.setMat4("transform", transform);
+        
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -196,8 +214,41 @@ int main()
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if(Keyboard::keyWentUp(GLFW_KEY_ESCAPE)) {
         glfwSetWindowShouldClose(window, true);
+    } else if(Keyboard::keyWentUp(GLFW_KEY_UP)) {
+        mixVal += 0.05f;
+        if(mixVal > 1.0f) {
+            mixVal = 1.0f;
+        }
+    } else if(Keyboard::keyWentUp(GLFW_KEY_DOWN)) {
+        mixVal -= 0.05f;
+        if(mixVal < 0.0f) {
+            mixVal = 0.0f;
+        }
+    } else if(Keyboard::key(GLFW_KEY_W)) {
+        transform = glm::translate(transform, glm::vec3(0.0f, 0.1f, 0.0f));
+    } else if(Keyboard::key(GLFW_KEY_S)) {
+        transform = glm::translate(transform, glm::vec3(0.0f, -0.1f, 0.0f));
+    } else if(Keyboard::key(GLFW_KEY_A)) {
+        transform = glm::translate(transform, glm::vec3(-0.1f, 0.0f, 0.0f));
+    } else if(Keyboard::key(GLFW_KEY_D)) {
+        transform = glm::translate(transform, glm::vec3(0.1f, 0.0f, 0.0f));
+    }
+    
+    if(Mouse::buttonWentUp(GLFW_MOUSE_BUTTON_1)) {
+        mixVal += 0.05f;
+        if(mixVal > 1.0f) {
+            mixVal = 1.0f;
+        }
+    } else if(Mouse::buttonWentUp(GLFW_MOUSE_BUTTON_2)) {
+        mixVal -= 0.05f;
+        if(mixVal < 0.0f) {
+            mixVal = 0.0f;
+        }
+    }
+    
+    mainJ.update();
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
