@@ -23,6 +23,7 @@
 		E2B2EB1B297A26C7004304BC /* joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB19297A26C7004304BC /* joystick.cpp */; };
 		E2B2EB1E297AD78A004304BC /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB1C297AD78A004304BC /* camera.cpp */; };
 		E2FA58BE297F73FB0038071B /* screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA58BC297F73FB0038071B /* screen.cpp */; };
+		E2FA58C1297FC7140038071B /* texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA58BF297FC7140038071B /* texture.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -456,6 +457,8 @@
 		E2B2EB1D297AD78A004304BC /* camera.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = camera.hpp; sourceTree = "<group>"; };
 		E2FA58BC297F73FB0038071B /* screen.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = screen.cpp; sourceTree = "<group>"; };
 		E2FA58BD297F73FB0038071B /* screen.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = screen.hpp; sourceTree = "<group>"; };
+		E2FA58BF297FC7140038071B /* texture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = texture.cpp; sourceTree = "<group>"; };
+		E2FA58C0297FC7140038071B /* texture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = texture.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1033,6 +1036,8 @@
 			children = (
 				E2B2EB0D2976FDF2004304BC /* shader.hpp */,
 				E2B2EB0E2976FDF2004304BC /* shader.cpp */,
+				E2FA58BF297FC7140038071B /* texture.cpp */,
+				E2FA58C0297FC7140038071B /* texture.hpp */,
 			);
 			path = graphic;
 			sourceTree = "<group>";
@@ -1098,6 +1103,7 @@
 				E2B2EAFD2972F0DE004304BC /* glm.cpp in Sources */,
 				E2B2EB04297559B6004304BC /* stb.cpp in Sources */,
 				E2B2EB18297A26B7004304BC /* mouse.cpp in Sources */,
+				E2FA58C1297FC7140038071B /* texture.cpp in Sources */,
 				E2B2EB1E297AD78A004304BC /* camera.cpp in Sources */,
 				E2B2EB0A2975827D004304BC /* object.fs.glsl in Sources */,
 				66E5F15C2971A76F00A4938F /* main.cpp in Sources */,
