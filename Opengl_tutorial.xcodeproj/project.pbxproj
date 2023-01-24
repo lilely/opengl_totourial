@@ -24,6 +24,8 @@
 		E2B2EB1E297AD78A004304BC /* camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB1C297AD78A004304BC /* camera.cpp */; };
 		E2FA58BE297F73FB0038071B /* screen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA58BC297F73FB0038071B /* screen.cpp */; };
 		E2FA58C1297FC7140038071B /* texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA58BF297FC7140038071B /* texture.cpp */; };
+		E2FA58C4297FD0EB0038071B /* mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA58C2297FD0EB0038071B /* mesh.cpp */; };
+		E2FA58C7297FD0F40038071B /* model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA58C5297FD0F40038071B /* model.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -459,6 +461,11 @@
 		E2FA58BD297F73FB0038071B /* screen.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = screen.hpp; sourceTree = "<group>"; };
 		E2FA58BF297FC7140038071B /* texture.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = texture.cpp; sourceTree = "<group>"; };
 		E2FA58C0297FC7140038071B /* texture.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = texture.hpp; sourceTree = "<group>"; };
+		E2FA58C2297FD0EB0038071B /* mesh.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mesh.cpp; sourceTree = "<group>"; };
+		E2FA58C3297FD0EB0038071B /* mesh.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = mesh.hpp; sourceTree = "<group>"; };
+		E2FA58C5297FD0F40038071B /* model.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = model.cpp; sourceTree = "<group>"; };
+		E2FA58C6297FD0F40038071B /* model.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = model.hpp; sourceTree = "<group>"; };
+		E2FA58CA297FF1310038071B /* cube.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = cube.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1034,12 +1041,25 @@
 		E2FA58BB297F71A50038071B /* graphic */ = {
 			isa = PBXGroup;
 			children = (
+				E2FA58C8297FF11C0038071B /* models */,
 				E2B2EB0D2976FDF2004304BC /* shader.hpp */,
 				E2B2EB0E2976FDF2004304BC /* shader.cpp */,
 				E2FA58BF297FC7140038071B /* texture.cpp */,
 				E2FA58C0297FC7140038071B /* texture.hpp */,
+				E2FA58C2297FD0EB0038071B /* mesh.cpp */,
+				E2FA58C3297FD0EB0038071B /* mesh.hpp */,
+				E2FA58C5297FD0F40038071B /* model.cpp */,
+				E2FA58C6297FD0F40038071B /* model.hpp */,
 			);
 			path = graphic;
+			sourceTree = "<group>";
+		};
+		E2FA58C8297FF11C0038071B /* models */ = {
+			isa = PBXGroup;
+			children = (
+				E2FA58CA297FF1310038071B /* cube.hpp */,
+			);
+			path = models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1105,7 +1125,9 @@
 				E2B2EB18297A26B7004304BC /* mouse.cpp in Sources */,
 				E2FA58C1297FC7140038071B /* texture.cpp in Sources */,
 				E2B2EB1E297AD78A004304BC /* camera.cpp in Sources */,
+				E2FA58C7297FD0F40038071B /* model.cpp in Sources */,
 				E2B2EB0A2975827D004304BC /* object.fs.glsl in Sources */,
+				E2FA58C4297FD0EB0038071B /* mesh.cpp in Sources */,
 				66E5F15C2971A76F00A4938F /* main.cpp in Sources */,
 				66E5F1652971A7B000A4938F /* glad.c in Sources */,
 				E2FA58BE297F73FB0038071B /* screen.cpp in Sources */,

@@ -72,3 +72,7 @@ void Texture::setWrap(GLenum s, GLenum t) {
 void Texture::activate() {
     glActiveTexture(GL_TEXTURE0 + id);
 }
+
+void Texture::bind() {
+    glBindTexture(GL_TEXTURE_2D, id);
+}

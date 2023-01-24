@@ -26,13 +26,13 @@ public:
     void setWrap(GLenum s, GLenum t);
     
     void activate();
+    void bind();
     
     int id;
     unsigned int tex;
-    
+    const char* name;
 private:
     static int currentId;
-    const char* name;
     const char* path;
     int width;
     int height;
