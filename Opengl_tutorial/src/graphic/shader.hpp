@@ -23,7 +23,11 @@ class Shader {
 public:
     unsigned int id;
     
+    Shader();
+    
     Shader(const char *vertexShaerPath, const char * fragmentShaderPath);
+    
+    void generateProgram(const char *vertexShaderPath, const char * fragmentShaderPath);
     
     std::string loadShaderSrc(const char * filePath);
     

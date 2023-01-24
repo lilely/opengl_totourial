@@ -2,19 +2,17 @@
 #include <GLFW/glfw3.h>
 #include <stb/stb_image.h>
 
-#include "Shader.hpp"
+#include "graphic/shader.hpp"
 #include "io/keyboard.hpp"
 #include "io/mouse.hpp"
 #include "io/joystick.hpp"
 #include "io/camera.hpp"
+#include "io/screen.hpp"
 #include <iostream>
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window, float delta);
+void processInput(float delta);
 
 // settings
-unsigned int SCR_WIDTH = 800;
-unsigned int SCR_HEIGHT = 600;
 
 float mixVal = 0.5f;
 
@@ -27,11 +25,9 @@ Camera cameras[] = {
     Camera(glm::vec3(0.0f, 0.0f, 7.0f)),
 };
 
+Screen screen;
+
 int activeCamera = 0;
-
-float Theta = 45.0f;
-
-float x,y,z;
 
 int main()
 {
@@ -48,22 +44,11 @@ int main()
     float lastTime = glfwGetTime();
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
-    if (window == NULL)
-    {
+    if(!screen.init()) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
-    glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    
-    // key pressed
-    glfwSetKeyCallback(window, Keyboard::keyCallback);
-    glfwSetMouseButtonCallback(window, Mouse::mouseButtonCallback);
-    glfwSetCursorPosCallback(window, Mouse::cursorPosCallback);
-    glfwSetScrollCallback(window, Mouse::mouseWheelCallback);
-    
     // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
@@ -71,11 +56,10 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    glEnable(GL_DEPTH_TEST);
+    screen.setParamters();
     // build and compile our shader zprogram
     // ------------------------------------
     Shader ourShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.fs.glsl");
-
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
     float vertices[] = {
@@ -205,24 +189,20 @@ int main()
         mainJ.update();
         std::cout << "joystick is preseted!" << std::endl;
     }
-    x = 0.0f;
-    y = 0.0f;
-    z = 3.0f;
+
     // render loop
     // -----------
-    while (!glfwWindowShouldClose(window))
+    while (!screen.shouldClose())
     {
         float currentTime = glfwGetTime();
         float delta = currentTime - lastTime;
         lastTime = currentTime;
         // input
         // -----
-        processInput(window, delta);
-
+        processInput(delta);
         // render
         // ------
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        screen.update();
 
         // bind textures on corresponding texture units
         glActiveTexture(GL_TEXTURE0);
@@ -237,7 +217,7 @@ int main()
         
         model = glm::rotate(model,(float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f));
         view = cameras[activeCamera].getViewMatrix();
-        projection = glm::perspective(cameras[activeCamera].getZoom(),(float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
+        projection = glm::perspective(cameras[activeCamera].getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.1f, 100.0f);
         // render container
         ourShader.activate();
         ourShader.setMat4("model", model);
@@ -250,8 +230,7 @@ int main()
         glDrawArrays(GL_TRIANGLES, 0, 36);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        screen.newFrame();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
@@ -267,10 +246,10 @@ int main()
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window, float delta)
+void processInput(float delta)
 {
     if(Keyboard::keyWentUp(GLFW_KEY_ESCAPE)) {
-        glfwSetWindowShouldClose(window, true);
+        screen.setShouldClose(true);
     } else if(Keyboard::keyWentUp(GLFW_KEY_UP)) {
         mixVal += 0.05f;
         if(mixVal > 1.0f) {
@@ -293,30 +272,16 @@ void processInput(GLFWwindow *window, float delta)
         activeCamera += activeCamera == 0 ? 1 : -1;
     }
     
-//    double dx = Mouse::getDX(), dy = Mouse::getDY();
-//    if(dx != 0 && dy != 0) {
-//        cameras[activeCamera].updateCameraDirection(dx, dy);
-//    }
+    double dx = Mouse::getDX(), dy = Mouse::getDY();
+    if(dx != 0 && dy != 0) {
+        cameras[activeCamera].updateCameraDirection(dx/10, dy/10);
+    }
 
 //    double scrollDy = Mouse::getScrollDY();
 //    if(scrollDy != 0) {
 //        std::cout << scrollDy << std::endl;
 //        camera.updateCameraZoom(scrollDy);
 //    }
-
-    if(Mouse::button(GLFW_MOUSE_BUTTON_1)) {
-//        mixVal += 0.05f;
-//        if(mixVal > 1.0f) {
-//            mixVal = 1.0f;
-//        }
-        Theta += 1.0f;
-    } else if(Mouse::button(GLFW_MOUSE_BUTTON_2)) {
-//        mixVal -= 0.05f;
-//        if(mixVal < 0.0f) {
-//            mixVal = 0.0f;
-//        }
-        Theta -= 1.0f;
-    }
     
     mainJ.update();
     
@@ -337,15 +302,4 @@ void processInput(GLFWwindow *window, float delta)
 //        transform = glm::scale(transform, glm::vec3(1 + lt/10, 1 + lt/10, 0.0f));
 //    }
 //    std::cout << lx << ":" << ly << std::endl;
-}
-
-// glfw: whenever the window size changed (by OS or user resize) this callback function executes
-// ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    // make sure the viewport matches the new window dimensions; note that width and
-    // height will be significantly larger than specified on retina displays.
-    glViewport(0, 0, width, height);
-    SCR_WIDTH = width;
-    SCR_HEIGHT = height;
 }

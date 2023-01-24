@@ -6,9 +6,15 @@
 //  Copyright © 2023 com.corp.jinxing. All rights reserved.
 //
 
-#include "Shader.hpp"
+#include "shader.hpp"
+
+Shader::Shader(){};
 
 Shader::Shader(const char *vertexShaderPath, const char *fragmentShaderPath) {
+    generateProgram(vertexShaderPath, fragmentShaderPath);
+}
+
+void Shader::generateProgram(const char *vertexShaderPath, const char * fragmentShaderPath) {
     int success;
     char infoLog[512];
     
