@@ -74,7 +74,7 @@ int main()
     glEnable(GL_DEPTH_TEST);
     // build and compile our shader zprogram
     // ------------------------------------
-    Shader ourShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/vertex_core.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/fragment_core.glsl");
+    Shader ourShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.fs.glsl");
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -200,9 +200,6 @@ int main()
     // or set it via the texture class
     ourShader.setInt("texture1", 0);
     ourShader.setInt("texture2", 1);
-//    transform = glm::rotate(transform, glm::radians(45.f), glm::vec3(1.0, 0.0f, 0.0f));
-//    transform = glm::rotate(transform, glm::radians(45.f), glm::vec3(0.0, 1.0f, 0.0f));
-//    ourShader.setMat4("transform", transform);
     
     if(mainJ.isPresent()) {
         mainJ.update();
@@ -239,7 +236,6 @@ int main()
         glm::mat4 projection = glm::mat4(1.0f);
         
         model = glm::rotate(model,(float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f));
-//        view = glm::translate(view, glm::vec3(-x,-y,-z));
         view = cameras[activeCamera].getViewMatrix();
         projection = glm::perspective(cameras[activeCamera].getZoom(),(float)SCR_WIDTH/(float)SCR_HEIGHT, 0.1f, 100.0f);
         // render container
@@ -252,7 +248,6 @@ int main()
         ourShader.setMat4("transform", transform);
         
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
@@ -287,30 +282,21 @@ void processInput(GLFWwindow *window, float delta)
             mixVal = 0.0f;
         }
     } else if(Keyboard::key(GLFW_KEY_W)) {
-        
         cameras[activeCamera].updateCameraPos(CameraDirection::UP, delta);
-//        y -= 0.1f;
-//        transform = glm::translate(transform, glm::vec3(0.0f, 0.1f, 0.0f));
     } else if(Keyboard::key(GLFW_KEY_S)) {
         cameras[activeCamera].updateCameraPos(CameraDirection::DOWN, delta);
-//        y += 0.1f;
-//        transform = glm::translate(transform, glm::vec3(0.0f, -0.1f, 0.0f));
     } else if(Keyboard::key(GLFW_KEY_A)) {
         cameras[activeCamera].updateCameraPos(CameraDirection::LEFT, delta);
-//        x += 0.1f;
-//        transform = glm::translate(transform, glm::vec3(-0.1f, 0.0f, 0.0f));
     } else if(Keyboard::key(GLFW_KEY_D)) {
         cameras[activeCamera].updateCameraPos(CameraDirection::RIGHT, delta);
-//        x -= 0.1f;
-//        transform = glm::translate(transform, glm::vec3(0.1f, 0.0f, 0.0f));
     } else if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
         activeCamera += activeCamera == 0 ? 1 : -1;
     }
     
-    double dx = Mouse::getDX(), dy = Mouse::getDY();
-    if(dx != 0 && dy != 0) {
-        cameras[activeCamera].updateCameraDirection(dx, dy);
-    }
+//    double dx = Mouse::getDX(), dy = Mouse::getDY();
+//    if(dx != 0 && dy != 0) {
+//        cameras[activeCamera].updateCameraDirection(dx, dy);
+//    }
 
 //    double scrollDy = Mouse::getScrollDY();
 //    if(scrollDy != 0) {

@@ -15,8 +15,8 @@
 		E2434B6C2971AE5F00DADB69 /* libglfw.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 66E5F16B2971A88200A4938F /* libglfw.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E2B2EAFD2972F0DE004304BC /* glm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EA402972F0DE004304BC /* glm.cpp */; };
 		E2B2EB04297559B6004304BC /* stb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB02297559B6004304BC /* stb.cpp */; };
-		E2B2EB0829758237004304BC /* vertex_core.glsl in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB0729758237004304BC /* vertex_core.glsl */; };
-		E2B2EB0A2975827D004304BC /* fragment_core.glsl in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB092975827D004304BC /* fragment_core.glsl */; };
+		E2B2EB0829758237004304BC /* object.vs.glsl in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB0729758237004304BC /* object.vs.glsl */; };
+		E2B2EB0A2975827D004304BC /* object.fs.glsl in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB092975827D004304BC /* object.fs.glsl */; };
 		E2B2EB0F2976FDF2004304BC /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB0E2976FDF2004304BC /* Shader.cpp */; };
 		E2B2EB15297A269F004304BC /* keyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB13297A269F004304BC /* keyboard.cpp */; };
 		E2B2EB18297A26B7004304BC /* mouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB16297A26B7004304BC /* mouse.cpp */; };
@@ -438,10 +438,9 @@
 		E2B2EAFC2972F0DE004304BC /* type_aligned.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = type_aligned.hpp; sourceTree = "<group>"; };
 		E2B2EB002972F8E2004304BC /* stb_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
 		E2B2EB02297559B6004304BC /* stb.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = stb.cpp; sourceTree = "<group>"; };
-		E2B2EB0729758237004304BC /* vertex_core.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = vertex_core.glsl; sourceTree = "<group>"; };
-		E2B2EB092975827D004304BC /* fragment_core.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = fragment_core.glsl; sourceTree = "<group>"; };
+		E2B2EB0729758237004304BC /* object.vs.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = object.vs.glsl; sourceTree = "<group>"; };
+		E2B2EB092975827D004304BC /* object.fs.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = object.fs.glsl; sourceTree = "<group>"; };
 		E2B2EB0B2975AD5A004304BC /* Opengl_tutorial.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Opengl_tutorial.entitlements; sourceTree = "<group>"; };
-		E2B2EB0C297642F5004304BC /* fragment_core_2.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fragment_core_2.glsl; sourceTree = "<group>"; };
 		E2B2EB0D2976FDF2004304BC /* Shader.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = Shader.hpp; sourceTree = "<group>"; };
 		E2B2EB0E2976FDF2004304BC /* Shader.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
 		E2B2EB10297784AB004304BC /* image2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image2.png; sourceTree = "<group>"; };
@@ -1004,9 +1003,8 @@
 			children = (
 				E2B2EB10297784AB004304BC /* image2.png */,
 				E2B2EB11297784AB004304BC /* image1.jpeg */,
-				E2B2EB0729758237004304BC /* vertex_core.glsl */,
-				E2B2EB092975827D004304BC /* fragment_core.glsl */,
-				E2B2EB0C297642F5004304BC /* fragment_core_2.glsl */,
+				E2B2EB0729758237004304BC /* object.vs.glsl */,
+				E2B2EB092975827D004304BC /* object.fs.glsl */,
 			);
 			path = asset;
 			sourceTree = "<group>";
@@ -1088,13 +1086,13 @@
 				E2B2EB04297559B6004304BC /* stb.cpp in Sources */,
 				E2B2EB18297A26B7004304BC /* mouse.cpp in Sources */,
 				E2B2EB1E297AD78A004304BC /* camera.cpp in Sources */,
-				E2B2EB0A2975827D004304BC /* fragment_core.glsl in Sources */,
+				E2B2EB0A2975827D004304BC /* object.fs.glsl in Sources */,
 				66E5F15C2971A76F00A4938F /* main.cpp in Sources */,
 				66E5F1652971A7B000A4938F /* glad.c in Sources */,
 				E2B2EB0F2976FDF2004304BC /* Shader.cpp in Sources */,
 				E2B2EB1B297A26C7004304BC /* joystick.cpp in Sources */,
 				E2B2EB15297A269F004304BC /* keyboard.cpp in Sources */,
-				E2B2EB0829758237004304BC /* vertex_core.glsl in Sources */,
+				E2B2EB0829758237004304BC /* object.vs.glsl in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
