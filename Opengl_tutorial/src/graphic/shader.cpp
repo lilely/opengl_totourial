@@ -71,13 +71,17 @@ GLuint Shader::compileShader(const char *filepath, GLenum type) {
     glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
     if(!success) {
         glGetShaderInfoLog(shader,512,NULL,infoLog);
-        std::cout << "Error with shader comp.:" << std::endl << infoLog << std::endl;
+        std::cout << filepath << ",Error with shader comp.:" << std::endl << infoLog << std::endl;
     }
     return shader;
 }
 
 void Shader::setMat4(const std::string &name, glm::mat4 val) {
     glUniformMatrix4fv(glGetUniformLocation(id,name.c_str()),1,GL_FALSE,glm::value_ptr(val));
+}
+
+void Shader::setMat3(const std::string &name, glm::mat3 val) {
+    glUniformMatrix3fv(glGetUniformLocation(id,name.c_str()),1,GL_FALSE,glm::value_ptr(val));
 }
 
 void Shader::setInt(const std::string& name, int value) {

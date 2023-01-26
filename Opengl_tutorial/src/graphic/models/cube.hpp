@@ -10,13 +10,16 @@
 #define cube_hpp
 
 #include "../model.hpp"
+#include "../material.hpp"
 
 class Cube : public Model {
 public:
     glm::vec3 pos;
     glm::vec3 size;
     
-    Cube(glm::vec3 pos, glm::vec3 size) : pos(pos), size(size) {}
+    Material material;
+    
+    Cube(Material material, glm::vec3 pos, glm::vec3 size) : material(material), pos(pos), size(size) {}
     
     void init() {
         int noVertices = 36;
@@ -84,7 +87,13 @@ public:
         model = glm::scale(model,size);
         model = glm::rotate(model,(float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f));
         shader.setMat4("model", model);
-        
+
+        // Material
+        shader.setFloat3("material.ambient", material.ambient);
+        shader.setFloat3("material.diffuse", material.diffuse);
+        shader.setFloat3("material.specular", material.specular);
+        shader.setFloat("material.shininess", material.shininess);
+    
         Model::render(shader);
     }
 };

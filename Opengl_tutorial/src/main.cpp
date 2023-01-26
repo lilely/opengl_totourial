@@ -11,6 +11,8 @@
 #include "graphic/texture.hpp"
 #include <iostream>
 #include "graphic/models/cube.hpp"
+#include "graphic/material.hpp"
+#include "graphic/models/lamp.hpp"
 
 void processInput(float delta);
 
@@ -64,8 +66,13 @@ int main()
     Shader ourShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.fs.glsl");
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    Cube cube(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
+    Shader lampShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/lamp.fs.glsl");
+    
+    Cube cube(Material::red_plastic,glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
     cube.init();
+    
+    Lamp lamp(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(-1.0f,-0.5f,-0.5f), glm::vec3(0.25f));
+    lamp.init();
     
     if(mainJ.isPresent()) {
         mainJ.update();
@@ -87,6 +94,14 @@ int main()
         screen.update();
         // bind textures on corresponding texture units
         
+        ourShader.activate();
+        ourShader.setFloat3("light.position", lamp.pos);
+        ourShader.setFloat3("viewPos", cameras[activeCamera].cameraPos);
+        
+        ourShader.setFloat3("light.ambient", lamp.ambient);
+        ourShader.setFloat3("light.diffuse", lamp.diffuse);
+        ourShader.setFloat3("light.specular", lamp.specular);
+        
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
         
@@ -99,6 +114,11 @@ int main()
         ourShader.setFloat("mixVal", mixVal);
         
         cube.render(ourShader);
+        
+        lampShader.activate();
+        lampShader.setMat4("view", view);
+        lampShader.setMat4("projection", projection);
+        lamp.render(lampShader);
 //        glDrawArrays(GL_TRIANGLES, 0, 36);
         screen.newFrame();
     }
@@ -106,6 +126,7 @@ int main()
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     cube.cleanup();
+    lamp.cleanup();
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
@@ -118,16 +139,6 @@ void processInput(float delta)
 {
     if(Keyboard::keyWentUp(GLFW_KEY_ESCAPE)) {
         screen.setShouldClose(true);
-    } else if(Keyboard::keyWentUp(GLFW_KEY_UP)) {
-        mixVal += 0.05f;
-        if(mixVal > 1.0f) {
-            mixVal = 1.0f;
-        }
-    } else if(Keyboard::keyWentUp(GLFW_KEY_DOWN)) {
-        mixVal -= 0.05f;
-        if(mixVal < 0.0f) {
-            mixVal = 0.0f;
-        }
     } else if(Keyboard::key(GLFW_KEY_W)) {
         cameras[activeCamera].updateCameraPos(CameraDirection::UP, delta);
     } else if(Keyboard::key(GLFW_KEY_S)) {
@@ -138,12 +149,20 @@ void processInput(float delta)
         cameras[activeCamera].updateCameraPos(CameraDirection::RIGHT, delta);
     } else if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
         activeCamera += activeCamera == 0 ? 1 : -1;
+    } else if(Keyboard::key(GLFW_KEY_UP)) {
+        cameras[activeCamera].updateCameraDirection(0, 1.0f);
+    } else if(Keyboard::key(GLFW_KEY_DOWN)) {
+        cameras[activeCamera].updateCameraDirection(0, -1.0f);
+    } else if(Keyboard::key(GLFW_KEY_LEFT)) {
+        cameras[activeCamera].updateCameraDirection(1.0f, 0);
+    } else if(Keyboard::key(GLFW_KEY_RIGHT)) {
+        cameras[activeCamera].updateCameraDirection(-1.0f, 0);
     }
     
-    double dx = Mouse::getDX(), dy = Mouse::getDY();
-    if(dx != 0 && dy != 0) {
-        cameras[activeCamera].updateCameraDirection(dx/10, dy/10);
-    }
+//    double dx = Mouse::getDX(), dy = Mouse::getDY();
+//    if(dx != 0 && dy != 0) {
+//        cameras[activeCamera].updateCameraDirection(dx/10, dy/10);
+//    }
 
 //    double scrollDy = Mouse::getScrollDY();
 //    if(scrollDy != 0) {
@@ -152,7 +171,7 @@ void processInput(float delta)
 //    }
     
     mainJ.update();
-    
+
 //    float lx = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_STICK_X);
 //    float ly = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_STICK_Y);
 //    if(std::abs(lx) > 0.05f) {
