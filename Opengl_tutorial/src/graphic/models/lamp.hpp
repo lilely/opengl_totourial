@@ -10,14 +10,12 @@
 #define lamp_h
 
 #include "cube.hpp"
+#include "../lights/light.hpp"
 
 class Lamp : public Cube {
 public:
     glm::vec3 lightColor;
-    
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
+    PointLight pointLight;
     
     Lamp(glm::vec3 lightColor,
          glm::vec3 ambient,
@@ -25,13 +23,13 @@ public:
          glm::vec3 specular,
          glm::vec3 pos,
          glm::vec3 size) : lightColor(lightColor),
-            ambient(ambient),
-            diffuse(diffuse),
-            specular(specular),
-    Cube(Material::white_plastic, pos, size) {};
+        pointLight({pos, ambient, diffuse, specular}),
+        Cube(Material::white_plastic, pos, size) {};
 
     void render(Shader shader) {
         shader.setFloat3("lightColor", lightColor);
+//        pointLight.render(shader);
+        
         Cube::render(shader);
     }
 };

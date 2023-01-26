@@ -98,10 +98,6 @@ int main()
         ourShader.setFloat3("light.position", lamp.pos);
         ourShader.setFloat3("viewPos", cameras[activeCamera].cameraPos);
         
-        ourShader.setFloat3("light.ambient", lamp.ambient);
-        ourShader.setFloat3("light.diffuse", lamp.diffuse);
-        ourShader.setFloat3("light.specular", lamp.specular);
-        
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
         
@@ -112,6 +108,7 @@ int main()
         ourShader.setMat4("view", view);
         ourShader.setMat4("projection", projection);
         ourShader.setFloat("mixVal", mixVal);
+        lamp.pointLight.render(ourShader);
         
         cube.render(ourShader);
         
@@ -119,6 +116,7 @@ int main()
         lampShader.setMat4("view", view);
         lampShader.setMat4("projection", projection);
         lamp.render(lampShader);
+        
 //        glDrawArrays(GL_TRIANGLES, 0, 36);
         screen.newFrame();
     }
