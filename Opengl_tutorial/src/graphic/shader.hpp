@@ -40,6 +40,10 @@ public:
     void setInt(const std::string& name, int value);
     
     void setFloat(const std::string& name, float value);
+    
+    void setFloat3(const std::string& name, glm::vec3 val);
+    
+    void setFloat3(const std::string& name, float v1, float v2, float v3);
 };
 
 #endif /* Shader_h */
