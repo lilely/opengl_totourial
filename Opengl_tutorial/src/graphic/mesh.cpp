@@ -16,9 +16,13 @@ std::vector<struct Vertex> Vertex::genList(float* vertices, int noVertices) {
                                vertices[stride * i],
                                vertices[stride * i + 1],
                                vertices[stride * i + 2]);
+        ret[i].normal = glm::vec3(
+                                  vertices[stride * i + 3],
+                                  vertices[stride * i + 4],
+                                  vertices[stride * i + 5]);
         ret[i].texCoord = glm::vec2(
-                                     vertices[stride * i + 3],
-                                     vertices[stride * i + 4]);
+                                     vertices[stride * i + 6],
+                                     vertices[stride * i + 7]);
     }
     
     return ret;
@@ -58,11 +62,14 @@ void Mesh::setup() {
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
     // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(offsetof(Vertex, texCoord)));
+    // normal
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(offsetof(Vertex, normal)));
     glEnableVertexAttribArray(1);
+    // color attribute
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(offsetof(Vertex, texCoord)));
+    glEnableVertexAttribArray(2);
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
