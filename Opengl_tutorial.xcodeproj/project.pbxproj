@@ -27,6 +27,9 @@
 		E2FA58C4297FD0EB0038071B /* mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA58C2297FD0EB0038071B /* mesh.cpp */; };
 		E2FA58C7297FD0F40038071B /* model.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA58C5297FD0F40038071B /* model.cpp */; };
 		E2FA58CE298221110038071B /* material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA58CC298221110038071B /* material.cpp */; };
+		E2FA58D62982A8C30038071B /* filesys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA58D42982A8C30038071B /* filesys.cpp */; };
+		E2FA58DC2982B0ED0038071B /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FA58DB2982B0ED0038071B /* CoreFoundation.framework */; };
+		E2FA58E02982BB6A0038071B /* light.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA58DE2982BB6A0038071B /* light.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -471,6 +474,14 @@
 		E2FA58CD298221110038071B /* material.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = material.hpp; sourceTree = "<group>"; };
 		E2FA58CF298222C80038071B /* lamp.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = lamp.hpp; sourceTree = "<group>"; };
 		E2FA58D029822BDD0038071B /* lamp.fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lamp.fs.glsl; sourceTree = "<group>"; };
+		E2FA58D129828C8B0038071B /* box_specular.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = box_specular.png; sourceTree = "<group>"; };
+		E2FA58D229828C8B0038071B /* box.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = box.png; sourceTree = "<group>"; };
+		E2FA58D42982A8C30038071B /* filesys.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = filesys.cpp; sourceTree = "<group>"; };
+		E2FA58D52982A8C30038071B /* filesys.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = filesys.hpp; sourceTree = "<group>"; };
+		E2FA58D72982ABC20038071B /* object_texture.fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = object_texture.fs.glsl; sourceTree = "<group>"; };
+		E2FA58DB2982B0ED0038071B /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		E2FA58DE2982BB6A0038071B /* light.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = light.cpp; sourceTree = "<group>"; };
+		E2FA58DF2982BB6A0038071B /* light.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = light.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -478,6 +489,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E2FA58DC2982B0ED0038071B /* CoreFoundation.framework in Frameworks */,
 				66E5F1712971A96700A4938F /* OpenGL.framework in Frameworks */,
 				66E5F16D2971A88200A4938F /* libglfw.3.dylib in Frameworks */,
 				66E5F16E2971A88200A4938F /* libglfw3.a in Frameworks */,
@@ -531,6 +543,7 @@
 		66E5F1632971A78A00A4938F /* src */ = {
 			isa = PBXGroup;
 			children = (
+				E2FA58D32982A8A80038071B /* utils */,
 				E2FA58BB297F71A50038071B /* graphic */,
 				E2B2EB12297A267A004304BC /* io */,
 				66E5F15B2971A76F00A4938F /* main.cpp */,
@@ -566,6 +579,7 @@
 		66E5F16F2971A96700A4938F /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E2FA58DB2982B0ED0038071B /* CoreFoundation.framework */,
 				66E5F1702971A96700A4938F /* OpenGL.framework */,
 			);
 			name = Frameworks;
@@ -1018,9 +1032,12 @@
 		E2B2EB05297581F3004304BC /* asset */ = {
 			isa = PBXGroup;
 			children = (
+				E2FA58D129828C8B0038071B /* box_specular.png */,
+				E2FA58D229828C8B0038071B /* box.png */,
 				E2B2EB10297784AB004304BC /* image2.png */,
 				E2B2EB11297784AB004304BC /* image1.jpeg */,
 				E2B2EB0729758237004304BC /* object.vs.glsl */,
+				E2FA58D72982ABC20038071B /* object_texture.fs.glsl */,
 				E2B2EB092975827D004304BC /* object.fs.glsl */,
 				E2FA58D029822BDD0038071B /* lamp.fs.glsl */,
 			);
@@ -1047,6 +1064,7 @@
 		E2FA58BB297F71A50038071B /* graphic */ = {
 			isa = PBXGroup;
 			children = (
+				E2FA58DD2982BB500038071B /* lights */,
 				E2FA58C8297FF11C0038071B /* models */,
 				E2B2EB0D2976FDF2004304BC /* shader.hpp */,
 				E2B2EB0E2976FDF2004304BC /* shader.cpp */,
@@ -1069,6 +1087,24 @@
 				E2FA58CF298222C80038071B /* lamp.hpp */,
 			);
 			path = models;
+			sourceTree = "<group>";
+		};
+		E2FA58D32982A8A80038071B /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				E2FA58D42982A8C30038071B /* filesys.cpp */,
+				E2FA58D52982A8C30038071B /* filesys.hpp */,
+			);
+			path = utils;
+			sourceTree = "<group>";
+		};
+		E2FA58DD2982BB500038071B /* lights */ = {
+			isa = PBXGroup;
+			children = (
+				E2FA58DE2982BB6A0038071B /* light.cpp */,
+				E2FA58DF2982BB6A0038071B /* light.hpp */,
+			);
+			path = lights;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1131,6 +1167,8 @@
 			files = (
 				E2B2EAFD2972F0DE004304BC /* glm.cpp in Sources */,
 				E2B2EB04297559B6004304BC /* stb.cpp in Sources */,
+				E2FA58E02982BB6A0038071B /* light.cpp in Sources */,
+				E2FA58D62982A8C30038071B /* filesys.cpp in Sources */,
 				E2B2EB18297A26B7004304BC /* mouse.cpp in Sources */,
 				E2FA58C1297FC7140038071B /* texture.cpp in Sources */,
 				E2B2EB1E297AD78A004304BC /* camera.cpp in Sources */,
@@ -1265,6 +1303,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Opengl_tutorial/Opengl_tutorial.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = ZLCU9QXL39;
 				ENABLE_HARDENED_RUNTIME = YES;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/Opengl_tutorial/include";
@@ -1281,6 +1320,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = Opengl_tutorial/Opengl_tutorial.entitlements;
 				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_ASSET_PATHS = "";
 				DEVELOPMENT_TEAM = ZLCU9QXL39;
 				ENABLE_HARDENED_RUNTIME = YES;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/Opengl_tutorial/include";

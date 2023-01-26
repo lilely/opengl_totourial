@@ -11,15 +11,23 @@
 
 #include "../model.hpp"
 #include "../material.hpp"
+#include "../../utils/filesys.hpp"
+#include <string>
 
 class Cube : public Model {
 public:
     glm::vec3 pos;
     glm::vec3 size;
     
+    std::string diffuseTextureFileName;
+    std::string specularTextureFileName;
+    
     Material material;
     
-    Cube(Material material, glm::vec3 pos, glm::vec3 size) : material(material), pos(pos), size(size) {}
+    Cube(Material material, glm::vec3 pos, glm::vec3 size, std::string diffuseTexFileName = "", std::string specularTexFileName = "") : diffuseTextureFileName(diffuseTexFileName), specularTextureFileName(specularTexFileName),
+        material(material),
+        pos(pos),
+        size(size) {}
     
     void init() {
         int noVertices = 36;
@@ -73,12 +81,18 @@ public:
         for(int i = 0;i < noVertices;i++) {
             indices[i] = i;
         }
-
-        Texture texture1("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/image1.jpeg", "texture1", true);
-        texture1.load();
-        Texture texture2("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/image2.png", "texture2", true);
-        texture2.load();
-        meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices, {texture1,texture2}));
+        std::vector<Texture> textures;
+        if(diffuseTextureFileName.length() > 0) {
+            Texture texture1(FileManager::getFilePath("box.png").c_str(), "material.diffuse", true);
+            texture1.load();
+            textures.emplace_back(texture1);
+        }
+        if(specularTextureFileName.length() > 0) {
+            Texture texture2(FileManager::getFilePath("box_specular.png").c_str(), "material.specular", true);
+            texture2.load();
+            textures.emplace_back(texture2);
+        }
+        meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices, textures));
     }
     
     void render(Shader &shader) {
@@ -90,10 +104,14 @@ public:
 
         // Material
         shader.setFloat3("material.ambient", material.ambient);
-        shader.setFloat3("material.diffuse", material.diffuse);
-        shader.setFloat3("material.specular", material.specular);
+        if(diffuseTextureFileName.length() == 0) {
+            shader.setFloat3("material.diffuse", material.diffuse);
+        }
+        if(specularTextureFileName.length() == 0) {
+            shader.setFloat3("material.specular", material.specular);
+        }
         shader.setFloat("material.shininess", material.shininess);
-    
+
         Model::render(shader);
     }
 };

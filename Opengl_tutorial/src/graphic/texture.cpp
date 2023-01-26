@@ -31,6 +31,7 @@ void Texture::load(bool flip) {
     stbi_set_flip_vertically_on_load(true); // tell stb_image.h to flip loaded texture's on the y-axis.
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
     unsigned char *data = stbi_load(path, &width, &height, &nChannels, 0);
+    
     GLenum colorMode = GL_RGB;
     switch (nChannels) {
         case 1:
