@@ -68,7 +68,7 @@ int main()
     // ------------------------------------------------------------------
     Shader lampShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/lamp.fs.glsl");
     
-    Cube cube(Material::red_plastic,glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
+    Cube cube(Material::emerald,glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
     cube.init();
     
     Lamp lamp(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(-1.0f,-0.5f,-0.5f), glm::vec3(0.25f));
