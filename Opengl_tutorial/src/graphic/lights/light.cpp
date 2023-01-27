@@ -8,8 +8,8 @@
 
 #include "light.hpp"
 
-void PointLight::render(Shader shader) {
-    std::string name = "pointLight";
+void PointLight::render(Shader shader, int index) {
+    std::string name = "pointLights[" + std::to_string(index) + "]";
     
     shader.setFloat3(name + ".position", position);
     
@@ -22,17 +22,8 @@ void PointLight::render(Shader shader) {
     shader.setFloat3(name + ".specular", specular);
 }
 
-void DirLight::render(Shader shader) {
-    std::string name = "dirLight";
-    
-    shader.setFloat3(name + ".direction", direction);
-    shader.setFloat3(name + ".ambient", ambient);
-    shader.setFloat3(name + ".diffuse", diffuse);
-    shader.setFloat3(name + ".specular", specular);
-}
-
-void SpotLight::render(Shader shader) {
-    std::string name = "spotLight";
+void SpotLight::render(Shader shader, int index) {
+    std::string name = "spotLights[" + std::to_string(index) + "]";
     
     shader.setFloat3(name + ".position", position);
     shader.setFloat3(name + ".direction", direction);
@@ -47,6 +38,14 @@ void SpotLight::render(Shader shader) {
     shader.setFloat3(name + ".ambient", ambient);
     shader.setFloat3(name + ".diffuse", diffuse);
     shader.setFloat3(name + ".specular", specular);
-    
 }
 
+void DirLight::render(Shader shader) {
+    std::string name = "dirLight";
+
+    shader.setFloat3(name + ".direction", direction);
+    shader.setFloat3(name + ".ambient", ambient);
+    shader.setFloat3(name + ".diffuse", diffuse);
+    shader.setFloat3(name + ".specular", specular);
+    
+}

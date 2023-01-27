@@ -31,8 +31,6 @@ public:
 
     void render(Shader shader) {
         shader.setFloat3("lightColor", lightColor);
-//        pointLight.render(shader);
-        
         Cube::render(shader);
     }
 };

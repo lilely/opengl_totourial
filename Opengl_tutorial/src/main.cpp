@@ -14,6 +14,7 @@
 #include "graphic/material.hpp"
 #include "graphic/models/lamp.hpp"
 #include "graphic/lights/light.hpp"
+#include <vector>
 
 void processInput(float delta);
 
@@ -29,6 +30,8 @@ Camera cameras[] = {
     Camera(glm::vec3(0.0f, 0.0f, 3.0f)),
     Camera(glm::vec3(0.0f, 0.0f, 7.0f)),
 };
+
+bool needSpotLight = false;
 
 Screen screen;
 
@@ -69,12 +72,36 @@ int main()
     // ------------------------------------------------------------------
     Shader lampShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/lamp.fs.glsl");
     
-    Cube cube(Material::emerald,glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f),"box.png","box_specular.png");
-//    Cube cube(Material::emerald,glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
-    cube.init();
-    
-    Lamp lamp(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(-1.0f,-0.5f,-0.5f), 1.0f, 0.07f, 0.005f, glm::vec3(0.25f));
-    lamp.init();
+    glm::vec3 cubePositions[] = {
+        glm::vec3(0.0f,  0.0f,  0.0f),
+        glm::vec3(2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f, -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3(2.4f, -0.4f, -3.5f),
+        glm::vec3(-1.7f,  3.0f, -7.5f),
+        glm::vec3(1.3f, -2.0f, -2.5f),
+        glm::vec3(1.5f,  2.0f, -2.5f),
+        glm::vec3(1.5f,  0.2f, -1.5f),
+        glm::vec3(-1.3f,  1.0f, -1.5f)
+    };
+ 
+    std::vector<Cube> cubes;
+    for (unsigned int i = 0; i < 10; i++) {
+        cubes.emplace_back(Material::emerald,cubePositions[i], glm::vec3(0.75f),"box.png","box_specular.png");
+        cubes[i].init();
+    }
+     
+    glm::vec3 pointLightPositions[] = {
+        glm::vec3(0.7f,  0.2f,  2.0f),
+        glm::vec3(2.3f, -3.3f, -4.0f),
+        glm::vec3(-4.0f,  2.0f, -12.0f),
+        glm::vec3(0.0f,  0.0f, -3.0f)
+    };
+    std::vector<Lamp> lamps;
+    for (unsigned int i = 0; i < 4; i++) {
+        lamps.emplace_back(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),pointLightPositions[i], 1.0f, 0.07f, 0.005f, glm::vec3(0.25f));
+        lamps[i].init();
+    }
 
     DirLight dirLight({
         glm::vec3(-0.2, -1.0f, -0.3f),
@@ -112,9 +139,8 @@ int main()
         // ------
         screen.update();
         // bind textures on corresponding texture units
-        
+    
         ourShader.activate();
-        ourShader.setFloat3("light.position", lamp.pos);
         ourShader.setFloat3("viewPos", cameras[activeCamera].cameraPos);
         
         glm::mat4 view = glm::mat4(1.0f);
@@ -129,28 +155,44 @@ int main()
         ourShader.setFloat("mixVal", mixVal);
         
 //        dirLight.direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(dirLight.direction,1.0f));
-//
 //        dirLight.render(ourShader);
+
         spotLight.position = cameras[activeCamera].cameraPos;
         spotLight.direction = cameras[activeCamera].cameraFront;
-        spotLight.render(ourShader);
-//        lamp.pointLight.render(ourShader);
-
-        cube.render(ourShader);
+        spotLight.render(ourShader, 0);
+        if (needSpotLight) {
+            ourShader.setInt("noSpotLights", 1);
+        } else {
+            ourShader.setInt("noSpotLights", 0);
+        }
+        
+        for(int i = 0;i < cubes.size();i++) {
+            cubes[i].render(ourShader);
+        }
         
         lampShader.activate();
         lampShader.setMat4("view", view);
         lampShader.setMat4("projection", projection);
-        lamp.render(lampShader);
-        
-//        glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (unsigned int i = 0; i < lamps.size(); i++) {
+            lampShader.activate();
+            lamps[i].render(lampShader);
+            ourShader.activate();
+            lamps[i].pointLight.render(ourShader, i);
+        }
+        ourShader.setInt("noPointLights", 4);
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
         screen.newFrame();
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
-    cube.cleanup();
-    lamp.cleanup();
+    for(int i = 0;i < lamps.size();i ++) {
+        lamps[i].cleanup();
+    }
+    for(int i = 0;i < cubes.size();i++) {
+        cubes[i].cleanup();
+    }
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
@@ -185,6 +227,8 @@ void processInput(float delta)
         cameras[activeCamera].updateCameraDirection(-1.0f, 0);
     } else if(Keyboard::key(GLFW_KEY_RIGHT)) {
         cameras[activeCamera].updateCameraDirection(1.0f, 0);
+    } else if(Keyboard::keyWentDown(GLFW_KEY_L)) {
+        needSpotLight = !needSpotLight;
     }
     
 //    double dx = Mouse::getDX(), dy = Mouse::getDY();

@@ -23,18 +23,8 @@ struct PointLight {
     glm::vec3 diffuse;
     glm::vec3 specular;
     
-    void render(Shader shader);
+    void render(Shader shader, int index);
 };
-
-typedef struct DirLight {
-    glm::vec3 direction;
-    
-    glm::vec3 ambient;
-    glm::vec3 diffuse;
-    glm::vec3 specular;
-    
-    void render(Shader shader);
-} DirLight;
 
 typedef struct SpotLight {
     glm::vec3 position;
@@ -51,7 +41,17 @@ typedef struct SpotLight {
     glm::vec3 diffuse;
     glm::vec3 specular;
     
-    void render(Shader shader);
+    void render(Shader shader, int index);
 } SpotLight;
+
+typedef struct DirLight {
+    glm::vec3 direction;
+    
+    glm::vec3 ambient;
+    glm::vec3 diffuse;
+    glm::vec3 specular;
+    
+    void render(Shader shader);
+} DirLight;
 
 #endif /* light_hpp */
