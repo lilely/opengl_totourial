@@ -15,6 +15,10 @@
 struct PointLight {
     glm::vec3 position;
     
+    float k1;
+    float k2;
+    float k3;
+    
     glm::vec3 ambient;
     glm::vec3 diffuse;
     glm::vec3 specular;
@@ -35,6 +39,10 @@ typedef struct DirLight {
 typedef struct SpotLight {
     glm::vec3 position;
     glm::vec3 direction;
+    
+    float k1;
+    float k2;
+    float k3;
     
     float cutOff;
     float outerCutOff;

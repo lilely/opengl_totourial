@@ -73,7 +73,7 @@ int main()
 //    Cube cube(Material::emerald,glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
     cube.init();
     
-    Lamp lamp(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(-1.0f,-0.5f,-0.5f), glm::vec3(0.25f));
+    Lamp lamp(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(-1.0f,-0.5f,-0.5f), 1.0f, 0.07f, 0.005f, glm::vec3(0.25f));
     lamp.init();
 
     DirLight dirLight({
@@ -84,6 +84,9 @@ int main()
     SpotLight spotLight({
         cameras[activeCamera].cameraPos,
         cameras[activeCamera].cameraFront,
+        1.0f,
+        0.07f,
+        0.005f,
         glm::cos(glm::radians(12.5f)),
         glm::cos(glm::radians(15.5f)),
         glm::vec3(1.0f),
@@ -161,13 +164,17 @@ void processInput(float delta)
     if(Keyboard::keyWentUp(GLFW_KEY_ESCAPE)) {
         screen.setShouldClose(true);
     } else if(Keyboard::key(GLFW_KEY_W)) {
-        cameras[activeCamera].updateCameraPos(CameraDirection::UP, delta);
+        cameras[activeCamera].updateCameraPos(CameraDirection::FORWARD, delta);
     } else if(Keyboard::key(GLFW_KEY_S)) {
-        cameras[activeCamera].updateCameraPos(CameraDirection::DOWN, delta);
+        cameras[activeCamera].updateCameraPos(CameraDirection::BACKWARD, delta);
     } else if(Keyboard::key(GLFW_KEY_A)) {
         cameras[activeCamera].updateCameraPos(CameraDirection::LEFT, delta);
     } else if(Keyboard::key(GLFW_KEY_D)) {
         cameras[activeCamera].updateCameraPos(CameraDirection::RIGHT, delta);
+    } else if(Keyboard::key(GLFW_KEY_E)) {
+        cameras[activeCamera].updateCameraPos(CameraDirection::UP, delta);
+    } else if(Keyboard::key(GLFW_KEY_X)) {
+        cameras[activeCamera].updateCameraPos(CameraDirection::DOWN, delta);
     } else if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
         activeCamera += activeCamera == 0 ? 1 : -1;
     } else if(Keyboard::key(GLFW_KEY_UP)) {
@@ -175,9 +182,9 @@ void processInput(float delta)
     } else if(Keyboard::key(GLFW_KEY_DOWN)) {
         cameras[activeCamera].updateCameraDirection(0, -1.0f);
     } else if(Keyboard::key(GLFW_KEY_LEFT)) {
-        cameras[activeCamera].updateCameraDirection(1.0f, 0);
-    } else if(Keyboard::key(GLFW_KEY_RIGHT)) {
         cameras[activeCamera].updateCameraDirection(-1.0f, 0);
+    } else if(Keyboard::key(GLFW_KEY_RIGHT)) {
+        cameras[activeCamera].updateCameraDirection(1.0f, 0);
     }
     
 //    double dx = Mouse::getDX(), dy = Mouse::getDY();

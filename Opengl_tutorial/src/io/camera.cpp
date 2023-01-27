@@ -14,7 +14,7 @@ Camera::Camera(glm::vec3 position)
         worldUp(glm::vec3(0.0f, 1.0f, 0.0f)),
         yaw(-90.0f),
         pitch(0.0f),
-        speed(2.5f),
+        speed(5.f),
         sensitivity(0.3f),
         zoom(45.f),
         cameraFront(glm::vec3(0.0f,0.0f,-1.0f))

@@ -24,6 +24,10 @@ struct Light {
 struct PointLight {
     vec3 position;
     
+    float k1;
+    float k2;
+    float k3;
+    
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -40,6 +44,10 @@ struct DirLight {
 struct SpotLight {
     vec3 position;
     vec3 direction;
+    
+    float k1;
+    float k2;
+    float k3;
     
     float cutOff;
     float outerCutOff;
@@ -113,7 +121,10 @@ vec3 calcSpotLight(vec3 norm, vec3 viewDir, vec3 diffMap, vec3 specularMap) {
         diffuse *= intensity;
         specular *= intensity;
         
-        return vec3(ambient + diffuse + specular);
+        float dist = length(spotLight.position - FragPos);
+        float attention = 1 / (spotLight.k1 + spotLight.k2 * dist + spotLight.k3 * dist * dist);
+        
+        return vec3(ambient + diffuse + specular) * attention;
     }
     return ambient;
 }
@@ -149,5 +160,8 @@ vec3 calcPointLight(vec3 norm, vec3 viewDir, vec3 diffMap, vec3 specularMap) {
     float spec = pow(max(dot(viewDir, reflectDir), 0.0) , material.shininess * 128);
     vec3 specular = pointLight.specular * spec * specularMap;
     
-    return vec3(ambient + diffuse + specular);
+    float dist = length(pointLight.position - FragPos);
+    float attention = 1 / (pointLight.k1 + pointLight.k2 * dist + pointLight.k3 * dist * dist);
+    
+    return vec3(ambient + diffuse + specular) * attention;
 }
