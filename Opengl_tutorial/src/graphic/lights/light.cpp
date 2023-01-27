@@ -16,3 +16,27 @@ void PointLight::render(Shader shader) {
     shader.setFloat3(name + ".diffuse", diffuse);
     shader.setFloat3(name + ".specular", specular);
 }
+
+void DirLight::render(Shader shader) {
+    std::string name = "dirLight";
+    
+    shader.setFloat3(name + ".direction", direction);
+    shader.setFloat3(name + ".ambient", ambient);
+    shader.setFloat3(name + ".diffuse", diffuse);
+    shader.setFloat3(name + ".specular", specular);
+}
+
+void SpotLight::render(Shader shader) {
+    std::string name = "spotLight";
+    
+    shader.setFloat3(name + ".position", position);
+    shader.setFloat3(name + ".direction", direction);
+    
+    shader.setFloat(name + ".cutOff", cutOff);
+    shader.setFloat(name + ".outerCutOff", outerCutOff);
+    
+    shader.setFloat3(name + ".ambient", ambient);
+    shader.setFloat3(name + ".diffuse", diffuse);
+    shader.setFloat3(name + ".specular", specular);
+}
+

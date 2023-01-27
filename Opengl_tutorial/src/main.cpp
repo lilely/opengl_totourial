@@ -13,6 +13,7 @@
 #include "graphic/models/cube.hpp"
 #include "graphic/material.hpp"
 #include "graphic/models/lamp.hpp"
+#include "graphic/lights/light.hpp"
 
 void processInput(float delta);
 
@@ -69,11 +70,26 @@ int main()
     Shader lampShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/lamp.fs.glsl");
     
     Cube cube(Material::emerald,glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f),"box.png","box_specular.png");
+//    Cube cube(Material::emerald,glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.75f));
     cube.init();
     
     Lamp lamp(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(-1.0f,-0.5f,-0.5f), glm::vec3(0.25f));
     lamp.init();
+
+    DirLight dirLight({
+        glm::vec3(-0.2, -1.0f, -0.3f),
+        glm::vec3(1.0f), glm::vec3(0.4f),
+        glm::vec3(0.75f)});
     
+    SpotLight spotLight({
+        cameras[activeCamera].cameraPos,
+        cameras[activeCamera].cameraFront,
+        glm::cos(glm::radians(12.5f)),
+        glm::cos(glm::radians(15.5f)),
+        glm::vec3(1.0f),
+        glm::vec3(1.0f),
+        glm::vec3(1.0f)
+    });
     if(mainJ.isPresent()) {
         mainJ.update();
         std::cout << "joystick is preseted!" << std::endl;
@@ -108,8 +124,15 @@ int main()
         ourShader.setMat4("view", view);
         ourShader.setMat4("projection", projection);
         ourShader.setFloat("mixVal", mixVal);
-        lamp.pointLight.render(ourShader);
         
+//        dirLight.direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(dirLight.direction,1.0f));
+//
+//        dirLight.render(ourShader);
+        spotLight.position = cameras[activeCamera].cameraPos;
+        spotLight.direction = cameras[activeCamera].cameraFront;
+        spotLight.render(ourShader);
+//        lamp.pointLight.render(ourShader);
+
         cube.render(ourShader);
         
         lampShader.activate();
