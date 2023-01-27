@@ -180,7 +180,6 @@ int main()
             lamps[i].pointLight.render(ourShader, i);
         }
         ourShader.setInt("noPointLights", 4);
-
         glDrawArrays(GL_TRIANGLES, 0, 36);
         screen.newFrame();
     }
@@ -197,6 +196,7 @@ int main()
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
+    
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
