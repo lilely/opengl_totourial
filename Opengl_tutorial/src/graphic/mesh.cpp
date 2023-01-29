@@ -29,16 +29,39 @@ std::vector<struct Vertex> Vertex::genList(float* vertices, int noVertices) {
 }
 
 Mesh::Mesh() {}
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) : vertices(vertices), indices(indices), textures(textures) {
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) : vertices(vertices), indices(indices), textures(textures), hasTexture(true) {
+    setup();
+}
+
+Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, aiColor4D diffuse, aiColor4D specular) : vertices(vertices), indices(indices), material_diffuse(diffuse), material_specular(specular) , hasTexture(false) {
     setup();
 }
 
 void Mesh::render(Shader &shader) {
-    for(int i = 0;i < textures.size();i++) {
-        glActiveTexture(GL_TEXTURE0 + textures[i].id);
-        shader.setInt(textures[i].name, textures[i].id);
-        textures[i].bind();
+    if(!hasTexture) {
+        shader.setFloat4("material.diffuse", material_diffuse);
+        shader.setFloat4("material.specular", material_specular);
+        shader.setInt("hasTexture", 0);
+    } else {
+        unsigned int diffuseTextureIndex = 0;
+        unsigned int specularTexutreIndex = 0;
+        shader.setInt("hasTexture", 1);
+        for(unsigned int i = 0;i < textures.size();i++) {
+            glActiveTexture(GL_TEXTURE0 + i);
+            std::string name;
+            switch (textures[i].type) {
+                case aiTextureType_DIFFUSE:
+                    name = "diffuse" + std::to_string(diffuseTextureIndex++);
+                    break;
+                case aiTextureType_SPECULAR:
+                    name = "specular" + std::to_string(specularTexutreIndex++);
+                    break;
+            }
+            shader.setInt(name, i);
+            textures[i].bind();
+        }
     }
+    
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0);
 //    glDrawArrays(GL_TRIANGLES, 0, 36);

@@ -27,7 +27,7 @@ public:
          float k3,
          glm::vec3 size) : lightColor(lightColor),
         pointLight({pos, k1, k2, k3, ambient, diffuse, specular}),
-        Cube(Material::white_plastic, pos, size) {};
+        Cube(pos, size) {};
 
     void render(Shader shader) {
         shader.setFloat3("lightColor", lightColor);

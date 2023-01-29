@@ -16,6 +16,8 @@
 #include <sstream>
 #include <iostream>
 
+#include <assimp/scene.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -46,6 +48,10 @@ public:
     void setFloat3(const std::string& name, glm::vec3 val);
     
     void setFloat3(const std::string& name, float v1, float v2, float v3);
+    
+    void setFloat4(const std::string& name, glm::vec4 val);
+    
+    void setFloat4(const std::string& name, aiColor4D val);
 };
 
 #endif /* Shader_h */

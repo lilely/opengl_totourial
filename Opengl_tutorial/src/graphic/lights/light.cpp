@@ -17,9 +17,9 @@ void PointLight::render(Shader shader, int index) {
     shader.setFloat(name + ".k2", k2);
     shader.setFloat(name + ".k3", k3);
     
-    shader.setFloat3(name + ".ambient", ambient);
-    shader.setFloat3(name + ".diffuse", diffuse);
-    shader.setFloat3(name + ".specular", specular);
+    shader.setFloat4(name + ".ambient", glm::vec4(ambient, 1.0f));
+    shader.setFloat4(name + ".diffuse", glm::vec4(diffuse, 1.0f));
+    shader.setFloat4(name + ".specular", glm::vec4(specular, 1.0f));
 }
 
 void SpotLight::render(Shader shader, int index) {
@@ -35,17 +35,17 @@ void SpotLight::render(Shader shader, int index) {
     shader.setFloat(name + ".cutOff", cutOff);
     shader.setFloat(name + ".outerCutOff", outerCutOff);
     
-    shader.setFloat3(name + ".ambient", ambient);
-    shader.setFloat3(name + ".diffuse", diffuse);
-    shader.setFloat3(name + ".specular", specular);
+    shader.setFloat4(name + ".ambient", glm::vec4(ambient, 1.0f));
+    shader.setFloat4(name + ".diffuse", glm::vec4(diffuse, 1.0f));
+    shader.setFloat4(name + ".specular", glm::vec4(specular, 1.0f));
 }
 
 void DirLight::render(Shader shader) {
     std::string name = "dirLight";
 
     shader.setFloat3(name + ".direction", direction);
-    shader.setFloat3(name + ".ambient", ambient);
-    shader.setFloat3(name + ".diffuse", diffuse);
-    shader.setFloat3(name + ".specular", specular);
+    shader.setFloat4(name + ".ambient", glm::vec4(ambient, 1.0f));
+    shader.setFloat4(name + ".diffuse", glm::vec4(diffuse, 1.0f));
+    shader.setFloat4(name + ".specular", glm::vec4(specular, 1.0f));
     
 }

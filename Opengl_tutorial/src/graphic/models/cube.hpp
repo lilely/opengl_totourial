@@ -24,10 +24,12 @@ public:
     
     Material material;
     
-    Cube(Material material, glm::vec3 pos, glm::vec3 size, std::string diffuseTexFileName = "", std::string specularTexFileName = "") : diffuseTextureFileName(diffuseTexFileName), specularTextureFileName(specularTexFileName),
-        material(material),
-        pos(pos),
-        size(size) {}
+//    Cube(Material material, glm::vec3 pos, glm::vec3 size, std::string diffuseTexFileName = "", std::string specularTexFileName = "") : diffuseTextureFileName(diffuseTexFileName), specularTextureFileName(specularTexFileName),
+//        material(material),
+//        pos(pos),
+//        size(size) {}
+    
+    Cube(glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f)) : Model(pos, size) {}
     
     void init() {
         int noVertices = 36;
@@ -81,39 +83,21 @@ public:
         for(int i = 0;i < noVertices;i++) {
             indices[i] = i;
         }
-        std::vector<Texture> textures;
-        if(diffuseTextureFileName.length() > 0) {
-            Texture texture1(FileManager::getFilePath("box.png").c_str(), "textMaterial.diffuse", true);
-            texture1.load();
-            textures.emplace_back(texture1);
-        }
-        if(specularTextureFileName.length() > 0) {
-            Texture texture2(FileManager::getFilePath("box_specular.png").c_str(), "textMaterial.specular", true);
-            texture2.load();
-            textures.emplace_back(texture2);
-        }
-        meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices, textures));
+//        std::vector<Texture> textures;
+//        if(diffuseTextureFileName.length() > 0) {
+//            Texture texture1(FileManager::getFilePath("box.png").c_str(), "textMaterial.diffuse", true);
+//            texture1.load();
+//            textures.emplace_back(texture1);
+//        }
+//        if(specularTextureFileName.length() > 0) {
+//            Texture texture2(FileManager::getFilePath("box_specular.png").c_str(), "textMaterial.specular", true);
+//            texture2.load();
+//            textures.emplace_back(texture2);
+//        }
+        meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices));
     }
     
     void render(Shader &shader) {
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,pos);
-        model = glm::scale(model,size);
-//        model = glm::rotate(model,(float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f));
-        shader.setMat4("model", model);
-        int hasTexture = 1;
-        // Material
-        shader.setFloat3("material.ambient", material.ambient);
-        if(diffuseTextureFileName.length() == 0) {
-            hasTexture = 0;
-            shader.setFloat3("material.diffuse", material.diffuse);
-        }
-        if(specularTextureFileName.length() == 0) {
-            shader.setFloat3("material.specular", material.specular);
-        }
-        shader.setInt("hasTexture", hasTexture);
-        shader.setFloat("material.shininess", material.shininess);
-        
         Model::render(shader);
     }
 };

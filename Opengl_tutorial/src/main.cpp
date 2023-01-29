@@ -11,6 +11,7 @@
 #include "graphic/texture.hpp"
 #include <iostream>
 #include "graphic/models/cube.hpp"
+#include "graphic/model.hpp"
 #include "graphic/material.hpp"
 #include "graphic/models/lamp.hpp"
 #include "graphic/lights/light.hpp"
@@ -72,24 +73,6 @@ int main()
     // ------------------------------------------------------------------
     Shader lampShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/lamp.fs.glsl");
     
-    glm::vec3 cubePositions[] = {
-        glm::vec3(0.0f,  0.0f,  0.0f),
-        glm::vec3(2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f, -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3(2.4f, -0.4f, -3.5f),
-        glm::vec3(-1.7f,  3.0f, -7.5f),
-        glm::vec3(1.3f, -2.0f, -2.5f),
-        glm::vec3(1.5f,  2.0f, -2.5f),
-        glm::vec3(1.5f,  0.2f, -1.5f),
-        glm::vec3(-1.3f,  1.0f, -1.5f)
-    };
- 
-    std::vector<Cube> cubes;
-    for (unsigned int i = 0; i < 10; i++) {
-        cubes.emplace_back(Material::emerald,cubePositions[i], glm::vec3(0.75f),"box.png","box_specular.png");
-        cubes[i].init();
-    }
      
     glm::vec3 pointLightPositions[] = {
         glm::vec3(0.7f,  0.2f,  2.0f),
@@ -102,7 +85,11 @@ int main()
         lamps.emplace_back(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),pointLightPositions[i], 1.0f, 0.07f, 0.005f, glm::vec3(0.25f));
         lamps[i].init();
     }
+    
+    Model model(glm::vec3(0.0f,0.0f,-3.0f), glm::vec3(0.05), false);
+    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
 
+    
     DirLight dirLight({
         glm::vec3(-0.2, -1.0f, -0.3f),
         glm::vec3(1.0f), glm::vec3(0.4f),
@@ -154,9 +141,10 @@ int main()
         ourShader.setMat4("projection", projection);
         ourShader.setFloat("mixVal", mixVal);
         
-//        dirLight.direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(dirLight.direction,1.0f));
-//        dirLight.render(ourShader);
-
+        dirLight.direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(dirLight.direction,1.0f));
+        dirLight.render(ourShader);
+        
+        
         spotLight.position = cameras[activeCamera].cameraPos;
         spotLight.direction = cameras[activeCamera].cameraFront;
         spotLight.render(ourShader, 0);
@@ -165,33 +153,31 @@ int main()
         } else {
             ourShader.setInt("noSpotLights", 0);
         }
+
+        model.render(ourShader);
         
-        for(int i = 0;i < cubes.size();i++) {
-            cubes[i].render(ourShader);
-        }
+//        lampShader.activate();
+//        lampShader.setMat4("view", view);
+//        lampShader.setMat4("projection", projection);
+//        for (unsigned int i = 0; i < lamps.size(); i++) {
+//            lampShader.activate();
+//            lamps[i].render(lampShader);
+//            ourShader.activate();
+//            lamps[i].pointLight.render(ourShader, i);
+//        }
+//        ourShader.setInt("noPointLights", 4);
         
-        lampShader.activate();
-        lampShader.setMat4("view", view);
-        lampShader.setMat4("projection", projection);
-        for (unsigned int i = 0; i < lamps.size(); i++) {
-            lampShader.activate();
-            lamps[i].render(lampShader);
-            ourShader.activate();
-            lamps[i].pointLight.render(ourShader, i);
-        }
-        ourShader.setInt("noPointLights", 4);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         screen.newFrame();
     }
 
+    model.cleanup();
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     for(int i = 0;i < lamps.size();i ++) {
         lamps[i].cleanup();
     }
-    for(int i = 0;i < cubes.size();i++) {
-        cubes[i].cleanup();
-    }
+
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
     glfwTerminate();
