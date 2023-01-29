@@ -88,7 +88,6 @@ int main()
     
     Model model(glm::vec3(0.0f,0.0f,-3.0f), glm::vec3(1.0f), true);
     model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/Genshin/scene.gltf");
-
     
     DirLight dirLight({
         glm::vec3(-0.2, -1.0f, -0.3f),
@@ -191,29 +190,41 @@ void processInput(float delta)
 {
     if(Keyboard::keyWentUp(GLFW_KEY_ESCAPE)) {
         screen.setShouldClose(true);
-    } else if(Keyboard::key(GLFW_KEY_W)) {
+    }
+    if(Keyboard::key(GLFW_KEY_W)) {
         cameras[activeCamera].updateCameraPos(CameraDirection::FORWARD, delta);
-    } else if(Keyboard::key(GLFW_KEY_S)) {
+    }
+    if(Keyboard::key(GLFW_KEY_S)) {
         cameras[activeCamera].updateCameraPos(CameraDirection::BACKWARD, delta);
-    } else if(Keyboard::key(GLFW_KEY_A)) {
+    }
+    if(Keyboard::key(GLFW_KEY_A)) {
         cameras[activeCamera].updateCameraPos(CameraDirection::LEFT, delta);
-    } else if(Keyboard::key(GLFW_KEY_D)) {
+    }
+    if(Keyboard::key(GLFW_KEY_D)) {
         cameras[activeCamera].updateCameraPos(CameraDirection::RIGHT, delta);
-    } else if(Keyboard::key(GLFW_KEY_E)) {
+    }
+    if(Keyboard::key(GLFW_KEY_E)) {
         cameras[activeCamera].updateCameraPos(CameraDirection::UP, delta);
-    } else if(Keyboard::key(GLFW_KEY_X)) {
+    }
+    if(Keyboard::key(GLFW_KEY_X)) {
         cameras[activeCamera].updateCameraPos(CameraDirection::DOWN, delta);
-    } else if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
+    }
+    if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
         activeCamera += activeCamera == 0 ? 1 : -1;
-    } else if(Keyboard::key(GLFW_KEY_UP)) {
+    }
+    if(Keyboard::key(GLFW_KEY_UP)) {
         cameras[activeCamera].updateCameraDirection(0, 1.0f);
-    } else if(Keyboard::key(GLFW_KEY_DOWN)) {
+    }
+    if(Keyboard::key(GLFW_KEY_DOWN)) {
         cameras[activeCamera].updateCameraDirection(0, -1.0f);
-    } else if(Keyboard::key(GLFW_KEY_LEFT)) {
+    }
+    if(Keyboard::key(GLFW_KEY_LEFT)) {
         cameras[activeCamera].updateCameraDirection(-1.0f, 0);
-    } else if(Keyboard::key(GLFW_KEY_RIGHT)) {
+    }
+    if(Keyboard::key(GLFW_KEY_RIGHT)) {
         cameras[activeCamera].updateCameraDirection(1.0f, 0);
-    } else if(Keyboard::keyWentDown(GLFW_KEY_L)) {
+    }
+    if(Keyboard::keyWentDown(GLFW_KEY_L)) {
         needSpotLight = !needSpotLight;
     }
     
