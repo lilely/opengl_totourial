@@ -613,6 +613,7 @@
 		E2FA596F298673B20038071B /* scene.gltf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
 		E2FA5970298673B20038071B /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
 		E2FA5971298673B20038071B /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
+		E2FA59722986AEA80038071B /* gun.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = gun.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1221,6 +1222,7 @@
 			children = (
 				E2FA58CA297FF1310038071B /* cube.hpp */,
 				E2FA58CF298222C80038071B /* lamp.hpp */,
+				E2FA59722986AEA80038071B /* gun.hpp */,
 			);
 			path = models;
 			sourceTree = "<group>";

@@ -16,6 +16,7 @@
 #include "graphic/models/lamp.hpp"
 #include "graphic/lights/light.hpp"
 #include <vector>
+#include "graphic/models/gun.hpp"
 
 void processInput(float delta);
 
@@ -27,9 +28,9 @@ glm::mat4 transform = glm::mat4(1.0f);
 
 Joystick mainJ(0);
 
-Camera cameras[] = {
-    Camera(glm::vec3(0.0f, 0.0f, 3.0f)),
-    Camera(glm::vec3(0.0f, 0.0f, 7.0f)),
+Camera *cameras[] = {
+    &Camera::defaultCamera,
+    new Camera(glm::vec3(0.0f, 0.0f, 7.0f)),
 };
 
 bool needSpotLight = false;
@@ -86,8 +87,11 @@ int main()
         lamps[i].init();
     }
     
-    Model model(glm::vec3(0.0f,0.0f,-3.0f), glm::vec3(1.0f), true);
-    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/Genshin/scene.gltf");
+    Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
+    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
+    
+    Gun gun;
+    gun.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
     
     DirLight dirLight({
         glm::vec3(-0.2, -1.0f, -0.3f),
@@ -95,8 +99,8 @@ int main()
         glm::vec3(0.75f)});
     
     SpotLight spotLight({
-        cameras[activeCamera].cameraPos,
-        cameras[activeCamera].cameraFront,
+        cameras[activeCamera]->cameraPos,
+        cameras[activeCamera]->cameraFront,
         1.0f,
         0.07f,
         0.005f,
@@ -127,13 +131,13 @@ int main()
         // bind textures on corresponding texture units
     
         ourShader.activate();
-        ourShader.setFloat3("viewPos", cameras[activeCamera].cameraPos);
+        ourShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
         
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
         
-        view = cameras[activeCamera].getViewMatrix();
-        projection = glm::perspective(cameras[activeCamera].getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.1f, 100.0f);
+        view = cameras[activeCamera]->getViewMatrix();
+        projection = glm::perspective(cameras[activeCamera]->getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.1f, 100.0f);
         // render container
         ourShader.activate();
         ourShader.setMat4("view", view);
@@ -144,8 +148,8 @@ int main()
         dirLight.render(ourShader);
         
         
-        spotLight.position = cameras[activeCamera].cameraPos;
-        spotLight.direction = cameras[activeCamera].cameraFront;
+        spotLight.position = cameras[activeCamera]->cameraPos;
+        spotLight.direction = cameras[activeCamera]->cameraFront;
         spotLight.render(ourShader, 0);
         if (needSpotLight) {
             ourShader.setInt("noSpotLights", 1);
@@ -154,7 +158,7 @@ int main()
         }
 
         model.render(ourShader);
-        
+        gun.render(ourShader);
 //        lampShader.activate();
 //        lampShader.setMat4("view", view);
 //        lampShader.setMat4("projection", projection);
@@ -171,6 +175,7 @@ int main()
     }
 
     model.cleanup();
+    gun.cleanup();
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     for(int i = 0;i < lamps.size();i ++) {
@@ -192,37 +197,37 @@ void processInput(float delta)
         screen.setShouldClose(true);
     }
     if(Keyboard::key(GLFW_KEY_W)) {
-        cameras[activeCamera].updateCameraPos(CameraDirection::FORWARD, delta);
+        cameras[activeCamera]->updateCameraPos(CameraDirection::FORWARD, delta);
     }
     if(Keyboard::key(GLFW_KEY_S)) {
-        cameras[activeCamera].updateCameraPos(CameraDirection::BACKWARD, delta);
+        cameras[activeCamera]->updateCameraPos(CameraDirection::BACKWARD, delta);
     }
     if(Keyboard::key(GLFW_KEY_A)) {
-        cameras[activeCamera].updateCameraPos(CameraDirection::LEFT, delta);
+        cameras[activeCamera]->updateCameraPos(CameraDirection::LEFT, delta);
     }
     if(Keyboard::key(GLFW_KEY_D)) {
-        cameras[activeCamera].updateCameraPos(CameraDirection::RIGHT, delta);
+        cameras[activeCamera]->updateCameraPos(CameraDirection::RIGHT, delta);
     }
     if(Keyboard::key(GLFW_KEY_E)) {
-        cameras[activeCamera].updateCameraPos(CameraDirection::UP, delta);
+        cameras[activeCamera]->updateCameraPos(CameraDirection::UP, delta);
     }
     if(Keyboard::key(GLFW_KEY_X)) {
-        cameras[activeCamera].updateCameraPos(CameraDirection::DOWN, delta);
+        cameras[activeCamera]->updateCameraPos(CameraDirection::DOWN, delta);
     }
     if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
         activeCamera += activeCamera == 0 ? 1 : -1;
     }
     if(Keyboard::key(GLFW_KEY_UP)) {
-        cameras[activeCamera].updateCameraDirection(0, 1.0f);
+        cameras[activeCamera]->updateCameraDirection(0, 1.0f);
     }
     if(Keyboard::key(GLFW_KEY_DOWN)) {
-        cameras[activeCamera].updateCameraDirection(0, -1.0f);
+        cameras[activeCamera]->updateCameraDirection(0, -1.0f);
     }
     if(Keyboard::key(GLFW_KEY_LEFT)) {
-        cameras[activeCamera].updateCameraDirection(-1.0f, 0);
+        cameras[activeCamera]->updateCameraDirection(-1.0f, 0);
     }
     if(Keyboard::key(GLFW_KEY_RIGHT)) {
-        cameras[activeCamera].updateCameraDirection(1.0f, 0);
+        cameras[activeCamera]->updateCameraDirection(1.0f, 0);
     }
     if(Keyboard::keyWentDown(GLFW_KEY_L)) {
         needSpotLight = !needSpotLight;
