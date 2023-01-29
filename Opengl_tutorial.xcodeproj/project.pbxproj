@@ -593,6 +593,26 @@
 		E2FA5955298653190038071B /* scene.gltf */ = {isa = PBXFileReference; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
 		E2FA5956298653190038071B /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
 		E2FA5957298653190038071B /* license.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
+		E2FA595A298671960038071B /* Hair_emissive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Hair_emissive.png; sourceTree = "<group>"; };
+		E2FA595B298671960038071B /* material_emissive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = material_emissive.png; sourceTree = "<group>"; };
+		E2FA595C298671960038071B /* Face_emissive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Face_emissive.png; sourceTree = "<group>"; };
+		E2FA595D298671960038071B /* Costume_emissive.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Costume_emissive.png; sourceTree = "<group>"; };
+		E2FA595E298671960038071B /* scene.gltf */ = {isa = PBXFileReference; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
+		E2FA595F298671960038071B /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
+		E2FA5960298671960038071B /* license.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
+		E2FA5963298673260038071B /* TEX_Hammer_metallicRoughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TEX_Hammer_metallicRoughness.png; sourceTree = "<group>"; };
+		E2FA5964298673260038071B /* TEX_Hammer_baseColor.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = TEX_Hammer_baseColor.jpeg; sourceTree = "<group>"; };
+		E2FA5965298673260038071B /* TEX_Hammer_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = TEX_Hammer_normal.png; sourceTree = "<group>"; };
+		E2FA5966298673260038071B /* scene.gltf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
+		E2FA5967298673260038071B /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
+		E2FA5968298673260038071B /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
+		E2FA596B298673B20038071B /* eyeColor_baseColor.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = eyeColor_baseColor.jpeg; sourceTree = "<group>"; };
+		E2FA596C298673B20038071B /* SkinColor_baseColor.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = SkinColor_baseColor.jpeg; sourceTree = "<group>"; };
+		E2FA596D298673B20038071B /* SkinColor_metallicRoughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = SkinColor_metallicRoughness.png; sourceTree = "<group>"; };
+		E2FA596E298673B20038071B /* teethTexture_baseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = teethTexture_baseColor.png; sourceTree = "<group>"; };
+		E2FA596F298673B20038071B /* scene.gltf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
+		E2FA5970298673B20038071B /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
+		E2FA5971298673B20038071B /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1358,6 +1378,9 @@
 		E2FA5947298653190038071B /* models */ = {
 			isa = PBXGroup;
 			children = (
+				E2FA5969298673B20038071B /* tyrannosarus */,
+				E2FA5961298673260038071B /* hammer */,
+				E2FA5958298671960038071B /* Genshin */,
 				E2FA5948298653190038071B /* lotr_troll */,
 				E2FA5954298653190038071B /* m4a1 */,
 			);
@@ -1397,6 +1420,71 @@
 				E2FA5957298653190038071B /* license.txt */,
 			);
 			path = m4a1;
+			sourceTree = "<group>";
+		};
+		E2FA5958298671960038071B /* Genshin */ = {
+			isa = PBXGroup;
+			children = (
+				E2FA5959298671960038071B /* textures */,
+				E2FA595E298671960038071B /* scene.gltf */,
+				E2FA595F298671960038071B /* scene.bin */,
+				E2FA5960298671960038071B /* license.txt */,
+			);
+			path = Genshin;
+			sourceTree = "<group>";
+		};
+		E2FA5959298671960038071B /* textures */ = {
+			isa = PBXGroup;
+			children = (
+				E2FA595A298671960038071B /* Hair_emissive.png */,
+				E2FA595B298671960038071B /* material_emissive.png */,
+				E2FA595C298671960038071B /* Face_emissive.png */,
+				E2FA595D298671960038071B /* Costume_emissive.png */,
+			);
+			path = textures;
+			sourceTree = "<group>";
+		};
+		E2FA5961298673260038071B /* hammer */ = {
+			isa = PBXGroup;
+			children = (
+				E2FA5962298673260038071B /* textures */,
+				E2FA5966298673260038071B /* scene.gltf */,
+				E2FA5967298673260038071B /* scene.bin */,
+				E2FA5968298673260038071B /* license.txt */,
+			);
+			path = hammer;
+			sourceTree = "<group>";
+		};
+		E2FA5962298673260038071B /* textures */ = {
+			isa = PBXGroup;
+			children = (
+				E2FA5963298673260038071B /* TEX_Hammer_metallicRoughness.png */,
+				E2FA5964298673260038071B /* TEX_Hammer_baseColor.jpeg */,
+				E2FA5965298673260038071B /* TEX_Hammer_normal.png */,
+			);
+			path = textures;
+			sourceTree = "<group>";
+		};
+		E2FA5969298673B20038071B /* tyrannosarus */ = {
+			isa = PBXGroup;
+			children = (
+				E2FA596A298673B20038071B /* textures */,
+				E2FA596F298673B20038071B /* scene.gltf */,
+				E2FA5970298673B20038071B /* scene.bin */,
+				E2FA5971298673B20038071B /* license.txt */,
+			);
+			path = tyrannosarus;
+			sourceTree = "<group>";
+		};
+		E2FA596A298673B20038071B /* textures */ = {
+			isa = PBXGroup;
+			children = (
+				E2FA596B298673B20038071B /* eyeColor_baseColor.jpeg */,
+				E2FA596C298673B20038071B /* SkinColor_baseColor.jpeg */,
+				E2FA596D298673B20038071B /* SkinColor_metallicRoughness.png */,
+				E2FA596E298673B20038071B /* teethTexture_baseColor.png */,
+			);
+			path = textures;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

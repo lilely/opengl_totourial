@@ -12,7 +12,7 @@ Model::Model(glm::vec3 pos, glm::vec3 size, bool hasTex) : pos(pos), size(size),
 
 void Model::loadModel(std::string path) {
     Assimp::Importer import;
-    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
     if(!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
         std::cout << "Could not load model at" << path << std::endl << import.GetErrorString() << std::endl;
         return;
@@ -92,6 +92,9 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         // specular maps
         std::vector<Texture> specularMaps = loadTextures(material, aiTextureType_SPECULAR);
         textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+        
+        std::vector<Texture> ambientMaps = loadTextures(material, aiTextureType_EMISSIVE);
+        textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
     }
     
     return Mesh(vertices, indices, textures);

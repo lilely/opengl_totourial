@@ -1,0 +1,11 @@
+Model Information:
+* title:	Old Hammer (free - photobashed - gameready)
+* source:	https://sketchfab.com/3d-models/old-hammer-free-photobashed-gameready-a3d7bc18e2004488a1ae4b89e35d4212
+* author:	Ole Gunnar Isager (https://sketchfab.com/FrenchBaguette)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Old Hammer (free - photobashed - gameready)" (https://sketchfab.com/3d-models/old-hammer-free-photobashed-gameready-a3d7bc18e2004488a1ae4b89e35d4212) by Ole Gunnar Isager (https://sketchfab.com/FrenchBaguette) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

@@ -86,8 +86,8 @@ int main()
         lamps[i].init();
     }
     
-    Model model(glm::vec3(0.0f,0.0f,-3.0f), glm::vec3(0.05), false);
-    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
+    Model model(glm::vec3(0.0f,0.0f,-3.0f), glm::vec3(1.0f), true);
+    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/Genshin/scene.gltf");
 
     
     DirLight dirLight({
