@@ -35,7 +35,7 @@ Camera *cameras[] = {
     new Camera(glm::vec3(0.0f, 0.0f, 7.0f)),
 };
 
-std::vector<Sphere> spheres;
+SphereArray spheres;
 
 bool needSpotLight = false;
 
@@ -97,8 +97,7 @@ int main()
 //    Gun gun;
 //    gun.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
 
-    Sphere shpere;
-    shpere.init();
+    spheres.init();
     
     Camera::defaultCamera.updateCameraPos(CameraDirection::BACKWARD, 5.0f);
 
@@ -168,10 +167,7 @@ int main()
 
 //        model.render(ourShader);
 //        gun.render(ourShader);
-        
-        for(auto &sp : spheres) {
-            sp.render(ourShader, delta);
-        }
+        spheres.render(ourShader, delta);
         
         lampShader.activate();
         lampShader.setMat4("view", view);
@@ -196,9 +192,7 @@ int main()
         lamps[i].cleanup();
     }
     
-    for(auto &sp : spheres) {
-        sp.cleanup();
-    }
+    spheres.cleanup();
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
@@ -208,12 +202,11 @@ int main()
 }
 
 void addSphere() {
-    Sphere sp;
-    sp.init();
-    sp.rb.pos = Camera::defaultCamera.cameraPos;
-    sp.rb.applyAcceleration(Enviroment::gravitationalAcceleration);
-    sp.rb.applyImpulse(Camera::defaultCamera.cameraFront, 50.0f);
-    spheres.emplace_back(sp);
+    RigidBody rb;
+    rb.pos = Camera::defaultCamera.cameraPos;
+    rb.applyAcceleration(Enviroment::gravitationalAcceleration);
+    rb.applyImpulse(Camera::defaultCamera.cameraFront, 50.0f);
+    spheres.instances.emplace_back(rb);
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
