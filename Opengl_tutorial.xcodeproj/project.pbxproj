@@ -617,16 +617,13 @@
 		E2FA5971298673B20038071B /* license.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
 		E2FA59722986AEA80038071B /* gun.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = gun.hpp; sourceTree = "<group>"; };
 		E2FA5973298A65860038071B /* sphere.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = sphere.hpp; sourceTree = "<group>"; };
-		E2FA5976298A671C0038071B /* sanjiaodisikeqiu_t_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sanjiaodisikeqiu_t_normal.png; sourceTree = "<group>"; };
-		E2FA5977298A671C0038071B /* sanjiaodisikeqiu_t_metallicRoughness.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sanjiaodisikeqiu_t_metallicRoughness.png; sourceTree = "<group>"; };
-		E2FA5978298A671C0038071B /* sanjiaodisikeqiu_t_baseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sanjiaodisikeqiu_t_baseColor.png; sourceTree = "<group>"; };
-		E2FA5979298A671C0038071B /* scene.gltf */ = {isa = PBXFileReference; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
-		E2FA597A298A671C0038071B /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
-		E2FA597B298A671C0038071B /* license.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
 		E2FA597D298A6BE90038071B /* rigidbody.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = rigidbody.cpp; sourceTree = "<group>"; };
 		E2FA597E298A6BE90038071B /* rigidbody.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rigidbody.hpp; sourceTree = "<group>"; };
 		E2FA5980298A73210038071B /* enviroment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = enviroment.cpp; sourceTree = "<group>"; };
 		E2FA5981298A73210038071B /* enviroment.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = enviroment.hpp; sourceTree = "<group>"; };
+		E2FA5988298A8F100038071B /* scene.gltf */ = {isa = PBXFileReference; lastKnownFileType = text; path = scene.gltf; sourceTree = "<group>"; };
+		E2FA5989298A8F100038071B /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
+		E2FA598A298A8F100038071B /* license.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1395,7 +1392,7 @@
 		E2FA5947298653190038071B /* models */ = {
 			isa = PBXGroup;
 			children = (
-				E2FA5974298A671C0038071B /* sphere */,
+				E2FA5987298A8F100038071B /* sphere */,
 				E2FA5969298673B20038071B /* tyrannosarus */,
 				E2FA5961298673260038071B /* hammer */,
 				E2FA5958298671960038071B /* Genshin */,
@@ -1505,27 +1502,6 @@
 			path = textures;
 			sourceTree = "<group>";
 		};
-		E2FA5974298A671C0038071B /* sphere */ = {
-			isa = PBXGroup;
-			children = (
-				E2FA5975298A671C0038071B /* textures */,
-				E2FA5979298A671C0038071B /* scene.gltf */,
-				E2FA597A298A671C0038071B /* scene.bin */,
-				E2FA597B298A671C0038071B /* license.txt */,
-			);
-			path = sphere;
-			sourceTree = "<group>";
-		};
-		E2FA5975298A671C0038071B /* textures */ = {
-			isa = PBXGroup;
-			children = (
-				E2FA5976298A671C0038071B /* sanjiaodisikeqiu_t_normal.png */,
-				E2FA5977298A671C0038071B /* sanjiaodisikeqiu_t_metallicRoughness.png */,
-				E2FA5978298A671C0038071B /* sanjiaodisikeqiu_t_baseColor.png */,
-			);
-			path = textures;
-			sourceTree = "<group>";
-		};
 		E2FA597C298A6BB90038071B /* physics */ = {
 			isa = PBXGroup;
 			children = (
@@ -1535,6 +1511,16 @@
 				E2FA5981298A73210038071B /* enviroment.hpp */,
 			);
 			path = physics;
+			sourceTree = "<group>";
+		};
+		E2FA5987298A8F100038071B /* sphere */ = {
+			isa = PBXGroup;
+			children = (
+				E2FA5988298A8F100038071B /* scene.gltf */,
+				E2FA5989298A8F100038071B /* scene.bin */,
+				E2FA598A298A8F100038071B /* license.txt */,
+			);
+			path = sphere;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

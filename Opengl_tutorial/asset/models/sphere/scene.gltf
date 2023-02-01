@@ -1,168 +1,103 @@
 {
   "accessors": [
     {
-      "bufferView": 2,
+      "bufferView": 1,
       "componentType": 5126,
-      "count": 5982,
+      "count": 1984,
       "max": [
-        0.9987139701843262,
-        0.9986652731895447,
-        0.9989877939224243
-      ],
-      "min": [
-        -0.9987139701843262,
-        -0.9986652731895447,
-        -0.9989877939224243
-      ],
-      "type": "VEC3"
-    },
-    {
-      "bufferView": 2,
-      "byteOffset": 71784,
-      "componentType": 5126,
-      "count": 5982,
-      "max": [
-        0.9999580383300781,
+        1.0,
         1.0,
         1.0
       ],
       "min": [
-        -0.9999578595161438,
+        -1.0,
         -1.0,
         -1.0
       ],
       "type": "VEC3"
     },
     {
-      "bufferView": 3,
-      "componentType": 5126,
-      "count": 5982,
-      "max": [
-        0.9983745217323303,
-        1.0,
-        0.9986025094985962,
-        1.0
-      ],
-      "min": [
-        -0.9981889724731445,
-        -0.9991449117660522,
-        -0.9985881447792053,
-        1.0
-      ],
-      "type": "VEC4"
-    },
-    {
       "bufferView": 1,
+      "byteOffset": 23808,
       "componentType": 5126,
-      "count": 5982,
+      "count": 1984,
       "max": [
-        0.9975211024284363,
-        0.99755859375
+        0.9904383420944214,
+        0.9904383420944214,
+        0.9951387047767639
       ],
       "min": [
-        0.00244140625,
-        0.00244140625
+        -0.9904383420944214,
+        -0.9904383420944214,
+        -0.9951387047767639
       ],
-      "type": "VEC2"
+      "type": "VEC3"
     },
     {
       "bufferView": 0,
       "componentType": 5125,
-      "count": 12480,
+      "count": 2880,
       "type": "SCALAR"
     }
   ],
   "asset": {
     "extras": {
-      "author": "chiwei (https://sketchfab.com/chiwei2333)",
-      "license": "CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)",
-      "source": "https://sketchfab.com/3d-models/sphere-mirror-4k-materialtest-37c76b996e1040f8a41a0f4bc21f3e76",
-      "title": "Sphere-Mirror-4K-MaterialTest"
+      "author": "oatmas64134 (https://sketchfab.com/oatmas64134)",
+      "license": "CC-BY-NC-SA-4.0 (http://creativecommons.org/licenses/by-nc-sa/4.0/)",
+      "source": "https://sketchfab.com/3d-models/sphere-bb721dfff9594206aee62175e43c08b2",
+      "title": "Sphere"
     },
-    "generator": "Sketchfab-14.64.0",
+    "generator": "Sketchfab-12.65.0",
     "version": "2.0"
   },
   "bufferViews": [
     {
       "buffer": 0,
-      "byteLength": 49920,
+      "byteLength": 11520,
       "name": "floatBufferViews",
       "target": 34963
     },
     {
       "buffer": 0,
-      "byteLength": 47856,
-      "byteOffset": 49920,
-      "byteStride": 8,
-      "name": "floatBufferViews",
-      "target": 34962
-    },
-    {
-      "buffer": 0,
-      "byteLength": 143568,
-      "byteOffset": 97776,
+      "byteLength": 47616,
+      "byteOffset": 11520,
       "byteStride": 12,
-      "name": "floatBufferViews",
-      "target": 34962
-    },
-    {
-      "buffer": 0,
-      "byteLength": 95712,
-      "byteOffset": 241344,
-      "byteStride": 16,
       "name": "floatBufferViews",
       "target": 34962
     }
   ],
   "buffers": [
     {
-      "byteLength": 337056,
+      "byteLength": 59136,
       "uri": "scene.bin"
-    }
-  ],
-  "images": [
-    {
-      "uri": "textures/sanjiaodisikeqiu_t_baseColor.png"
-    },
-    {
-      "uri": "textures/sanjiaodisikeqiu_t_metallicRoughness.png"
-    },
-    {
-      "uri": "textures/sanjiaodisikeqiu_t_normal.png"
     }
   ],
   "materials": [
     {
       "doubleSided": true,
-      "name": "sanjiaodisikeqiu_t",
-      "normalTexture": {
-        "index": 2
-      },
-      "occlusionTexture": {
-        "index": 1
-      },
+      "name": "Root",
       "pbrMetallicRoughness": {
-        "baseColorTexture": {
-          "index": 0
-        },
-        "metallicRoughnessTexture": {
-          "index": 1
-        }
+        "baseColorFactor": [
+          0.5,
+          0.5,
+          0.5,
+          1.0
+        ],
+        "metallicFactor": 0.0,
+        "roughnessFactor": 0.6
       }
     }
   ],
   "meshes": [
     {
-      "name": "sanjiaodisikeqiu_sanjiaodisikeqiu_t_0",
+      "name": "Sphere",
       "primitives": [
         {
           "attributes": {
             "NORMAL": 1,
-            "POSITION": 0,
-            "TANGENT": 2,
-            "TEXCOORD_0": 3
+            "POSITION": 0
           },
-          "indices": 4,
+          "indices": 2,
           "material": 0,
           "mode": 4
         }
@@ -196,69 +131,93 @@
     },
     {
       "children": [
-        2
+        2,
+        4,
+        6
       ],
-      "matrix": [
-        0.009999999776482582,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.009999999776482582,
-        0.0,
-        0.0,
-        -0.009999999776482582,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
-        1.0
-      ],
-      "name": "11d0e96eb8a548058689e0e99eeb5953.fbx"
+      "name": "Root"
     },
     {
       "children": [
         3
       ],
-      "name": "RootNode"
+      "matrix": [
+        -0.29086000000000006,
+        0.9551700000000001,
+        -0.05519000000000001,
+        0.0,
+        -0.7711,
+        -0.19988000000000003,
+        0.6045200000000001,
+        0.0,
+        0.5663900000000001,
+        0.21839000000000003,
+        0.7946700000000001,
+        0.0,
+        4.076250000000001,
+        1.00545,
+        5.903860000000001,
+        1.0
+      ],
+      "name": "Lamp"
+    },
+    {
+      "name": "Lamp"
     },
     {
       "children": [
-        4
+        5
       ],
       "matrix": [
-        10.0,
+        1.0,
         0.0,
         0.0,
         0.0,
         0.0,
-        10.0,
+        1.0,
         0.0,
         0.0,
         0.0,
         0.0,
-        10.0,
+        1.0,
         0.0,
+        -0.7278800000000001,
         0.0,
-        0.0,
-        0.0,
+        1.16609,
         1.0
       ],
-      "name": "sanjiaodisikeqiu"
+      "name": "Sphere"
     },
     {
       "mesh": 0,
-      "name": "sanjiaodisikeqiu_sanjiaodisikeqiu_t_0"
-    }
-  ],
-  "samplers": [
+      "name": "Sphere"
+    },
     {
-      "magFilter": 9729,
-      "minFilter": 9987,
-      "wrapS": 10497,
-      "wrapT": 10497
+      "children": [
+        7
+      ],
+      "matrix": [
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        1.0,
+        0.0,
+        -0.5439200000000001,
+        1.82107,
+        3.5685800000000003,
+        1.0
+      ],
+      "name": "Sun"
+    },
+    {
+      "name": "Sun"
     }
   ],
   "scene": 0,
@@ -268,20 +227,6 @@
       "nodes": [
         0
       ]
-    }
-  ],
-  "textures": [
-    {
-      "sampler": 0,
-      "source": 0
-    },
-    {
-      "sampler": 0,
-      "source": 1
-    },
-    {
-      "sampler": 0,
-      "source": 2
     }
   ]
 }
