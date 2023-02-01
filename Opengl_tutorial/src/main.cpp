@@ -16,6 +16,7 @@
 #include "graphic/models/lamp.hpp"
 #include "graphic/lights/light.hpp"
 #include <vector>
+#include <stack>
 #include "graphic/models/gun.hpp"
 #include "graphic/models/sphere.hpp"
 #include "physics/enviroment.hpp"
@@ -173,8 +174,21 @@ int main()
 
 //        model.render(ourShader);
 //        gun.render(ourShader);
-        spheres.render(ourShader, delta);
         
+        std::stack<int> toRemoveIndx;
+        for(int i = 0;i < spheres.instances.size();i ++) {
+            if(glm::length(cameras[activeCamera]->cameraPos - spheres.instances[i].pos) > 100.f) {
+                toRemoveIndx.push(i);
+            }
+        }
+        if(toRemoveIndx.size() > 0) {
+            spheres.instances.erase(spheres.instances.begin(),spheres.instances.begin()+toRemoveIndx.top()+1);
+        }
+
+        if(spheres.instances.size() > 0) {
+            spheres.render(ourShader, delta);
+        }
+
         lampShader.activate();
         lampShader.setMat4("view", view);
         lampShader.setMat4("projection", projection);
