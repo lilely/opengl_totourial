@@ -8,7 +8,9 @@
 
 #include "model.hpp"
 
-Model::Model(glm::vec3 pos, glm::vec3 size, bool hasTex) : pos(pos), size(size), hasTex(hasTex) {}
+Model::Model(glm::vec3 pos, glm::vec3 size, bool hasTex) : size(size), hasTex(hasTex) {
+    rb.pos = pos;
+}
 
 void Model::loadModel(std::string path) {
     Assimp::Importer import;
@@ -129,10 +131,11 @@ std::vector<Texture> Model::loadTextures(aiMaterial *mat, aiTextureType type) {
 
 void Model::init() {}
 
-void Model::render(Shader &shader, bool setModel) {
+void Model::render(Shader &shader, float dt, bool setModel) {
+    rb.update(dt);
     if(setModel) {
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model,pos);
+        model = glm::translate(model,rb.pos);
         model = glm::scale(model,size);
     //        model = glm::rotate(model,(float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f));
         shader.setMat4("model", model);

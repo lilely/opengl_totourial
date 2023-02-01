@@ -17,11 +17,12 @@ class Gun : public Model
 public:
     Gun() : Model(glm::vec3(0.0f), glm::vec3(0.05f), false) {}
     
-    void render(Shader &shader) {
+    void render(Shader &shader, float dt) {
+        rb.update(dt);
         glm::mat4 model = glm::mat4(1.0f);
         
-        pos = Camera::defaultCamera.cameraPos + glm::vec3(Camera::defaultCamera.cameraFront * 2.5f) + glm::vec3(Camera::defaultCamera.cameraUp * -0.8f);
-        model = glm::translate(model,pos);
+        rb.pos += Camera::defaultCamera.cameraPos + glm::vec3(Camera::defaultCamera.cameraFront * 2.5f) + glm::vec3(Camera::defaultCamera.cameraUp * -0.8f);
+        model = glm::translate(model,rb.pos);
         model = glm::scale(model,size);
     //        model = glm::rotate(model,(float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f));
         

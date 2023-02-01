@@ -17,6 +17,7 @@
 #include "graphic/lights/light.hpp"
 #include <vector>
 #include "graphic/models/gun.hpp"
+#include "graphic/models/sphere.hpp"
 
 void processInput(float delta);
 
@@ -87,11 +88,14 @@ int main()
         lamps[i].init();
     }
     
-    Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
-    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
+//    Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
+//    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
+//
+//    Gun gun;
+//    gun.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
     
-    Gun gun;
-    gun.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
+    Sphere shpere;
+    shpere.init();
     
     DirLight dirLight({
         glm::vec3(-0.2, -1.0f, -0.3f),
@@ -157,8 +161,11 @@ int main()
             ourShader.setInt("noSpotLights", 0);
         }
 
-        model.render(ourShader);
-        gun.render(ourShader);
+//        model.render(ourShader);
+//        gun.render(ourShader);
+        
+        shpere.render(ourShader, delta);
+        
 //        lampShader.activate();
 //        lampShader.setMat4("view", view);
 //        lampShader.setMat4("projection", projection);
@@ -174,8 +181,9 @@ int main()
         screen.newFrame();
     }
 
-    model.cleanup();
-    gun.cleanup();
+//    model.cleanup();
+//    gun.cleanup();
+    shpere.cleanup();
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     for(int i = 0;i < lamps.size();i ++) {

@@ -22,12 +22,12 @@
 #include <vector>
 
 #include "material.hpp"
-
+#include "../physics/rigidbody.hpp"
 #include "mesh.hpp"
 
 class Model {
 public:
-    glm::vec3 pos;
+    RigidBody rb;
     
     glm::vec3 size;
     
@@ -37,7 +37,7 @@ public:
     
     void init();
     
-    void render(Shader &shader, bool setModel = true);
+    void render(Shader &shader, float dt, bool setModel = true);
     
     void cleanup();
     
