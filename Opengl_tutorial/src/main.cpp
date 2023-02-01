@@ -18,6 +18,7 @@
 #include <vector>
 #include "graphic/models/gun.hpp"
 #include "graphic/models/sphere.hpp"
+#include "physics/enviroment.hpp"
 
 void processInput(float delta);
 
@@ -33,6 +34,8 @@ Camera *cameras[] = {
     &Camera::defaultCamera,
     new Camera(glm::vec3(0.0f, 0.0f, 7.0f)),
 };
+
+std::vector<Sphere> spheres;
 
 bool needSpotLight = false;
 
@@ -93,10 +96,12 @@ int main()
 //
 //    Gun gun;
 //    gun.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
-    
+
     Sphere shpere;
     shpere.init();
     
+    Camera::defaultCamera.updateCameraPos(CameraDirection::BACKWARD, 5.0f);
+
     DirLight dirLight({
         glm::vec3(-0.2, -1.0f, -0.3f),
         glm::vec3(1.0f), glm::vec3(0.4f),
@@ -141,7 +146,7 @@ int main()
         glm::mat4 projection = glm::mat4(1.0f);
         
         view = cameras[activeCamera]->getViewMatrix();
-        projection = glm::perspective(cameras[activeCamera]->getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.1f, 100.0f);
+        projection = glm::perspective(cameras[activeCamera]->getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.01f, 1000.0f);
         // render container
         ourShader.activate();
         ourShader.setMat4("view", view);
@@ -164,30 +169,35 @@ int main()
 //        model.render(ourShader);
 //        gun.render(ourShader);
         
-        shpere.render(ourShader, delta);
+        for(auto &sp : spheres) {
+            sp.render(ourShader, delta);
+        }
         
-//        lampShader.activate();
-//        lampShader.setMat4("view", view);
-//        lampShader.setMat4("projection", projection);
-//        for (unsigned int i = 0; i < lamps.size(); i++) {
-//            lampShader.activate();
-//            lamps[i].render(lampShader);
-//            ourShader.activate();
-//            lamps[i].pointLight.render(ourShader, i);
-//        }
-//        ourShader.setInt("noPointLights", 4);
-        
+        lampShader.activate();
+        lampShader.setMat4("view", view);
+        lampShader.setMat4("projection", projection);
+        for (unsigned int i = 0; i < lamps.size(); i++) {
+            lampShader.activate();
+            lamps[i].render(lampShader, delta);
+            ourShader.activate();
+            lamps[i].pointLight.render(ourShader, i);
+        }
+        ourShader.setInt("noPointLights", 4);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         screen.newFrame();
     }
 
 //    model.cleanup();
 //    gun.cleanup();
-    shpere.cleanup();
+//    shpere.cleanup();
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     for(int i = 0;i < lamps.size();i ++) {
         lamps[i].cleanup();
+    }
+    
+    for(auto &sp : spheres) {
+        sp.cleanup();
     }
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
@@ -195,6 +205,15 @@ int main()
     glfwTerminate();
     return 0;
     
+}
+
+void addSphere() {
+    Sphere sp;
+    sp.init();
+    sp.rb.pos = Camera::defaultCamera.cameraPos;
+    sp.rb.applyAcceleration(Enviroment::gravitationalAcceleration);
+    sp.rb.applyImpulse(Camera::defaultCamera.cameraFront, 50.0f);
+    spheres.emplace_back(sp);
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
@@ -241,6 +260,10 @@ void processInput(float delta)
         needSpotLight = !needSpotLight;
     }
     
+    if(Keyboard::keyWentDown(GLFW_KEY_F)) {
+        addSphere();
+    }
+    
 //    double dx = Mouse::getDX(), dy = Mouse::getDY();
 //    if(dx != 0 && dy != 0) {
 //        cameras[activeCamera].updateCameraDirection(dx/10, dy/10);
@@ -272,3 +295,4 @@ void processInput(float delta)
 //    }
 //    std::cout << lx << ":" << ly << std::endl;
 }
+

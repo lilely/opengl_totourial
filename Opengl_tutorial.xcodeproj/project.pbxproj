@@ -33,6 +33,7 @@
 		E2FA58E22983F0AB0038071B /* libassimpd.5.2.4.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E2FA58E12983F0AA0038071B /* libassimpd.5.2.4.dylib */; };
 		E2FA59462983F1480038071B /* libassimpd.5.2.4.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = E2FA58E12983F0AA0038071B /* libassimpd.5.2.4.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E2FA597F298A6BE90038071B /* rigidbody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA597D298A6BE90038071B /* rigidbody.cpp */; };
+		E2FA5982298A73210038071B /* enviroment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2FA5980298A73210038071B /* enviroment.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -624,6 +625,8 @@
 		E2FA597B298A671C0038071B /* license.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
 		E2FA597D298A6BE90038071B /* rigidbody.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = rigidbody.cpp; sourceTree = "<group>"; };
 		E2FA597E298A6BE90038071B /* rigidbody.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = rigidbody.hpp; sourceTree = "<group>"; };
+		E2FA5980298A73210038071B /* enviroment.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = enviroment.cpp; sourceTree = "<group>"; };
+		E2FA5981298A73210038071B /* enviroment.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = enviroment.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1528,6 +1531,8 @@
 			children = (
 				E2FA597D298A6BE90038071B /* rigidbody.cpp */,
 				E2FA597E298A6BE90038071B /* rigidbody.hpp */,
+				E2FA5980298A73210038071B /* enviroment.cpp */,
+				E2FA5981298A73210038071B /* enviroment.hpp */,
 			);
 			path = physics;
 			sourceTree = "<group>";
@@ -1600,6 +1605,7 @@
 				E2FA58C7297FD0F40038071B /* model.cpp in Sources */,
 				E2B2EB0A2975827D004304BC /* object.fs.glsl in Sources */,
 				E2FA58C4297FD0EB0038071B /* mesh.cpp in Sources */,
+				E2FA5982298A73210038071B /* enviroment.cpp in Sources */,
 				66E5F15C2971A76F00A4938F /* main.cpp in Sources */,
 				66E5F1652971A7B000A4938F /* glad.c in Sources */,
 				E2FA597F298A6BE90038071B /* rigidbody.cpp in Sources */,

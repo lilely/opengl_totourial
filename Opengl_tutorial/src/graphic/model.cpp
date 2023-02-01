@@ -7,6 +7,7 @@
 //
 
 #include "model.hpp"
+#include "../physics/enviroment.hpp"
 
 Model::Model(glm::vec3 pos, glm::vec3 size, bool hasTex) : size(size), hasTex(hasTex) {
     rb.pos = pos;
