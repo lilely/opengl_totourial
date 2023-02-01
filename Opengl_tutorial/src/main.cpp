@@ -36,6 +36,7 @@ Camera *cameras[] = {
 };
 
 SphereArray spheres;
+LampArray lamps;
 
 bool needSpotLight = false;
 
@@ -85,10 +86,9 @@ int main()
         glm::vec3(-4.0f,  2.0f, -12.0f),
         glm::vec3(0.0f,  0.0f, -3.0f)
     };
-    std::vector<Lamp> lamps;
+    
     for (unsigned int i = 0; i < 4; i++) {
-        lamps.emplace_back(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),pointLightPositions[i], 1.0f, 0.07f, 0.005f, glm::vec3(0.25f));
-        lamps[i].init();
+        lamps.pointLights.emplace_back(pointLightPositions[i], 1.0f, 0.07f, 0.005f, glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f));
     }
     
 //    Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
@@ -98,6 +98,7 @@ int main()
 //    gun.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
 
     spheres.init();
+    lamps.init();
     
     Camera::defaultCamera.updateCameraPos(CameraDirection::BACKWARD, 5.0f);
 
@@ -164,6 +165,11 @@ int main()
         } else {
             ourShader.setInt("noSpotLights", 0);
         }
+        
+        for(int i = 0; i < lamps.pointLights.size();i++) {
+            lamps.pointLights[i].render(ourShader, i);
+        }
+        ourShader.setInt("noPointLights", 4);
 
 //        model.render(ourShader);
 //        gun.render(ourShader);
@@ -172,13 +178,8 @@ int main()
         lampShader.activate();
         lampShader.setMat4("view", view);
         lampShader.setMat4("projection", projection);
-        for (unsigned int i = 0; i < lamps.size(); i++) {
-            lampShader.activate();
-            lamps[i].render(lampShader, delta);
-            ourShader.activate();
-            lamps[i].pointLight.render(ourShader, i);
-        }
-        ourShader.setInt("noPointLights", 4);
+        lamps.render(lampShader, delta);
+        
         glDrawArrays(GL_TRIANGLES, 0, 36);
         screen.newFrame();
     }
@@ -188,9 +189,7 @@ int main()
 //    shpere.cleanup();
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
-    for(int i = 0;i < lamps.size();i ++) {
-        lamps[i].cleanup();
-    }
+    lamps.cleanup();
     
     spheres.cleanup();
 

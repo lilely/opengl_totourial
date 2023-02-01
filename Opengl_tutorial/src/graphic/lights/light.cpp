@@ -8,6 +8,10 @@
 
 #include "light.hpp"
 
+PointLight::PointLight() {}
+
+PointLight::PointLight(glm::vec3 pos, float k1, float k2, float k3, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) : position(pos), k1(k1), k2(k2), k3(k3), ambient(ambient), diffuse(diffuse), specular(specular) {}
+
 void PointLight::render(Shader shader, int index) {
     std::string name = "pointLights[" + std::to_string(index) + "]";
     

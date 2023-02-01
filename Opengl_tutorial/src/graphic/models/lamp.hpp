@@ -11,11 +11,14 @@
 
 #include "cube.hpp"
 #include "../lights/light.hpp"
+#include "modelarray.hpp"
 
 class Lamp : public Cube {
 public:
     glm::vec3 lightColor;
     PointLight pointLight;
+    
+    Lamp(){};
     
     Lamp(glm::vec3 lightColor,
          glm::vec3 ambient,
@@ -35,5 +38,23 @@ public:
     }
 };
 
+class LampArray : public ModelArray<Lamp> {
+public:
+    std::vector<PointLight> pointLights;
+    
+    void init() {
+        model = Lamp(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(0.0f), 1.0f, 0.07f, 0.005f, glm::vec3(0.25f));
+        model.init();
+    }
+    
+    void render(Shader shader, float dt) {
+        for(auto &light : pointLights) {
+            model.rb.pos = light.position;
+            shader.activate();
+            model.render(shader, dt);
+        }
+    }
+    
+};
 
 #endif /* lamp_h */

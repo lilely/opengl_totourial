@@ -23,6 +23,10 @@ struct PointLight {
     glm::vec3 diffuse;
     glm::vec3 specular;
     
+    PointLight();
+    
+    PointLight(glm::vec3 pos, float k1, float k2, float k3, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+    
     void render(Shader shader, int index);
 };
 
