@@ -39,7 +39,7 @@ public:
     
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, aiColor4D diffuse, aiColor4D specular);
     
-    void render(Shader &shader);
+    void render(Shader &shader, bool doRender = true);
     
     void cleanup();
     

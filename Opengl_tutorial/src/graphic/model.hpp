@@ -31,21 +31,21 @@ public:
     
     glm::vec3 size;
     
+    std::vector<Mesh> meshes;
+    
     Model(glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f), bool hasTex = true);
     
     void loadModel(std::string path);
     
     void init();
     
-    void render(Shader &shader, float dt, bool setModel = true);
+    void render(Shader &shader, float dt, bool setModel = true, bool doRender = true);
     
     void cleanup();
     
 protected:
     
     bool hasTex;
-    
-    std::vector<Mesh> meshes;
     
     std::string directory;
     

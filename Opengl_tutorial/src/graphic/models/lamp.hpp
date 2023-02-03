@@ -44,7 +44,7 @@ public:
     
     void init() {
         model = Lamp(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(0.0f), 1.0f, 0.07f, 0.005f, glm::vec3(0.25f));
-        model.init();
+        ModelArray::init();
     }
     
     void render(Shader shader, float dt) {
