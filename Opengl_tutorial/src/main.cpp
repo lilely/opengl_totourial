@@ -91,7 +91,7 @@ int main()
     };
     
     for (unsigned int i = 0; i < 4; i++) {
-        lamps.pointLights.emplace_back(pointLightPositions[i], 1.0f, 0.07f, 0.005f, glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f));
+        lamps.pointLights.emplace_back(pointLightPositions[i], 1.0f, 0.07f, 0.05f, glm::vec3(0.5f),glm::vec3(0.5f),glm::vec3(0.5f));
     }
     
     Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
@@ -146,63 +146,90 @@ int main()
 //        ourShader.activate();
 //        ourShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
         
-        instanceShader.activate();
-        instanceShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
+        
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
         
         view = cameras[activeCamera]->getViewMatrix();
         projection = glm::perspective(cameras[activeCamera]->getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.01f, 1000.0f);
         // render container
-        instanceShader.setFloat("mixVal", mixVal);
         
+        // Dir Lights
         dirLight.direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(dirLight.direction,1.0f));
-        dirLight.render(instanceShader);
         
+        // Spot Lights
         spotLight.position = cameras[activeCamera]->cameraPos;
         spotLight.direction = cameras[activeCamera]->cameraFront;
         
-//        model.render(instanceShader, delta);
-        
-//        spotLight.render(ourShader, 0);
-//        if (needSpotLight) {
-//            ourShader.setInt("noSpotLights", 1);
-//        } else {
-//            ourShader.setInt("noSpotLights", 0);
-//        }
-//        ourShader.setInt("noPointLights", 4);
-        
-        spotLight.render(instanceShader, 0);
-        if (needSpotLight) {
-            instanceShader.setInt("noSpotLights", 1);
-        } else {
-            instanceShader.setInt("noSpotLights", 0);
-        }
-        
-        for(int i = 0; i < lamps.pointLights.size();i++) {
-//            lamps.pointLights[i].render(ourShader, i);
-            lamps.pointLights[i].render(instanceShader, i);
-        }
-        instanceShader.setInt("noPointLights", 4);
-        
-        
 //        gun.render(ourShader);
         
-        std::stack<int> toRemoveIndx;
-        for(int i = 0;i < spheres.instances.size();i ++) {
-            if(glm::length(cameras[activeCamera]->cameraPos - spheres.instances[i].pos) > 100.f) {
-                toRemoveIndx.push(i);
+        { // instance shader render
+            instanceShader.activate();
+            
+            // Set view position
+            instanceShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
+            
+            // Dir Lights
+            dirLight.render(instanceShader);
+            
+            // Spot Lights
+            spotLight.render(instanceShader, 0);
+            if (needSpotLight) {
+                instanceShader.setInt("noSpotLights", 1);
+            } else {
+                instanceShader.setInt("noSpotLights", 0);
+            }
+            
+            // Point Lights
+            for(int i = 0; i < lamps.pointLights.size();i++) {
+                lamps.pointLights[i].render(instanceShader, i);
+            }
+            instanceShader.setInt("noPointLights", 4);
+            
+            // Render Sphere
+            std::stack<int> toRemoveIndx;
+            for(int i = 0;i < spheres.instances.size();i ++) {
+                if(glm::length(cameras[activeCamera]->cameraPos - spheres.instances[i].pos) > 100.f) {
+                    toRemoveIndx.push(i);
+                }
+            }
+            if(toRemoveIndx.size() > 0) {
+                spheres.instances.erase(spheres.instances.begin(),spheres.instances.begin()+toRemoveIndx.top()+1);
+            }
+            
+            if(spheres.instances.size() > 0) {
+                instanceShader.setMat4("view", view);
+                instanceShader.setMat4("projection", projection);
+                spheres.render(instanceShader, delta);
             }
         }
-        if(toRemoveIndx.size() > 0) {
-            spheres.instances.erase(spheres.instances.begin(),spheres.instances.begin()+toRemoveIndx.top()+1);
-        }
         
-        if(spheres.instances.size() > 0) {
-            instanceShader.activate();
-            instanceShader.setMat4("view", view);
-            instanceShader.setMat4("projection", projection);
-            spheres.render(instanceShader, delta);
+        { // ourShader shader render
+            ourShader.activate();
+            
+            // Set view position
+            ourShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
+            
+            // Dir Lights
+            dirLight.render(ourShader);
+            
+            // Spot Lights
+            spotLight.render(ourShader, 0);
+            if (needSpotLight) {
+                ourShader.setInt("noSpotLights", 1);
+            } else {
+                ourShader.setInt("noSpotLights", 0);
+            }
+            
+            // Point Lights
+            for(int i = 0; i < lamps.pointLights.size();i++) {
+                lamps.pointLights[i].render(ourShader, i);
+            }
+            ourShader.setInt("noPointLights", 4);
+            
+            ourShader.setMat4("view", view);
+            ourShader.setMat4("projection", projection);
+            model.render(ourShader, delta);
         }
 
         lampShader.activate();
