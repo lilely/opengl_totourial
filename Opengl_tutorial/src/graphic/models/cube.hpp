@@ -15,10 +15,7 @@
 #include <string>
 
 class Cube : public Model {
-public:
-    glm::vec3 pos;
-    glm::vec3 size;
-    
+public:    
     std::string diffuseTextureFileName;
     std::string specularTextureFileName;
     
@@ -97,8 +94,8 @@ public:
         meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices));
     }
     
-    void render(Shader &shader, float dt) {
-        Model::render(shader, dt);
+    void render(Shader &shader, float dt, bool setModel = true, bool doRender = true) {
+        Model::render(shader, dt, setModel, doRender);
     }
 };
 

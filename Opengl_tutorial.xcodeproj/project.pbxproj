@@ -625,6 +625,7 @@
 		E2FA5989298A8F100038071B /* scene.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = scene.bin; sourceTree = "<group>"; };
 		E2FA598A298A8F100038071B /* license.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
 		E2FA598C298A915B0038071B /* modelarray.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = modelarray.hpp; sourceTree = "<group>"; usesTabs = 0; };
+		E2FA598F298DD1DD0038071B /* instance.vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = instance.vs.glsl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1180,6 +1181,7 @@
 		E2B2EB05297581F3004304BC /* asset */ = {
 			isa = PBXGroup;
 			children = (
+				E2FA598E298DD1920038071B /* instance */,
 				E2FA5947298653190038071B /* models */,
 				E2FA58D129828C8B0038071B /* box_specular.png */,
 				E2FA58D229828C8B0038071B /* box.png */,
@@ -1523,6 +1525,14 @@
 				E2FA598A298A8F100038071B /* license.txt */,
 			);
 			path = sphere;
+			sourceTree = "<group>";
+		};
+		E2FA598E298DD1920038071B /* instance */ = {
+			isa = PBXGroup;
+			children = (
+				E2FA598F298DD1DD0038071B /* instance.vs.glsl */,
+			);
+			path = instance;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

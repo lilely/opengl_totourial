@@ -76,9 +76,11 @@ int main()
     // build and compile our shader zprogram
     // ------------------------------------
     Shader ourShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object_texture.fs.glsl");
+    
+    Shader instanceShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/instance.vs.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object_texture.fs.glsl");
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
-    Shader lampShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/lamp.fs.glsl");
+    Shader lampShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/instance.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/lamp.fs.glsl");
     
      
     glm::vec3 pointLightPositions[] = {
@@ -92,8 +94,9 @@ int main()
         lamps.pointLights.emplace_back(pointLightPositions[i], 1.0f, 0.07f, 0.005f, glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f));
     }
     
-//    Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
-//    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
+    Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
+    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
+    model.init();
 //
 //    Gun gun;
 //    gun.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
@@ -140,39 +143,49 @@ int main()
         screen.update();
         // bind textures on corresponding texture units
     
-        ourShader.activate();
-        ourShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
+//        ourShader.activate();
+//        ourShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
         
+        instanceShader.activate();
+        instanceShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
         
         view = cameras[activeCamera]->getViewMatrix();
         projection = glm::perspective(cameras[activeCamera]->getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.01f, 1000.0f);
         // render container
-        ourShader.activate();
-        ourShader.setMat4("view", view);
-        ourShader.setMat4("projection", projection);
-        ourShader.setFloat("mixVal", mixVal);
+        instanceShader.setFloat("mixVal", mixVal);
         
         dirLight.direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(dirLight.direction,1.0f));
-        dirLight.render(ourShader);
-        
+        dirLight.render(instanceShader);
         
         spotLight.position = cameras[activeCamera]->cameraPos;
         spotLight.direction = cameras[activeCamera]->cameraFront;
-        spotLight.render(ourShader, 0);
+        
+//        model.render(instanceShader, delta);
+        
+//        spotLight.render(ourShader, 0);
+//        if (needSpotLight) {
+//            ourShader.setInt("noSpotLights", 1);
+//        } else {
+//            ourShader.setInt("noSpotLights", 0);
+//        }
+//        ourShader.setInt("noPointLights", 4);
+        
+        spotLight.render(instanceShader, 0);
         if (needSpotLight) {
-            ourShader.setInt("noSpotLights", 1);
+            instanceShader.setInt("noSpotLights", 1);
         } else {
-            ourShader.setInt("noSpotLights", 0);
+            instanceShader.setInt("noSpotLights", 0);
         }
         
         for(int i = 0; i < lamps.pointLights.size();i++) {
-            lamps.pointLights[i].render(ourShader, i);
+//            lamps.pointLights[i].render(ourShader, i);
+            lamps.pointLights[i].render(instanceShader, i);
         }
-        ourShader.setInt("noPointLights", 4);
-
-//        model.render(ourShader);
+        instanceShader.setInt("noPointLights", 4);
+        
+        
 //        gun.render(ourShader);
         
         std::stack<int> toRemoveIndx;
@@ -184,17 +197,19 @@ int main()
         if(toRemoveIndx.size() > 0) {
             spheres.instances.erase(spheres.instances.begin(),spheres.instances.begin()+toRemoveIndx.top()+1);
         }
-
+        
         if(spheres.instances.size() > 0) {
-            spheres.render(ourShader, delta);
+            instanceShader.activate();
+            instanceShader.setMat4("view", view);
+            instanceShader.setMat4("projection", projection);
+            spheres.render(instanceShader, delta);
         }
 
         lampShader.activate();
         lampShader.setMat4("view", view);
         lampShader.setMat4("projection", projection);
         lamps.render(lampShader, delta);
-        
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+
         screen.newFrame();
     }
 
