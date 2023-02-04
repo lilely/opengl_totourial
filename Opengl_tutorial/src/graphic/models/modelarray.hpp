@@ -77,9 +77,8 @@ public:
                 sizes.push_back(model.size);
             }
         } else {
-            std::cout << "updated size:" << std::endl;
-            std::cout << sizes[0].x << " " << sizes[0].y << " " << sizes[0].z << std::endl;
-
+//            std::cout << "updated size:" << std::endl;
+//            std::cout << sizes[0].x << " " << sizes[0].y << " " << sizes[0].z << std::endl;
         }
         shader.setMat4("model", glm::mat4(1.0f));
         model.render(shader, dt, false, false);
@@ -109,6 +108,8 @@ public:
     
     void cleanup() {
         model.cleanup();
+        glDeleteBuffers(1, &posVBO);
+        glDeleteBuffers(1, &sizeVBO);
     }
     
 protected:

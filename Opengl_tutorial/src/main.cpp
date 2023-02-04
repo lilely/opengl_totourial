@@ -20,6 +20,7 @@
 #include "graphic/models/gun.hpp"
 #include "graphic/models/sphere.hpp"
 #include "physics/enviroment.hpp"
+#include "graphic/models/box.hpp"
 
 void processInput(float delta);
 
@@ -38,6 +39,7 @@ Camera *cameras[] = {
 
 SphereArray spheres;
 LampArray lamps;
+Box box;
 
 bool needSpotLight = false;
 
@@ -82,6 +84,8 @@ int main()
     // ------------------------------------------------------------------
     Shader lampShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/instance.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/lamp.fs.glsl");
     
+    Shader boxShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/box.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/box.fs.glsl");
+    
      
     glm::vec3 pointLightPositions[] = {
         glm::vec3(0.7f,  0.2f,  2.0f),
@@ -97,6 +101,8 @@ int main()
     Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
     model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
     model.init();
+    
+    box.init();
 //
 //    Gun gun;
 //    gun.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
@@ -220,7 +226,6 @@ int main()
             } else {
                 ourShader.setInt("noSpotLights", 0);
             }
-            
             // Point Lights
             for(int i = 0; i < lamps.pointLights.size();i++) {
                 lamps.pointLights[i].render(ourShader, i);
@@ -236,6 +241,13 @@ int main()
         lampShader.setMat4("view", view);
         lampShader.setMat4("projection", projection);
         lamps.render(lampShader, delta);
+        
+        if(box.offsetVecs.size() > 0) {
+            boxShader.activate();
+            boxShader.setMat4("view", view);
+            boxShader.setMat4("projection", projection);
+            box.render(boxShader, delta);
+        }
 
         screen.newFrame();
     }
@@ -246,7 +258,7 @@ int main()
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
     lamps.cleanup();
-    
+    box.cleanup();
     spheres.cleanup();
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
@@ -311,6 +323,12 @@ void processInput(float delta)
     if(Keyboard::keyWentDown(GLFW_KEY_F)) {
         addSphere();
     }
+    
+    if(Keyboard::keyWentDown(GLFW_KEY_B)) {
+        box.offsetVecs.push_back(glm::vec3(box.offsetVecs.size() * 1.0f));
+        box.sizeVecs.push_back(glm::vec3(box.sizeVecs.size() * 0.5f));
+    }
+    
     
 //    double dx = Mouse::getDX(), dy = Mouse::getDY();
 //    if(dx != 0 && dy != 0) {

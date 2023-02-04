@@ -626,6 +626,9 @@
 		E2FA598A298A8F100038071B /* license.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = license.txt; sourceTree = "<group>"; };
 		E2FA598C298A915B0038071B /* modelarray.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = modelarray.hpp; sourceTree = "<group>"; usesTabs = 0; };
 		E2FA598F298DD1DD0038071B /* instance.vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = instance.vs.glsl; sourceTree = "<group>"; };
+		E2FA5990298ECED30038071B /* box.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = box.hpp; sourceTree = "<group>"; };
+		E2FA5991298ED4510038071B /* box.vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = box.vs.glsl; sourceTree = "<group>"; };
+		E2FA5992298ED5920038071B /* box.fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = box.fs.glsl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1239,6 +1242,7 @@
 				E2FA59722986AEA80038071B /* gun.hpp */,
 				E2FA5973298A65860038071B /* sphere.hpp */,
 				E2FA598C298A915B0038071B /* modelarray.hpp */,
+				E2FA5990298ECED30038071B /* box.hpp */,
 			);
 			path = models;
 			sourceTree = "<group>";
@@ -1531,6 +1535,8 @@
 			isa = PBXGroup;
 			children = (
 				E2FA598F298DD1DD0038071B /* instance.vs.glsl */,
+				E2FA5991298ED4510038071B /* box.vs.glsl */,
+				E2FA5992298ED5920038071B /* box.fs.glsl */,
 			);
 			path = instance;
 			sourceTree = "<group>";
