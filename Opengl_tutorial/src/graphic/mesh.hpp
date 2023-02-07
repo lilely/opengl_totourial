@@ -20,6 +20,7 @@
 
 #include "../algorithm/bounds.hpp"
 #include "./models/box.hpp"
+#include "memory/vertexmemory.hpp"
 
 typedef struct Vertex {
     glm::vec3 pos;
@@ -35,7 +36,8 @@ public:
     
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
-    unsigned int VAO;
+    
+    ArrayObject VAO;
     
     std::vector<Texture> textures;
     

@@ -11,9 +11,9 @@
 
 #include <glm/glm.hpp>
 
-enum BoudingTypes {
-    AABB,
-    SPHERE,
+enum BoudingTypes : unsigned char {
+    AABB = 0x01,
+    SPHERE = 0x02,
 };
 
 class BoudingRegion {

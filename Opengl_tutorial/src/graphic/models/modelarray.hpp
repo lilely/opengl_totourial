@@ -46,7 +46,7 @@ public:
         glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * UPPER_BOUND, NULL, GL_DYNAMIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         for(int i = 0;i < model.meshes.size();i++) {
-            glBindVertexArray(model.meshes[i].VAO);
+            glBindVertexArray(model.meshes[i].VAO.val);
             // positions
             glBindBuffer(GL_ARRAY_BUFFER, posVBO);
             glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(0));
@@ -99,7 +99,7 @@ public:
                     box->addInstance(model.meshes[i].boundRange, positions[j], sizes[j]);
                 }
             }
-            glBindVertexArray(model.meshes[i].VAO);
+            glBindVertexArray(model.meshes[i].VAO.val);
             glDrawElementsInstanced(GL_TRIANGLES, static_cast<int>(model.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, (GLsizei)size);
             //    glDrawArrays(GL_TRIANGLES, 0, 36);
             glBindVertexArray(0);

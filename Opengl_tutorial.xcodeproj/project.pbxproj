@@ -14,6 +14,7 @@
 		66E5F1712971A96700A4938F /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66E5F1702971A96700A4938F /* OpenGL.framework */; };
 		E2434B6C2971AE5F00DADB69 /* libglfw.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 66E5F16B2971A88200A4938F /* libglfw.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E273E0B52991442500E0FB43 /* bounds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E273E0B32991442500E0FB43 /* bounds.cpp */; };
+		E273E0B929929FCA00E0FB43 /* vertexmemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E273E0B729929FCA00E0FB43 /* vertexmemory.cpp */; };
 		E2B2EAFD2972F0DE004304BC /* glm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EA402972F0DE004304BC /* glm.cpp */; };
 		E2B2EB04297559B6004304BC /* stb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB02297559B6004304BC /* stb.cpp */; };
 		E2B2EB0829758237004304BC /* object.vs.glsl in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB0729758237004304BC /* object.vs.glsl */; };
@@ -72,6 +73,8 @@
 		66E5F1702971A96700A4938F /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		E273E0B32991442500E0FB43 /* bounds.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = bounds.cpp; sourceTree = "<group>"; };
 		E273E0B42991442500E0FB43 /* bounds.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = bounds.hpp; sourceTree = "<group>"; };
+		E273E0B729929FCA00E0FB43 /* vertexmemory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = vertexmemory.cpp; sourceTree = "<group>"; };
+		E273E0B829929FCA00E0FB43 /* vertexmemory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = vertexmemory.hpp; sourceTree = "<group>"; };
 		E2B2E97C2972F0DD004304BC /* vec4.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec4.hpp; sourceTree = "<group>"; };
 		E2B2E97D2972F0DD004304BC /* integer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = integer.hpp; sourceTree = "<group>"; };
 		E2B2E97E2972F0DD004304BC /* vector_relational.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vector_relational.hpp; sourceTree = "<group>"; };
@@ -750,6 +753,15 @@
 			path = algorithm;
 			sourceTree = "<group>";
 		};
+		E273E0B629929FB100E0FB43 /* memory */ = {
+			isa = PBXGroup;
+			children = (
+				E273E0B729929FCA00E0FB43 /* vertexmemory.cpp */,
+				E273E0B829929FCA00E0FB43 /* vertexmemory.hpp */,
+			);
+			path = memory;
+			sourceTree = "<group>";
+		};
 		E2B2E97B2972F0DD004304BC /* glm */ = {
 			isa = PBXGroup;
 			children = (
@@ -1231,6 +1243,7 @@
 		E2FA58BB297F71A50038071B /* graphic */ = {
 			isa = PBXGroup;
 			children = (
+				E273E0B629929FB100E0FB43 /* memory */,
 				E2FA58DD2982BB500038071B /* lights */,
 				E2FA58C8297FF11C0038071B /* models */,
 				E2B2EB0D2976FDF2004304BC /* shader.hpp */,
@@ -1620,6 +1633,7 @@
 				E273E0B52991442500E0FB43 /* bounds.cpp in Sources */,
 				E2FA58C1297FC7140038071B /* texture.cpp in Sources */,
 				E2B2EB1E297AD78A004304BC /* camera.cpp in Sources */,
+				E273E0B929929FCA00E0FB43 /* vertexmemory.cpp in Sources */,
 				E2FA58C7297FD0F40038071B /* model.cpp in Sources */,
 				E2B2EB0A2975827D004304BC /* object.fs.glsl in Sources */,
 				E2FA58C4297FD0EB0038071B /* mesh.cpp in Sources */,
