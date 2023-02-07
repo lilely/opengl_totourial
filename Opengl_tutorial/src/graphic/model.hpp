@@ -24,6 +24,7 @@
 #include "material.hpp"
 #include "../physics/rigidbody.hpp"
 #include "mesh.hpp"
+#include "../algorithm/bounds.hpp"
 
 class Model {
 public:
@@ -33,7 +34,9 @@ public:
     
     std::vector<Mesh> meshes;
     
-    Model(glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f), bool hasTex = true);
+    BoudingTypes boundType;
+    
+    Model(glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f), bool hasTex = true, BoudingTypes boundType = BoudingTypes::AABB);
     
     void loadModel(std::string path);
     

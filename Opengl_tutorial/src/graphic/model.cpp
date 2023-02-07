@@ -9,7 +9,7 @@
 #include "model.hpp"
 #include "../physics/enviroment.hpp"
 
-Model::Model(glm::vec3 pos, glm::vec3 size, bool hasTex) : size(size), hasTex(hasTex) {
+Model::Model(glm::vec3 pos, glm::vec3 size, bool hasTex, BoudingTypes boundType) : boundType(boundType), size(size), hasTex(hasTex) {
     rb.pos = pos;
 }
 
@@ -43,6 +43,9 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     std::vector<unsigned int> indices;
     std::vector<Texture> textures;
     
+    BoudingRegion boundRange(boundType);
+    glm::vec3 max_bound(-float(~0));
+    glm::vec3 min_bound(float(~0));
     // vertices
     for(unsigned int i = 0; i < mesh->mNumVertices;i ++) {
         Vertex vertex;
@@ -50,6 +53,11 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
             mesh->mVertices[i].x,
             mesh->mVertices[i].y,
             mesh->mVertices[i].z);
+        
+        for(int j = 0;j < 3;j++) {
+            if(max_bound[j] < vertex.pos[j]) max_bound[j] = vertex.pos[j];
+            if(min_bound[j] > vertex.pos[j]) min_bound[j] = vertex.pos[j];
+        }
         
         vertex.normal = glm::vec3(
             mesh->mNormals[i].x,
@@ -64,6 +72,29 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
             vertex.texCoord = glm::vec2(0.0f);
         }
         vertices.emplace_back(vertex);
+    }
+    
+    if (boundType == BoudingTypes::AABB) {
+        // assign min and max
+        boundRange.min = min_bound;
+        boundRange.max = max_bound;
+    } else {
+        // caculate max distance from the center
+        boundRange.center = (min_bound + max_bound) / 2.0f;
+        float maxRadiusSquared = 0.0f;
+        for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
+            float radiusSquared = 0.0f; // distance for this vertex
+            for (int j = 0; j < 3; j++) {
+                radiusSquared += (vertices[i].pos[j] - boundRange.center[j]) * (vertices[i].pos[j] - boundRange.center[j]);
+            }
+            if (radiusSquared > maxRadiusSquared) {
+                // found new squared radius
+                // a^2 > b^2 --> |a| > |b|
+                maxRadiusSquared = radiusSquared;
+            }
+        }
+
+        boundRange.radius = sqrt(maxRadiusSquared);
     }
     
     // process indices
@@ -85,7 +116,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
             aiColor4D specular(1.0f);
             aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specular);
             
-            return Mesh(vertices, indices, diffuse, specular);
+            return Mesh(boundRange, vertices, indices, diffuse, specular);
         }
         
         // diffuse maps
@@ -100,7 +131,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
     }
     
-    return Mesh(vertices, indices, textures);
+    return Mesh(boundRange, vertices, indices, textures);
 }
 
 std::vector<Texture> Model::loadTextures(aiMaterial *mat, aiTextureType type) {

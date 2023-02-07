@@ -18,6 +18,8 @@
 #include "shader.hpp"
 #include "texture.hpp"
 
+#include "../algorithm/bounds.hpp"
+
 typedef struct Vertex {
     glm::vec3 pos;
     glm::vec3 normal;
@@ -28,16 +30,17 @@ typedef struct Vertex {
 
 class Mesh {
 public:
+    BoudingRegion boundRange;
+    
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     unsigned int VAO;
     
     std::vector<Texture> textures;
     
-    Mesh();
-    Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures = {});
+    Mesh(BoudingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures = {});
     
-    Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, aiColor4D diffuse, aiColor4D specular);
+    Mesh(BoudingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, aiColor4D diffuse, aiColor4D specular);
     
     void render(Shader &shader, bool doRender = true);
     

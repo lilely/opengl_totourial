@@ -28,12 +28,11 @@ std::vector<struct Vertex> Vertex::genList(float* vertices, int noVertices) {
     return ret;
 }
 
-Mesh::Mesh() {}
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) : vertices(vertices), indices(indices), textures(textures), hasTexture(true) {
+Mesh::Mesh(BoudingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures) : boundRange(boundRange), vertices(vertices), indices(indices), textures(textures), hasTexture(true) {
     setup();
 }
 
-Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, aiColor4D diffuse, aiColor4D specular) : vertices(vertices), indices(indices), material_diffuse(diffuse), material_specular(specular) , hasTexture(false) {
+Mesh::Mesh(BoudingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, aiColor4D diffuse, aiColor4D specular) : boundRange(boundRange), vertices(vertices), indices(indices), material_diffuse(diffuse), material_specular(specular) , hasTexture(false) {
     setup();
 }
 

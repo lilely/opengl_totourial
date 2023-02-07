@@ -13,6 +13,7 @@
 #include "../material.hpp"
 #include "../../utils/filesys.hpp"
 #include <string>
+#include "../../algorithm/bounds.hpp"
 
 class Cube : public Model {
 public:    
@@ -30,7 +31,7 @@ public:
     
     void init() {
         int noVertices = 36;
-        
+        BoudingRegion boundingRange(glm::vec3(-0.5f), glm::vec3(0.5f));
         float vertices[] = {
             // position                 normal              texcoord
             -0.5f, -0.5f, -0.5f,     0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
@@ -91,7 +92,7 @@ public:
 //            texture2.load();
 //            textures.emplace_back(texture2);
 //        }
-        meshes.push_back(Mesh(Vertex::genList(vertices, noVertices), indices));
+        meshes.push_back(Mesh(boundingRange, Vertex::genList(vertices, noVertices), indices));
     }
     
     void render(Shader &shader, float dt, bool setModel = true, bool doRender = true) {
