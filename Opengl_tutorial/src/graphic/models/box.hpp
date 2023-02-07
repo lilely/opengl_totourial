@@ -15,6 +15,7 @@
 #include <GLFW/glfw3.h>
 
 #include "shader.hpp"
+#include "../../algorithm/bounds.hpp"
 
 #define BOX_UPPER_BOUND 100
 
@@ -61,7 +62,7 @@ public:
         
         glGenBuffers(1, &VBO);
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float) * 3, &vertices[0], GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         glGenBuffers(1, &offsetVBO);
@@ -116,6 +117,11 @@ public:
         glDrawElementsInstanced(GL_LINES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0, (GLsizei)size);
         //    glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
+    }
+    
+    void addInstance(BoudingRegion &rb, glm::vec3 pos, glm::vec3 size) {
+        offsetVecs.push_back(rb.caculateCenter() * size + pos);
+        sizeVecs.push_back(rb.caculateDimensions() * size);
     }
     
     void cleanup() {

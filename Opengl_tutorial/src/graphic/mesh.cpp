@@ -36,7 +36,7 @@ Mesh::Mesh(BoudingRegion boundRange, std::vector<Vertex> vertices, std::vector<u
     setup();
 }
 
-void Mesh::render(Shader &shader, bool doRender) {
+void Mesh::render(Shader &shader,Box *box, glm::vec3 pos, glm::vec3 size, bool doRender) {
     if(!hasTexture) {
         shader.setFloat4("material.diffuse", material_diffuse);
         shader.setFloat4("material.specular", material_specular);
@@ -62,6 +62,10 @@ void Mesh::render(Shader &shader, bool doRender) {
     }
     
     if(doRender) {
+        if(box) {
+            box->addInstance(boundRange, pos, size);
+        }
+        
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0);
     //    glDrawArrays(GL_TRIANGLES, 0, 36);

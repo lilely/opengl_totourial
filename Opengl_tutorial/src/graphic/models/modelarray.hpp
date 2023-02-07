@@ -13,6 +13,7 @@
 #include <vector>
 #include <algorithm>
 #include <glm/glm.hpp>
+#include "box.hpp"
 
 #define UPPER_BOUND 100
 
@@ -65,7 +66,7 @@ public:
         
     }
     
-    void render(Shader shader, float dt, bool setLists = true) {
+    void render(Shader shader, float dt, Box *box = nullptr, bool setLists = true) {
         if(setLists) {
             positions.clear();
             sizes.clear();
@@ -93,6 +94,11 @@ public:
             glBindBuffer(GL_ARRAY_BUFFER, 0);
         }
         for(unsigned int i = 0;i < model.meshes.size();i++) {
+            if (box != nullptr) {
+                for(unsigned int j = 0;j < size;j++) {
+                    box->addInstance(model.meshes[i].boundRange, positions[j], sizes[j]);
+                }
+            }
             glBindVertexArray(model.meshes[i].VAO);
             glDrawElementsInstanced(GL_TRIANGLES, static_cast<int>(model.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, (GLsizei)size);
             //    glDrawArrays(GL_TRIANGLES, 0, 36);

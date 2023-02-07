@@ -163,7 +163,7 @@ std::vector<Texture> Model::loadTextures(aiMaterial *mat, aiTextureType type) {
 
 void Model::init() {}
 
-void Model::render(Shader &shader, float dt, bool setModel, bool doRender) {
+void Model::render(Shader &shader, float dt, bool setModel, bool doRender, Box *box) {
     rb.update(dt);
     if(setModel) {
         glm::mat4 model = glm::mat4(1.0f);
@@ -174,7 +174,7 @@ void Model::render(Shader &shader, float dt, bool setModel, bool doRender) {
     }
     shader.setFloat("material.shininess", 0.5f);
     for(auto mesh : meshes) {
-        mesh.render(shader, doRender);
+        mesh.render(shader, box, rb.pos, size, doRender);
     }
 }
 

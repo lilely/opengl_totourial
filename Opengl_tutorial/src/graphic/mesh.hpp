@@ -19,6 +19,7 @@
 #include "texture.hpp"
 
 #include "../algorithm/bounds.hpp"
+#include "./models/box.hpp"
 
 typedef struct Vertex {
     glm::vec3 pos;
@@ -42,7 +43,7 @@ public:
     
     Mesh(BoudingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, aiColor4D diffuse, aiColor4D specular);
     
-    void render(Shader &shader, bool doRender = true);
+    void render(Shader &shader,Box *box = nullptr, glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f), bool doRender = true);
     
     void cleanup();
     

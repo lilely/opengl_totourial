@@ -25,6 +25,7 @@
 #include "../physics/rigidbody.hpp"
 #include "mesh.hpp"
 #include "../algorithm/bounds.hpp"
+#include "./models/box.hpp"
 
 class Model {
 public:
@@ -42,7 +43,7 @@ public:
     
     void init();
     
-    void render(Shader &shader, float dt, bool setModel = true, bool doRender = true);
+    void render(Shader &shader, float dt, bool setModel = true, bool doRender = true, Box *box = nullptr);
     
     void cleanup();
     

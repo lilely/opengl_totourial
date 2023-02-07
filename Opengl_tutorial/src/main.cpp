@@ -39,7 +39,6 @@ Camera *cameras[] = {
 
 SphereArray spheres;
 LampArray lamps;
-Box box;
 
 bool needSpotLight = false;
 
@@ -102,6 +101,7 @@ int main()
     model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
     model.init();
     
+    Box box;
     box.init();
 //
 //    Gun gun;
@@ -141,6 +141,10 @@ int main()
         float currentTime = glfwGetTime();
         float delta = currentTime - lastTime;
         lastTime = currentTime;
+        
+        // clear box vertices and sizes
+        box.offsetVecs.clear();
+        box.sizeVecs.clear();
         // input
         // -----
         processInput(delta);
@@ -206,9 +210,10 @@ int main()
             if(spheres.instances.size() > 0) {
                 instanceShader.setMat4("view", view);
                 instanceShader.setMat4("projection", projection);
-                spheres.render(instanceShader, delta);
+                spheres.render(instanceShader, delta, &box);
             }
         }
+        
         
         { // ourShader shader render
             ourShader.activate();
@@ -234,13 +239,13 @@ int main()
             
             ourShader.setMat4("view", view);
             ourShader.setMat4("projection", projection);
-            model.render(ourShader, delta);
+            model.render(ourShader, delta, true, true, &box);
         }
 
         lampShader.activate();
         lampShader.setMat4("view", view);
         lampShader.setMat4("projection", projection);
-        lamps.render(lampShader, delta);
+        lamps.render(lampShader, delta, &box);
         
         if(box.offsetVecs.size() > 0) {
             boxShader.activate();
@@ -251,6 +256,7 @@ int main()
 
         screen.newFrame();
     }
+
 
 //    model.cleanup();
 //    gun.cleanup();
@@ -322,11 +328,6 @@ void processInput(float delta)
     
     if(Keyboard::keyWentDown(GLFW_KEY_F)) {
         addSphere();
-    }
-    
-    if(Keyboard::keyWentDown(GLFW_KEY_B)) {
-        box.offsetVecs.push_back(glm::vec3(box.offsetVecs.size() * 1.0f));
-        box.sizeVecs.push_back(glm::vec3(box.sizeVecs.size() * 0.5f));
     }
     
     

@@ -16,7 +16,7 @@
 
 class Sphere : public Model {
 public:
-    Sphere(glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f)) : Model(pos, size, false, BoudingTypes::SPHERE) {}
+    Sphere(glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f)) : Model(pos, size, false, BoudingTypes::AABB) {}
     
     void init() {
         Model::loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/sphere/scene.gltf");

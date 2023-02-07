@@ -12,6 +12,7 @@
 #include "cube.hpp"
 #include "../lights/light.hpp"
 #include "modelarray.hpp"
+#include "box.hpp"
 
 class Lamp : public Cube {
 public:
@@ -48,14 +49,14 @@ public:
         ModelArray::init();
     }
     
-    void render(Shader shader, float dt) {
+    void render(Shader shader, float dt, Box *box = nullptr) {
         positions.clear();
         sizes.clear();
         for(auto &light : pointLights) {
             positions.push_back(light.position);
             sizes.push_back(model.size);
         }
-        ModelArray::render(shader, dt, false);
+        ModelArray::render(shader, dt, box, false);
     }
     
 };
