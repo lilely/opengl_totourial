@@ -41,10 +41,6 @@ public:
         posVBO.bind();
         posVBO.setData<glm::vec3>(UPPER_BOUND, NULL, GL_DYNAMIC_DRAW);
         posVBO.clear();
-//        glGenBuffers(1, &posVBO);
-//        glBindBuffer(GL_ARRAY_BUFFER, posVBO);
-//        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * UPPER_BOUND, NULL, GL_DYNAMIC_DRAW);
-//        glBindBuffer(GL_ARRAY_BUFFER, 0);
         
         sizeVBO.generate();
         sizeVBO.bind();
@@ -100,7 +96,7 @@ public:
             }
             model.meshes[i].VAO.bind();
             model.meshes[i].VAO.draw(GL_TRIANGLES, static_cast<int>(model.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, (GLsizei)size);
-            model.meshes[i].VAO.clear();
+            ArrayObject::clear();
             // reset
             glActiveTexture(GL_TEXTURE0);
         }

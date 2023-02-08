@@ -16,6 +16,7 @@
 
 #include "shader.hpp"
 #include "../../algorithm/bounds.hpp"
+#include "../memory/vertexmemory.hpp"
 
 #define BOX_UPPER_BOUND 100
 
@@ -56,67 +57,63 @@ public:
             1, 5,
             2, 6
         };
+        VAO.generate();
+        VAO.bind();
         
-        glGenVertexArrays(1, &VAO);
-        glBindVertexArray(VAO);
+        VBO.generate();
+        VBO.bind();
+        VBO.setData<GLfloat>(static_cast<GLuint>(vertices.size() * 3), &vertices[0], GL_STATIC_DRAW);
+        VBO.clear();
         
-        glGenBuffers(1, &VBO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float) * 3, &vertices[0], GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        offsetVBO.generate();
+        offsetVBO.bind();
+        offsetVBO.setData<glm::vec3>(BOX_UPPER_BOUND, NULL, GL_DYNAMIC_DRAW);
+        offsetVBO.clear();
+
         
-        glGenBuffers(1, &offsetVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, offsetVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * BOX_UPPER_BOUND, NULL, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        
-        glGenBuffers(1, &sizeVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, sizeVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * BOX_UPPER_BOUND, NULL, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        
-        glGenBuffers(1, &EBO);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+        sizeVBO.generate();
+        sizeVBO.bind();
+        sizeVBO.setData<glm::vec3>(BOX_UPPER_BOUND, NULL, GL_DYNAMIC_DRAW);
+        sizeVBO.clear();
+
+        EBO = BufferObject(GL_ELEMENT_ARRAY_BUFFER);
+        EBO.generate();
+        EBO.bind();
+        EBO.setData<GLuint>(static_cast<GLuint>(indices.size()), &indices[0], GL_STATIC_DRAW);
         
         // position attribute
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-        glEnableVertexAttribArray(0);
+        VBO.bind();
+        VBO.setAttPointer<float>(0, 3, GL_FLOAT, 3, 0);
+        VBO.clear();
         
-        // positions
-        glBindBuffer(GL_ARRAY_BUFFER, offsetVBO);
-        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(0));
-        glEnableVertexAttribArray(1);
-        // sizes
-        glBindBuffer(GL_ARRAY_BUFFER, sizeVBO);
-        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(0));
-        glEnableVertexAttribArray(2);
-        
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-        
-        glVertexAttribDivisor(1, 1);
-        glVertexAttribDivisor(2, 1);
-        
-        glBindVertexArray(0);
+        // position
+        offsetVBO.bind();
+        offsetVBO.setAttPointer<glm::vec3>(1, 3, GL_FLOAT, 1, 0, 1);
+        offsetVBO.clear();
+
+        // size
+        sizeVBO.bind();
+        sizeVBO.setAttPointer<glm::vec3>(2, 3, GL_FLOAT, 1, 0, 1);
+        sizeVBO.clear();
+
+        ArrayObject::clear();
     }
     
     void render(Shader shader, float dt) {
         shader.setMat4("model", glm::mat4(1.0f));
         size_t size = std::min((int)offsetVecs.size(), BOX_UPPER_BOUND);
         if(size != 0) {
-            glBindBuffer(GL_ARRAY_BUFFER, offsetVBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 3 * size, &offsetVecs[0]);
+            offsetVBO.bind();
+            offsetVBO.updateData<glm::vec3>(0, (unsigned int)size, &offsetVecs[0]);
 
-            glBindBuffer(GL_ARRAY_BUFFER, sizeVBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 3 * size, &sizeVecs[0]);
-
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            sizeVBO.bind();
+            sizeVBO.updateData<glm::vec3>(0, (unsigned int)size, &sizeVecs[0]);
+            
+            sizeVBO.clear();
         }
-        glBindVertexArray(VAO);
-        glDrawElementsInstanced(GL_LINES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0, (GLsizei)size);
-        //    glDrawArrays(GL_TRIANGLES, 0, 36);
-        glBindVertexArray(0);
+        VAO.bind();
+        VAO.draw(GL_LINES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0, (GLsizei)size);
+        ArrayObject::clear();
     }
     
     void addInstance(BoudingRegion &rb, glm::vec3 pos, glm::vec3 size) {
@@ -125,15 +122,17 @@ public:
     }
     
     void cleanup() {
-        glDeleteVertexArrays(1, &VAO);
-        glDeleteBuffers(1, &VBO);
-        glDeleteBuffers(1, &EBO);
-        glDeleteBuffers(1, &offsetVBO);
-        glDeleteBuffers(1, &sizeVBO);
+        VAO.cleanup();
+        VBO.cleanup();
+        EBO.cleanup();
+        offsetVBO.cleanup();
+        sizeVBO.cleanup();
     }
     
 private:
-    unsigned int VAO, VBO, EBO, offsetVBO, sizeVBO;
+    ArrayObject VAO;
+    BufferObject VBO, offsetVBO, sizeVBO;
+    BufferObject EBO;
     
     std::vector<float> vertices;
     std::vector<unsigned int> indices;
