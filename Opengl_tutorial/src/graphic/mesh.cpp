@@ -65,10 +65,6 @@ void Mesh::render(Shader &shader,Box *box, glm::vec3 pos, glm::vec3 size, bool d
         if(box) {
             box->addInstance(boundRange, pos, size);
         }
-        
-//        glBindVertexArray(VAO);
-//        glDrawElements(GL_TRIANGLES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0);
-//        glBindVertexArray(0);
         VAO.bind();
         VAO.draw(GL_TRIANGLES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0);
         ArrayObject::clear();
@@ -78,16 +74,17 @@ void Mesh::render(Shader &shader,Box *box, glm::vec3 pos, glm::vec3 size, bool d
 }
 
 void Mesh::cleanup() {
-//    glDeleteVertexArrays(1, &VAO);
-//    glDeleteBuffers(1, &VBO);
-//    glDeleteBuffers(1, &EBO);
     VAO.cleanup();
 }
 
 void Mesh::setup() {
-//    glGenVertexArrays(1, &VAO.val);
     VAO.generate();
     VAO.bind();
+    
+    VAO["EBO"] = BufferObject(GL_ELEMENT_ARRAY_BUFFER);
+    VAO["EBO"].generate();
+    VAO["EBO"].bind();
+    VAO["EBO"].setData(static_cast<GLuint>(indices.size()), &indices[0], GL_STATIC_DRAW);
     
     VAO["VBO"] = BufferObject(GL_ARRAY_BUFFER);
     VAO["VBO"].generate();
@@ -99,11 +96,7 @@ void Mesh::setup() {
     VAO["VBO"].setAttPointer<float>(1, 3, GL_FLOAT, 8, offsetof(Vertex, normal));
     // color attribute
     VAO["VBO"].setAttPointer<float>(2, 2, GL_FLOAT, 8, offsetof(Vertex, texCoord));
-
-    VAO["EBO"] = BufferObject(GL_ELEMENT_ARRAY_BUFFER);
-    VAO["EBO"].generate();
-    VAO["EBO"].bind();
-    VAO["EBO"].setData(static_cast<GLuint>(indices.size()), &indices[0], GL_STATIC_DRAW);
+    VAO["VBO"].clear();
 
     VAO.clear();    
 }

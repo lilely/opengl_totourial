@@ -14,15 +14,16 @@
 #include <algorithm>
 #include <glm/glm.hpp>
 #include "box.hpp"
+#include "../memory/vertexmemory.hpp"
 
 #define UPPER_BOUND 100
 
 template<class T>
 class ModelArray {
 public:
-    unsigned int posVBO;
+    BufferObject posVBO;
     
-    unsigned int sizeVBO;
+    BufferObject sizeVBO;
     
     std::vector<RigidBody> instances;
     
@@ -36,32 +37,30 @@ public:
     }
     
     void setupVBO() {
-        glGenBuffers(1, &posVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, posVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * UPPER_BOUND, NULL, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        posVBO.generate();
+        posVBO.bind();
+        posVBO.setData<glm::vec3>(UPPER_BOUND, NULL, GL_DYNAMIC_DRAW);
+        posVBO.clear();
+//        glGenBuffers(1, &posVBO);
+//        glBindBuffer(GL_ARRAY_BUFFER, posVBO);
+//        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * UPPER_BOUND, NULL, GL_DYNAMIC_DRAW);
+//        glBindBuffer(GL_ARRAY_BUFFER, 0);
         
-        glGenBuffers(1, &sizeVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, sizeVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 3 * UPPER_BOUND, NULL, GL_DYNAMIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        sizeVBO.generate();
+        sizeVBO.bind();
+        sizeVBO.setData<glm::vec3>(UPPER_BOUND, NULL, GL_DYNAMIC_DRAW);
+        sizeVBO.clear();
         for(int i = 0;i < model.meshes.size();i++) {
-            glBindVertexArray(model.meshes[i].VAO.val);
+            model.meshes[i].VAO.bind();
             // positions
-            glBindBuffer(GL_ARRAY_BUFFER, posVBO);
-            glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(0));
-            glEnableVertexAttribArray(3);
-            // sizes
-            glBindBuffer(GL_ARRAY_BUFFER, sizeVBO);
-            glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)(0));
-            glEnableVertexAttribArray(4);
+            posVBO.bind();
+            posVBO.setAttPointer<glm::vec3>(3, 3, GL_FLOAT, 1, 0, 1);
+            // size
+            sizeVBO.bind();
+            sizeVBO.setAttPointer<glm::vec3>(4, 3, GL_FLOAT, 1, 0, 1);
+            sizeVBO.clear();
             
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-            
-            glVertexAttribDivisor(3, 1);
-            glVertexAttribDivisor(4, 1);
-            
-            glBindVertexArray(0);
+            ArrayObject::clear();
         }
         
     }
@@ -85,13 +84,13 @@ public:
         model.render(shader, dt, false, false);
         size_t size = std::min((int)positions.size(), UPPER_BOUND);
         if(positions.size() != 0) {
-            glBindBuffer(GL_ARRAY_BUFFER, posVBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 3 * size, &positions[0]);
-
-            glBindBuffer(GL_ARRAY_BUFFER, sizeVBO);
-            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(float) * 3 * size, &sizes[0]);
-
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
+            posVBO.bind();
+            posVBO.updateData<glm::vec3>(0, size, &positions[0]);
+            
+            sizeVBO.bind();
+            sizeVBO.updateData<glm::vec3>(0, size, &sizes[0]);
+            
+            sizeVBO.clear();
         }
         for(unsigned int i = 0;i < model.meshes.size();i++) {
             if (box != nullptr) {
@@ -99,10 +98,9 @@ public:
                     box->addInstance(model.meshes[i].boundRange, positions[j], sizes[j]);
                 }
             }
-            glBindVertexArray(model.meshes[i].VAO.val);
-            glDrawElementsInstanced(GL_TRIANGLES, static_cast<int>(model.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, (GLsizei)size);
-            //    glDrawArrays(GL_TRIANGLES, 0, 36);
-            glBindVertexArray(0);
+            model.meshes[i].VAO.bind();
+            model.meshes[i].VAO.draw(GL_TRIANGLES, static_cast<int>(model.meshes[i].indices.size()), GL_UNSIGNED_INT, 0, (GLsizei)size);
+            model.meshes[i].VAO.clear();
             // reset
             glActiveTexture(GL_TEXTURE0);
         }
@@ -114,8 +112,8 @@ public:
     
     void cleanup() {
         model.cleanup();
-        glDeleteBuffers(1, &posVBO);
-        glDeleteBuffers(1, &sizeVBO);
+        posVBO.cleanup();
+        sizeVBO.cleanup();
     }
     
 protected:

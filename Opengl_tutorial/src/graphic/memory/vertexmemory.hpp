@@ -38,6 +38,11 @@ public:
     }
     
     template<typename T>
+    void updateData(GLintptr offset, GLuint noElements, T*data) {
+        glBufferSubData(type, offset, noElements * sizeof(T), data);
+    }
+    
+    template<typename T>
     void setAttPointer(GLuint idx, GLint size, GLenum type, GLuint stride, GLuint offset, GLuint divisor = 0) {
         glVertexAttribPointer(idx, size, type, GL_FALSE, stride * sizeof(T), (void *)(offset));
         glEnableVertexAttribArray(idx);
