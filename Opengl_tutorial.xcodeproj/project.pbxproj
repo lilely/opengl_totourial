@@ -15,6 +15,7 @@
 		E2434B6C2971AE5F00DADB69 /* libglfw.3.dylib in Embed Libraries */ = {isa = PBXBuildFile; fileRef = 66E5F16B2971A88200A4938F /* libglfw.3.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		E273E0B52991442500E0FB43 /* bounds.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E273E0B32991442500E0FB43 /* bounds.cpp */; };
 		E273E0B929929FCA00E0FB43 /* vertexmemory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E273E0B729929FCA00E0FB43 /* vertexmemory.cpp */; };
+		E273E0BF2994050400E0FB43 /* scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E273E0BD2994050400E0FB43 /* scene.cpp */; };
 		E2B2EAFD2972F0DE004304BC /* glm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EA402972F0DE004304BC /* glm.cpp */; };
 		E2B2EB04297559B6004304BC /* stb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB02297559B6004304BC /* stb.cpp */; };
 		E2B2EB0829758237004304BC /* object.vs.glsl in Sources */ = {isa = PBXBuildFile; fileRef = E2B2EB0729758237004304BC /* object.vs.glsl */; };
@@ -75,6 +76,9 @@
 		E273E0B42991442500E0FB43 /* bounds.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = bounds.hpp; sourceTree = "<group>"; };
 		E273E0B729929FCA00E0FB43 /* vertexmemory.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = vertexmemory.cpp; sourceTree = "<group>"; };
 		E273E0B829929FCA00E0FB43 /* vertexmemory.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = vertexmemory.hpp; sourceTree = "<group>"; };
+		E273E0BD2994050400E0FB43 /* scene.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = scene.cpp; sourceTree = "<group>"; };
+		E273E0BE2994050400E0FB43 /* scene.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = scene.hpp; sourceTree = "<group>"; };
+		E273E0C029940D6500E0FB43 /* states.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = states.hpp; sourceTree = "<group>"; };
 		E2B2E97C2972F0DD004304BC /* vec4.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec4.hpp; sourceTree = "<group>"; };
 		E2B2E97D2972F0DD004304BC /* integer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = integer.hpp; sourceTree = "<group>"; };
 		E2B2E97E2972F0DD004304BC /* vector_relational.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vector_relational.hpp; sourceTree = "<group>"; };
@@ -705,6 +709,8 @@
 				E2FA58BB297F71A50038071B /* graphic */,
 				E2B2EB12297A267A004304BC /* io */,
 				66E5F15B2971A76F00A4938F /* main.cpp */,
+				E273E0BD2994050400E0FB43 /* scene.cpp */,
+				E273E0BE2994050400E0FB43 /* scene.hpp */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -749,6 +755,7 @@
 			children = (
 				E273E0B32991442500E0FB43 /* bounds.cpp */,
 				E273E0B42991442500E0FB43 /* bounds.hpp */,
+				E273E0C029940D6500E0FB43 /* states.hpp */,
 			);
 			path = algorithm;
 			sourceTree = "<group>";
@@ -1636,6 +1643,7 @@
 				E273E0B929929FCA00E0FB43 /* vertexmemory.cpp in Sources */,
 				E2FA58C7297FD0F40038071B /* model.cpp in Sources */,
 				E2B2EB0A2975827D004304BC /* object.fs.glsl in Sources */,
+				E273E0BF2994050400E0FB43 /* scene.cpp in Sources */,
 				E2FA58C4297FD0EB0038071B /* mesh.cpp in Sources */,
 				E2FA5982298A73210038071B /* enviroment.cpp in Sources */,
 				66E5F15C2971A76F00A4938F /* main.cpp in Sources */,
