@@ -86,42 +86,64 @@ bool Scene::init() {
 
 void Scene::processInput(float delta)
 {
+    if(activeCamera != -1 && activeCamera < cameras.size()) {
+        // setup camera direction
+        if(Mouse::getDX() != 0 && Mouse::getDY() != 0) {
+            cameras[activeCamera]->updateCameraDirection(Mouse::getDX(), Mouse::getDY());
+        }
+        
+        // setup camera zoom
+        if(Mouse::getScrollDY() > 0) {
+            cameras[activeCamera]->updateCameraZoom(Mouse::getScrollDY());
+        }
+        
+        // setup camera position
+        if(Keyboard::key(GLFW_KEY_W)) {
+            cameras[activeCamera]->updateCameraPos(CameraDirection::FORWARD, delta);
+        }
+        if(Keyboard::key(GLFW_KEY_S)) {
+            cameras[activeCamera]->updateCameraPos(CameraDirection::BACKWARD, delta);
+        }
+        if(Keyboard::key(GLFW_KEY_A)) {
+            cameras[activeCamera]->updateCameraPos(CameraDirection::LEFT, delta);
+        }
+        if(Keyboard::key(GLFW_KEY_D)) {
+            cameras[activeCamera]->updateCameraPos(CameraDirection::RIGHT, delta);
+        }
+        if(Keyboard::key(GLFW_KEY_E)) {
+            cameras[activeCamera]->updateCameraPos(CameraDirection::UP, delta);
+        }
+        if(Keyboard::key(GLFW_KEY_X)) {
+            cameras[activeCamera]->updateCameraPos(CameraDirection::DOWN, delta);
+        }
+        if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
+            activeCamera += activeCamera == 0 ? 1 : -1;
+        }
+        if(Keyboard::key(GLFW_KEY_UP)) {
+            cameras[activeCamera]->updateCameraDirection(0, 1.0f);
+        }
+        if(Keyboard::key(GLFW_KEY_DOWN)) {
+            cameras[activeCamera]->updateCameraDirection(0, -1.0f);
+        }
+        if(Keyboard::key(GLFW_KEY_LEFT)) {
+            cameras[activeCamera]->updateCameraDirection(-1.0f, 0);
+        }
+        if(Keyboard::key(GLFW_KEY_RIGHT)) {
+            cameras[activeCamera]->updateCameraDirection(1.0f, 0);
+        }
+        
+        view = cameras[activeCamera]->getViewMatrix();
+        projection = glm::perspective(cameras[activeCamera]->getZoom(),    // FOV
+                                      (float)SCR_WIDTH / (float)SCR_HEIGHT,  // aspect ratio
+                                      0.1f, 100.0f   // near and far bounds
+                                      );
+        
+        cameraPos = cameras[activeCamera]->cameraPos;
+    }
     if(Keyboard::keyWentUp(GLFW_KEY_ESCAPE)) {
         setShouldClose(true);
     }
-    if(Keyboard::key(GLFW_KEY_W)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::FORWARD, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_S)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::BACKWARD, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_A)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::LEFT, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_D)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::RIGHT, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_E)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::UP, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_X)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::DOWN, delta);
-    }
-    if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
-        activeCamera += activeCamera == 0 ? 1 : -1;
-    }
-    if(Keyboard::key(GLFW_KEY_UP)) {
-        cameras[activeCamera]->updateCameraDirection(0, 1.0f);
-    }
-    if(Keyboard::key(GLFW_KEY_DOWN)) {
-        cameras[activeCamera]->updateCameraDirection(0, -1.0f);
-    }
-    if(Keyboard::key(GLFW_KEY_LEFT)) {
-        cameras[activeCamera]->updateCameraDirection(-1.0f, 0);
-    }
-    if(Keyboard::key(GLFW_KEY_RIGHT)) {
-        cameras[activeCamera]->updateCameraDirection(1.0f, 0);
-    }
+    
 //    if(Keyboard::keyWentDown(GLFW_KEY_L)) {
 //        should = !needSpotLight;
 //    }
@@ -174,7 +196,37 @@ void Scene::newFrame() {
 }
 
 void Scene::render(Shader shader, bool applyLighting) {
+    shader.activate();
+    shader.setMat4("view", view);
+    shader.setMat4("projection", projection);
     
+    // lighting
+    if(applyLighting) {
+        
+        // point lights
+        unsigned int noOfPointLights = static_cast<unsigned int>(pointLights.size());
+        unsigned int noOfActiveLights = 0;
+        for(unsigned int i = 0;i < noOfPointLights;i ++) {
+            if(States::isActive<unsigned int>(&activePointLights,i)) {
+                pointLights[i]->render(shader, noOfActiveLights);
+                noOfActiveLights++;
+            }
+        }
+        shader.setInt("noPointLights", noOfActiveLights);
+        
+        // spot lights
+        unsigned int noOfSpotLights = static_cast<unsigned int>(spotLights.size());
+        noOfActiveLights = 0;
+        for(unsigned int i = 0;i < noOfSpotLights;i++) {
+            if(States::isActive(&activeSpotLights, i)) {
+                spotLights[i]->render(shader, i);
+                noOfActiveLights++;
+            }
+        }
+        shader.setInt("noSpotLights", noOfActiveLights);
+        
+        dirLight->render(shader);
+    }
 }
 
 /* clean up methods */
@@ -184,7 +236,7 @@ void Scene::cleanup() {
 
 /* accessors */
 Camera* Scene::getActiveCamera() {
-    return cameras[activeCamera];
+    return (activeCamera == -1 && activeCamera >= cameras.size()) ? nullptr : cameras[activeCamera];
 }
 
 bool Scene::shouldClose() {
