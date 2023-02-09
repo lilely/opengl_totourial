@@ -1,271 +1,365 @@
-//
-//  main.cpp
-//  Opengl_tutorial
-//
-//  Created by 金星 on 2023/1/13.
-//  Copyright © 2023 com.corp.jinxing. All rights reserved.
-//
-
-#include <stdio.h>
-#include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-//#include <glm/glm.hpp>
-//#include <glm/gtc/matrix_transform.hpp>
-//#include <glm/gtc/type_ptr.hpp>
-//#include <stb/stb_image.h>
+#include <stb/stb_image.h>
 
-#include <fstream>
-#include <sstream>
-#include <streambuf>
-#include <string>
+#include "graphic/shader.hpp"
+#include "io/keyboard.hpp"
+#include "io/mouse.hpp"
+#include "io/joystick.hpp"
+#include "io/camera.hpp"
+#include "io/screen.hpp"
+#include "graphic/texture.hpp"
+#include <iostream>
+#include "graphic/models/cube.hpp"
+#include "graphic/model.hpp"
+#include "graphic/material.hpp"
+#include "graphic/models/lamp.hpp"
+#include "graphic/lights/light.hpp"
+#include <vector>
+#include <stack>
+#include "graphic/models/gun.hpp"
+#include "graphic/models/sphere.hpp"
+#include "physics/enviroment.hpp"
+#include "graphic/models/box.hpp"
 
-std::string loadShaderSrc(const char* filename);
+void processInput(float delta);
 
-int main(int argc, char **argv){
-    using std::cout;    using std::endl;
-    
-    int success;
-    char infoLog[512];
-    
-    //glm test
-//    glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
-//    glm::mat4 trans = glm::mat4(1.0f);
-    
-//    trans = glm::translate(trans, glm::vec3(2.0f, 1.0f, 1.0f));
-    
-//    trans = glm::rotate(trans,glm::radians(180.0f),glm::vec3(0.0f, 0.0f, 1.0f));
-    
-//    trans = glm::scale(trans,glm::vec3(0.5, 0.5, 0.5));
-    
-//    vec = trans * vec;
-//    std::cout << vec.x << " " << vec.y << " " << vec.z << std::endl;
-    
+// settings
+
+float mixVal = 0.5f;
+
+glm::mat4 transform = glm::mat4(1.0f);
+
+Joystick mainJ(0);
+
+Camera *cameras[] = {
+    &Camera::defaultCamera,
+    new Camera(glm::vec3(0.0f, 0.0f, 7.0f)),
+};
+
+SphereArray spheres;
+LampArray lamps;
+
+bool needSpotLight = false;
+
+Screen screen;
+
+int activeCamera = 0;
+
+int main()
+{
+    // glfw: initialize and configure
+    // ------------------------------
     glfwInit();
-//    主版本
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-//    次版本
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-//    告诉glfw 我们使用的是core_profile 核心模块
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-//    向前兼容
+
+#ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-//    创建一个GLFW 窗口   宽 高  窗口名字  后边两个暂时不用管
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
-    if (window == NULL) {
+#endif
+    float lastTime = glfwGetTime();
+    // glfw window creation
+    // --------------------
+    if(!screen.init()) {
         std::cout << "Failed to create GLFW window" << std::endl;
         glfwTerminate();
         return -1;
     }
-//    通知GLFW将我们窗口的上下文设置为当前线程的主上下文了
-    glfwMakeContextCurrent(window);
-    
-//    GLAD 是用来管理openGL 的函数指针的。所以在调用任何openGL函数之前我们都需要初始化GLAD。
-//    我们给GLAD传入了用来加载系统相关的OpenGL函数指针地址的函数。GLFW给我们的是glfwGetProcAddress，它根据我们编译的系统定义了正确的函数。
+    // glad: load all OpenGL function pointers
+    // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-    //    创建渲染的视口: 我们必须要告诉OpenGl 需要渲染的尺寸大小，即为视口 viewport(),这样openGL 才能知道根据窗口大小显示数据和坐标。
-//    glViewport 前两个参数控制视口左下角位置，后两个参数控制视口的宽和高
-//    openGL 幕后使用的是glViewport 定义的 位置和宽高进行2D转换
-    glViewport(0, 0, 800, 600);
-//    窗口调整的时候 视口应该也被调整  对窗口注册一个回调函数每次窗口大小被调整的时候会被调用
-    void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+    screen.setParamters();
+    // build and compile our shader zprogram
+    // ------------------------------------
+    Shader ourShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object_texture.fs.glsl");
     
-
-//   通过 glfwSetFramebufferSizeCallback glfw 函数 当窗口frame 变化时会调用。
-//    对于视网膜屏 Retain 屏   宽度和高度明显比原输入值更高一点。
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+    Shader instanceShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/instance.vs.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object_texture.fs.glsl");
+    // set up vertex data (and buffer(s)) and configure vertex attributes
+    // ------------------------------------------------------------------
+    Shader lampShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/instance.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/lamp.fs.glsl");
     
-    void processInput(GLFWwindow *window);
+    Shader boxShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/box.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/box.fs.glsl");
     
-    /* shaders
      
-     */
-    //compile vertex shader
-    unsigned int vertexShader;
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    std::string vertShaderSrc = loadShaderSrc("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/vertex_core.glsl");
-    const GLchar *vertShader = vertShaderSrc.c_str();
-    glShaderSource(vertexShader, 1, &vertShader, NULL);
-    glCompileShader(vertexShader);
+    glm::vec3 pointLightPositions[] = {
+        glm::vec3(0.7f,  0.2f,  2.0f),
+        glm::vec3(2.3f, -3.3f, -4.0f),
+        glm::vec3(-4.0f,  2.0f, -12.0f),
+        glm::vec3(0.0f,  0.0f, -3.0f)
+    };
     
-    // catch error
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if(!success) {
-        glGetShaderInfoLog(vertexShader,512,NULL,infoLog);
-        std::cout << "Error with vertext shader comp.:" << std::endl << infoLog << std::endl;
+    for (unsigned int i = 0; i < 4; i++) {
+        lamps.pointLights.emplace_back(pointLightPositions[i], 1.0f, 0.07f, 0.05f, glm::vec3(0.5f),glm::vec3(0.5f),glm::vec3(0.5f));
     }
     
-    // comple fragment shader
-    unsigned int fragmentShader[2];
+    Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
+    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
+    model.init();
     
-    // fragment 1
-    fragmentShader[0] = glCreateShader(GL_FRAGMENT_SHADER);
-    std::string fragShaderSrc = loadShaderSrc("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/fragment_core.glsl");
-    const GLchar* fragShader = fragShaderSrc.c_str();
-    glShaderSource(fragmentShader[0],1,&fragShader,NULL);
-    glCompileShader(fragmentShader[0]);
-    
-    //catch error
-    glGetShaderiv(fragmentShader[0], GL_COMPILE_STATUS, &success);
-    if(!success) {
-        glGetShaderInfoLog(fragmentShader[0],512,NULL,infoLog);
-        std::cout<< "Error with fragment shader comp.:" << std::endl << infoLog << std::endl;
-    }
-    
-    //catch error
-    glGetShaderiv(fragmentShader[0], GL_COMPILE_STATUS, &success);
-    if(!success) {
-        glGetShaderInfoLog(fragmentShader[0],512,NULL,infoLog);
-        std::cout<< "Error with fragment 0 shader comp.:" << std::endl << infoLog << std::endl;
-    }
-    
-    // fragment 2
-    fragmentShader[1] = glCreateShader(GL_FRAGMENT_SHADER);
-    fragShaderSrc = loadShaderSrc("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/fragment_core_2.glsl");
-    fragShader = fragShaderSrc.c_str();
-    glShaderSource(fragmentShader[1],1,&fragShader,NULL);
-    glCompileShader(fragmentShader[1]);
-    
-    //catch error
-    glGetShaderiv(fragmentShader[1], GL_COMPILE_STATUS, &success);
-    if(!success) {
-        glGetShaderInfoLog(fragmentShader[1],512,NULL,infoLog);
-        std::cout<< "Error with fragment 1 shader comp.:" << std::endl << infoLog << std::endl;
-    }
-    
-    // create program
-    unsigned int shaderProgram[2];
-    
-    // shader program 0
-    shaderProgram[0] = glCreateProgram();
-    glAttachShader(shaderProgram[0],vertexShader);
-    glAttachShader(shaderProgram[0],fragmentShader[0]);
-    glBindAttribLocation(shaderProgram[0], 0, "aPos");
-    glLinkProgram(shaderProgram[0]);
-    
-    //catch errors
-    glGetProgramiv(shaderProgram[0], GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shaderProgram[0],512,NULL,infoLog);
-        std::cout<< "Error with shader program comp.:" << std::endl << infoLog << std::endl;
-    }
-    
-    
-    // shader program 1
-    shaderProgram[1] = glCreateProgram();
-    glAttachShader(shaderProgram[1],vertexShader);
-    glAttachShader(shaderProgram[1],fragmentShader[1]);
-    glBindAttribLocation(shaderProgram[1], 0, "aPos");
-    glLinkProgram(shaderProgram[1]);
-    
-    //catch errors
-    glGetProgramiv(shaderProgram[1], GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shaderProgram[1],512,NULL,infoLog);
-        std::cout<< "Error with shader program comp.:" << std::endl << infoLog << std::endl;
-    }
-    
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader[0]);
-    glDeleteShader(fragmentShader[1]);
+    Box box;
+    box.init();
+//
+//    Gun gun;
+//    gun.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
 
-    float vertics[] = {
-        0.5f, 0.5f, 0.0f,
-        -0.5f, 0.5f, 0.0f,
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-    };
+    spheres.init();
+    lamps.init();
     
-    unsigned int indices[] = {
-        0,1,2,
-        2,3,0,
-    };
+    Camera::defaultCamera.updateCameraPos(CameraDirection::BACKWARD, 5.0f);
+
+    DirLight dirLight({
+        glm::vec3(-0.2, -1.0f, -0.3f),
+        glm::vec3(1.0f), glm::vec3(0.4f),
+        glm::vec3(0.75f)});
     
-    // VAO, VBO
-    unsigned int VAO, VBO, EBO;
-    glGenVertexArrays(1,&VAO);
-    glGenBuffers(1,&VBO);
-    glGenBuffers(1,&EBO);
-    
-    // bind VAO
-    glBindVertexArray(VAO);
-    
-    // bind VBO
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertics),vertics,GL_STATIC_DRAW);
-    
-    // set attribute pointer
-    glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,3*sizeof(GL_FLOAT),(void *)0);
-    glEnableVertexAttribArray(0);
-    
-    // set up EBO
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-    
-//   为了防止 渲染的图像一出现就退出 我们使用while 循环 。我们可以称之为Render Loop
-//    glfwWindowShouldClose 每次循环开始前检查一次GLFW 是否被要求退出 是true 的话渲染便结束了。
-    while(!glfwWindowShouldClose(window))
+    SpotLight spotLight({
+        cameras[activeCamera]->cameraPos,
+        cameras[activeCamera]->cameraFront,
+        1.0f,
+        0.07f,
+        0.005f,
+        glm::cos(glm::radians(12.5f)),
+        glm::cos(glm::radians(15.5f)),
+        glm::vec3(1.0f),
+        glm::vec3(1.0f),
+        glm::vec3(1.0f)
+    });
+    if(mainJ.isPresent()) {
+        mainJ.update();
+        std::cout << "joystick is preseted!" << std::endl;
+    }
+
+    // render loop
+    // -----------
+    while (!screen.shouldClose())
     {
-        //输出控制
-        processInput(window);
-//        glfwSwapBuffers 会交换颜色缓冲（他是存储着GLFW 窗口每一个像素色值的大缓冲），将会作为输出显示在屏幕上
-//        当程序退出的时候 使用一个自定义的颜色清空屏幕  在每个新的渲染迭代可是的时候我们总希望清屏否则总是看到上次渲染的结果。
-//        我们可以使用glClear   GL_COLOR_BUFFER_BIT，GL_DEPTH_BUFFER_BIT和GL_STENCIL_BUFFER_BIT。 我们清空颜色 。
-        glClearColor(0.5f, 0.1f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        float currentTime = glfwGetTime();
+        float delta = currentTime - lastTime;
+        lastTime = currentTime;
         
-        // draw shapes
-        glBindVertexArray(VAO);
-        glUseProgram(shaderProgram[0]);
-//        glDrawArrays(GL_TRIANGLES,0,6);
-        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,0);
+        // clear box vertices and sizes
+        box.offsetVecs.clear();
+        box.sizeVecs.clear();
+        // input
+        // -----
+        processInput(delta);
+        // render
+        // ------
+        screen.update();
+        // bind textures on corresponding texture units
+    
+//        ourShader.activate();
+//        ourShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
         
-        glUseProgram(shaderProgram[1]);
-//        glDrawArrays(GL_TRIANGLES,0,6);
-        glDrawElements(GL_TRIANGLES,6,GL_UNSIGNED_INT,(void *)(3*sizeof(unsigned int)));
         
-        glfwSwapBuffers(window);
-//        glfwPollEvents 检查函数有没有触发什么事件 键盘输入 鼠标移动 并调用对应函数
-        glfwPollEvents();
+        glm::mat4 view = glm::mat4(1.0f);
+        glm::mat4 projection = glm::mat4(1.0f);
+        
+        view = cameras[activeCamera]->getViewMatrix();
+        projection = glm::perspective(cameras[activeCamera]->getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.01f, 1000.0f);
+        // render container
+        
+        // Dir Lights
+        dirLight.direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(dirLight.direction,1.0f));
+        
+        // Spot Lights
+        spotLight.position = cameras[activeCamera]->cameraPos;
+        spotLight.direction = cameras[activeCamera]->cameraFront;
+        
+//        gun.render(ourShader);
+        
+        { // instance shader render
+            instanceShader.activate();
+            
+            // Set view position
+            instanceShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
+            
+            // Dir Lights
+            dirLight.render(instanceShader);
+            
+            // Spot Lights
+            spotLight.render(instanceShader, 0);
+            if (needSpotLight) {
+                instanceShader.setInt("noSpotLights", 1);
+            } else {
+                instanceShader.setInt("noSpotLights", 0);
+            }
+            
+            // Point Lights
+            for(int i = 0; i < lamps.pointLights.size();i++) {
+                lamps.pointLights[i].render(instanceShader, i);
+            }
+            instanceShader.setInt("noPointLights", 4);
+            
+            // Render Sphere
+            std::stack<int> toRemoveIndx;
+            for(int i = 0;i < spheres.instances.size();i ++) {
+                if(glm::length(cameras[activeCamera]->cameraPos - spheres.instances[i].pos) > 100.f) {
+                    toRemoveIndx.push(i);
+                }
+            }
+            if(toRemoveIndx.size() > 0) {
+                spheres.instances.erase(spheres.instances.begin(),spheres.instances.begin()+toRemoveIndx.top()+1);
+            }
+            
+            if(spheres.instances.size() > 0) {
+                instanceShader.setMat4("view", view);
+                instanceShader.setMat4("projection", projection);
+                spheres.render(instanceShader, delta, &box);
+            }
+        }
+        
+        
+        { // ourShader shader render
+            ourShader.activate();
+            
+            // Set view position
+            ourShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
+            
+            // Dir Lights
+            dirLight.render(ourShader);
+            
+            // Spot Lights
+            spotLight.render(ourShader, 0);
+            if (needSpotLight) {
+                ourShader.setInt("noSpotLights", 1);
+            } else {
+                ourShader.setInt("noSpotLights", 0);
+            }
+            // Point Lights
+            for(int i = 0; i < lamps.pointLights.size();i++) {
+                lamps.pointLights[i].render(ourShader, i);
+            }
+            ourShader.setInt("noPointLights", 4);
+            
+            ourShader.setMat4("view", view);
+            ourShader.setMat4("projection", projection);
+            model.render(ourShader, delta, true, true, &box);
+        }
+
+        lampShader.activate();
+        lampShader.setMat4("view", view);
+        lampShader.setMat4("projection", projection);
+        lamps.render(lampShader, delta, &box);
+        
+        if(box.offsetVecs.size() > 0) {
+            boxShader.activate();
+            boxShader.setMat4("view", view);
+            boxShader.setMat4("projection", projection);
+            box.render(boxShader, delta);
+        }
+
+        screen.newFrame();
     }
-    
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    
+
+
+//    model.cleanup();
+//    gun.cleanup();
+//    shpere.cleanup();
+    // optional: de-allocate all resources once they've outlived their purpose:
+    // ------------------------------------------------------------------------
+    lamps.cleanup();
+    box.cleanup();
+    spheres.cleanup();
+
+    // glfw: terminate, clearing all previously allocated GLFW resources.
+    // ------------------------------------------------------------------
     glfwTerminate();
-
     return 0;
-}
-
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-    glViewport(0, 0, width, height);
-}
-void processInput(GLFWwindow *window)
-{
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
-
-std::string loadShaderSrc(const char* filename) {
-    std::ifstream file;
-    std::stringstream buf;
     
-    std::string ret = "";
-    file.open(filename);
-    if(file.is_open()){
-        buf << file.rdbuf();
-        ret = buf.str();
-    } else {
-        std::cout << "Could not open " << filename << std::endl;
+}
+
+void addSphere() {
+    RigidBody rb;
+    rb.pos = Camera::defaultCamera.cameraPos;
+    rb.applyAcceleration(Enviroment::gravitationalAcceleration);
+    rb.applyImpulse(Camera::defaultCamera.cameraFront, 50.0f);
+    spheres.instances.emplace_back(rb);
+}
+
+// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
+// ---------------------------------------------------------------------------------------------------------
+void processInput(float delta)
+{
+    if(Keyboard::keyWentUp(GLFW_KEY_ESCAPE)) {
+        screen.setShouldClose(true);
     }
-    file.close();
+    if(Keyboard::key(GLFW_KEY_W)) {
+        cameras[activeCamera]->updateCameraPos(CameraDirection::FORWARD, delta);
+    }
+    if(Keyboard::key(GLFW_KEY_S)) {
+        cameras[activeCamera]->updateCameraPos(CameraDirection::BACKWARD, delta);
+    }
+    if(Keyboard::key(GLFW_KEY_A)) {
+        cameras[activeCamera]->updateCameraPos(CameraDirection::LEFT, delta);
+    }
+    if(Keyboard::key(GLFW_KEY_D)) {
+        cameras[activeCamera]->updateCameraPos(CameraDirection::RIGHT, delta);
+    }
+    if(Keyboard::key(GLFW_KEY_E)) {
+        cameras[activeCamera]->updateCameraPos(CameraDirection::UP, delta);
+    }
+    if(Keyboard::key(GLFW_KEY_X)) {
+        cameras[activeCamera]->updateCameraPos(CameraDirection::DOWN, delta);
+    }
+    if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
+        activeCamera += activeCamera == 0 ? 1 : -1;
+    }
+    if(Keyboard::key(GLFW_KEY_UP)) {
+        cameras[activeCamera]->updateCameraDirection(0, 1.0f);
+    }
+    if(Keyboard::key(GLFW_KEY_DOWN)) {
+        cameras[activeCamera]->updateCameraDirection(0, -1.0f);
+    }
+    if(Keyboard::key(GLFW_KEY_LEFT)) {
+        cameras[activeCamera]->updateCameraDirection(-1.0f, 0);
+    }
+    if(Keyboard::key(GLFW_KEY_RIGHT)) {
+        cameras[activeCamera]->updateCameraDirection(1.0f, 0);
+    }
+    if(Keyboard::keyWentDown(GLFW_KEY_L)) {
+        needSpotLight = !needSpotLight;
+    }
     
-    return ret;
+    if(Keyboard::keyWentDown(GLFW_KEY_F)) {
+        addSphere();
+    }
+    
+    
+//    double dx = Mouse::getDX(), dy = Mouse::getDY();
+//    if(dx != 0 && dy != 0) {
+//        cameras[activeCamera].updateCameraDirection(dx/10, dy/10);
+//    }
+
+//    double scrollDy = Mouse::getScrollDY();
+//    if(scrollDy != 0) {
+//        std::cout << scrollDy << std::endl;
+//        camera.updateCameraZoom(scrollDy);
+//    }
+    
+    mainJ.update();
+
+//    float lx = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_STICK_X);
+//    float ly = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_STICK_Y);
+//    if(std::abs(lx) > 0.05f) {
+//        transform = glm::translate(transform, glm::vec3(lx/10, 0.0f, 0.0f));
+//    }
+//    if(std::abs(ly) > 0.05f) {
+//        transform = glm::translate(transform, glm::vec3(0.0f, ly/10, 0.0f));
+//    }
+//    float rt = mainJ.axesState(GLFW_JOYSTICK_AXES_RIGHT_TRIGGER) / 2 + 0.5;
+//    if(std::abs(rt) > 0.05f) {
+//        transform = glm::scale(transform, glm::vec3(1 + rt/10, 1 + rt/10, 0.0f));
+//    }
+//    float lt = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_TRIGGER) / 2 + 0.5;
+//    if(std::abs(lt) > 0.05f) {
+//        transform = glm::scale(transform, glm::vec3(1 + lt/10, 1 + lt/10, 0.0f));
+//    }
+//    std::cout << lx << ":" << ly << std::endl;
 }
+
