@@ -34,11 +34,6 @@ glm::mat4 transform = glm::mat4(1.0f);
 
 Joystick mainJ(0);
 
-Camera *cameras[] = {
-    &Camera::defaultCamera,
-    new Camera(glm::vec3(0.0f, 0.0f, 7.0f)),
-};
-
 SphereArray spheres;
 LampArray lamps;
 
@@ -54,9 +49,8 @@ int main()
     // ------------------------------
     Scene scene(3, 3, "opengl_tutorial", 800, 600);
     scene.init();
-    for(auto camera : cameras) {
-        scene.cameras.push_back(camera);
-    }
+    scene.cameras.push_back(&Camera::defaultCamera);
+    scene.cameras.emplace_back(new Camera(glm::vec3(0.0f, 0.0f, 7.0f)));
     scene.activeCamera = 0;
     
     glfwInit();
@@ -124,14 +118,14 @@ int main()
     spheres.init();
     lamps.init();
     
-    Camera::defaultCamera.updateCameraPos(CameraDirection::BACKWARD, 5.0f);
+    scene.getActiveCamera()->updateCameraPos(CameraDirection::BACKWARD, 5.0f);
     scene.dirLight = std::make_shared<DirLight>(glm::vec3(-0.2, -1.0f, -0.3f),
                                                 glm::vec3(1.0f), glm::vec3(0.4f),
                                                 glm::vec3(0.75f));
     
     SpotLight aSpotLight({
-        cameras[activeCamera]->cameraPos,
-        cameras[activeCamera]->cameraFront,
+        scene.getActiveCamera()->cameraPos,
+        scene.getActiveCamera()->cameraFront,
         1.0f,
         0.07f,
         0.005f,
@@ -178,16 +172,16 @@ int main()
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
         
-        view = cameras[activeCamera]->getViewMatrix();
-        projection = glm::perspective(cameras[activeCamera]->getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.01f, 1000.0f);
+        view = scene.getActiveCamera()->getViewMatrix();
+        projection = glm::perspective(scene.getActiveCamera()->getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.01f, 1000.0f);
         // render container
         
         // Dir Lights
         scene.dirLight->direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(scene.dirLight->direction,1.0f));
         
         // Spot Lights
-        spotLight->position = cameras[activeCamera]->cameraPos;
-        spotLight->direction = cameras[activeCamera]->cameraFront;
+        spotLight->position = scene.getActiveCamera()->cameraPos;
+        spotLight->direction = scene.getActiveCamera()->cameraFront;
 
 //        gun.render(ourShader);
         
@@ -195,13 +189,13 @@ int main()
             instanceShader.activate();
             
             // Set view position
-            instanceShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
+            instanceShader.setFloat3("viewPos", scene.getActiveCamera()->cameraPos);
             scene.render(instanceShader);
             
             // Render Sphere
             std::stack<int> toRemoveIndx;
             for(int i = 0;i < spheres.instances.size();i ++) {
-                if(glm::length(cameras[activeCamera]->cameraPos - spheres.instances[i].pos) > 100.f) {
+                if(glm::length(scene.getActiveCamera()->cameraPos - spheres.instances[i].pos) > 100.f) {
                     toRemoveIndx.push(i);
                 }
             }
@@ -218,7 +212,7 @@ int main()
         { // ourShader shader render
             ourShader.activate();
             // Set view position
-            ourShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
+            ourShader.setFloat3("viewPos", scene.getActiveCamera()->cameraPos);
             scene.render(ourShader);
             model.render(ourShader, delta, true, true, &box);
         }
@@ -266,44 +260,7 @@ void addSphere() {
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 void processInput(float delta)
-{
-//    if(Keyboard::keyWentUp(GLFW_KEY_ESCAPE)) {
-//        screen.setShouldClose(true);
-//    }
-    if(Keyboard::key(GLFW_KEY_W)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::FORWARD, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_S)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::BACKWARD, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_A)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::LEFT, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_D)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::RIGHT, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_E)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::UP, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_X)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::DOWN, delta);
-    }
-    if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
-        activeCamera += activeCamera == 0 ? 1 : -1;
-    }
-    if(Keyboard::key(GLFW_KEY_UP)) {
-        cameras[activeCamera]->updateCameraDirection(0, 1.0f);
-    }
-    if(Keyboard::key(GLFW_KEY_DOWN)) {
-        cameras[activeCamera]->updateCameraDirection(0, -1.0f);
-    }
-    if(Keyboard::key(GLFW_KEY_LEFT)) {
-        cameras[activeCamera]->updateCameraDirection(-1.0f, 0);
-    }
-    if(Keyboard::key(GLFW_KEY_RIGHT)) {
-        cameras[activeCamera]->updateCameraDirection(1.0f, 0);
-    }
-    
+{    
     if(Keyboard::keyWentDown(GLFW_KEY_L)) {
         needSpotLight = !needSpotLight;
     }

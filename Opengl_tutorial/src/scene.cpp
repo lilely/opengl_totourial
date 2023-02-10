@@ -149,6 +149,10 @@ void Scene::processInput(float delta)
         needSpotLight = !needSpotLight;
     }
     
+    if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
+        activeCamera = (activeCamera + 1) % cameras.size();
+    }
+    
 //    if(Keyboard::keyWentDown(GLFW_KEY_L)) {
 //        should = !needSpotLight;
 //    }
