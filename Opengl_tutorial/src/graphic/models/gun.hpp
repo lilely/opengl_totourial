@@ -11,27 +11,27 @@
 
 #include "../model.hpp"
 #include "../../io/camera.hpp"
+#include "../../scene.hpp"
 
 class Gun : public Model
 {
 public:
     Gun() : Model(glm::vec3(0.0f), glm::vec3(0.05f), false) {}
     
-    void render(Shader &shader, float dt) {
+    void render(Shader &shader, float dt, Scene &scene) {
         rb.update(dt);
         glm::mat4 model = glm::mat4(1.0f);
         
-        rb.pos += Camera::defaultCamera.cameraPos + glm::vec3(Camera::defaultCamera.cameraFront * 2.5f) + glm::vec3(Camera::defaultCamera.cameraUp * -0.8f);
+        rb.pos += scene.getActiveCamera()->cameraPos + glm::vec3(scene.getActiveCamera()->cameraFront * 2.5f) + glm::vec3(scene.getActiveCamera()->cameraUp * -0.8f);
         model = glm::translate(model,rb.pos);
         model = glm::scale(model,size);
-    //        model = glm::rotate(model,(float)glfwGetTime() * glm::radians(-55.0f), glm::vec3(0.5f));
         
-        float theta = acos(glm::dot(Camera::defaultCamera.worldUp, Camera::defaultCamera.cameraFront) / glm::length(Camera::defaultCamera.cameraUp) / glm::length(Camera::defaultCamera.cameraFront));
-        model = glm::rotate(model, atanf(1) * 2 - theta, Camera::defaultCamera.cameraRight);
+        float theta = acos(glm::dot(scene.getActiveCamera()->worldUp, scene.getActiveCamera()->cameraFront) / glm::length(scene.getActiveCamera()->cameraUp) / glm::length(scene.getActiveCamera()->cameraFront));
+        model = glm::rotate(model, atanf(1) * 2 - theta, scene.getActiveCamera()->cameraRight);
         
-        glm::vec2 front2d = glm::vec2(Camera::defaultCamera.cameraFront.x, Camera::defaultCamera.cameraFront.z);
+        glm::vec2 front2d = glm::vec2(scene.getActiveCamera()->cameraFront.x, scene.getActiveCamera()->cameraFront.z);
         theta = acos(glm::dot(glm::vec2(1.0f, 0.0f), front2d) / glm::length(front2d));
-        model = glm::rotate(model, Camera::defaultCamera.cameraFront.z < 0 ? theta : -theta, Camera::defaultCamera.worldUp);
+        model = glm::rotate(model, scene.getActiveCamera()->cameraFront.z < 0 ? theta : -theta, scene.getActiveCamera()->worldUp);
         
         shader.setMat4("model", model);
         Model::render(shader, false);

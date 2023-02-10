@@ -146,7 +146,7 @@ void Scene::processInput(float delta)
     }
     
     if(Keyboard::keyWentDown(GLFW_KEY_L)) {
-        needSpotLight = !needSpotLight;
+        States::toggleIndex(&activeSpotLights, (unsigned int)0);
     }
     
     if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
@@ -225,20 +225,15 @@ void Scene::render(Shader shader, bool applyLighting) {
         shader.setInt("noPointLights", noOfActiveLights);
 
         // spot lights
-        if(needSpotLight) {
-            unsigned int noOfSpotLights = static_cast<unsigned int>(spotLights.size());
-            noOfActiveLights = 0;
-            for(unsigned int i = 0;i < noOfSpotLights;i++) {
-                if(States::isIndexActive(&activeSpotLights, i)) {
-                    spotLights[i]->render(shader, i);
-                    noOfActiveLights++;
-                }
+        unsigned int noOfSpotLights = static_cast<unsigned int>(spotLights.size());
+        noOfActiveLights = 0;
+        for(unsigned int i = 0;i < noOfSpotLights;i++) {
+            if(States::isIndexActive(&activeSpotLights, i)) {
+                spotLights[i]->render(shader, i);
+                noOfActiveLights++;
             }
-            
-            shader.setInt("noSpotLights", noOfActiveLights);
-        } else {
-            shader.setInt("noSpotLights", 0);
         }
+        shader.setInt("noSpotLights", noOfActiveLights);
         
         dirLight->render(shader);
     }
@@ -246,7 +241,7 @@ void Scene::render(Shader shader, bool applyLighting) {
 
 /* clean up methods */
 void Scene::cleanup() {
-    
+    glfwTerminate();
 }
 
 /* accessors */

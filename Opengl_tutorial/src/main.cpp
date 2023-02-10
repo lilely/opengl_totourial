@@ -39,7 +39,7 @@ LampArray lamps;
 
 bool needSpotLight = false;
 
-Screen screen;
+Scene scene(3, 3, "opengl_tutorial", 800, 600);
 
 int activeCamera = 0;
 
@@ -47,7 +47,6 @@ int main()
 {
     // glfw: initialize and configure
     // ------------------------------
-    Scene scene(3, 3, "opengl_tutorial", 800, 600);
     scene.init();
     scene.cameras.push_back(&Camera::defaultCamera);
     scene.cameras.emplace_back(new Camera(glm::vec3(0.0f, 0.0f, 7.0f)));
@@ -162,7 +161,6 @@ int main()
         processInput(delta);
         // render
         // ------
-        screen.update();
         scene.update();
         // bind textures on corresponding texture units
     
@@ -190,7 +188,6 @@ int main()
             
             // Set view position
             instanceShader.setFloat3("viewPos", scene.getActiveCamera()->cameraPos);
-            scene.render(instanceShader);
             
             // Render Sphere
             std::stack<int> toRemoveIndx;
@@ -204,6 +201,7 @@ int main()
             }
             
             if(spheres.instances.size() > 0) {
+                scene.render(instanceShader);
                 spheres.render(instanceShader, delta, &box);
             }
         }
@@ -217,15 +215,11 @@ int main()
             model.render(ourShader, delta, true, true, &box);
         }
 
-        lampShader.activate();
-        lampShader.setMat4("view", view);
-        lampShader.setMat4("projection", projection);
+        scene.render(lampShader, false);
         lamps.render(lampShader, delta, &box);
         
         if(box.offsetVecs.size() > 0) {
-            boxShader.activate();
-            boxShader.setMat4("view", view);
-            boxShader.setMat4("projection", projection);
+            scene.render(boxShader, false);
             box.render(boxShader, delta);
         }
         
@@ -241,19 +235,20 @@ int main()
     lamps.cleanup();
     box.cleanup();
     spheres.cleanup();
-
+    
+    scene.cleanup();
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    
     return 0;
     
 }
 
 void addSphere() {
     RigidBody rb;
-    rb.pos = Camera::defaultCamera.cameraPos;
+    rb.pos = scene.getActiveCamera()->cameraPos;
     rb.applyAcceleration(Enviroment::gravitationalAcceleration);
-    rb.applyImpulse(Camera::defaultCamera.cameraFront, 50.0f);
+    rb.applyImpulse(scene.getActiveCamera()->cameraFront, 50.0f);
     spheres.instances.emplace_back(rb);
 }
 
@@ -269,36 +264,5 @@ void processInput(float delta)
         addSphere();
     }
     
-    
-//    double dx = Mouse::getDX(), dy = Mouse::getDY();
-//    if(dx != 0 && dy != 0) {
-//        cameras[activeCamera].updateCameraDirection(dx/10, dy/10);
-//    }
-
-//    double scrollDy = Mouse::getScrollDY();
-//    if(scrollDy != 0) {
-//        std::cout << scrollDy << std::endl;
-//        camera.updateCameraZoom(scrollDy);
-//    }
-    
-    mainJ.update();
-
-//    float lx = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_STICK_X);
-//    float ly = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_STICK_Y);
-//    if(std::abs(lx) > 0.05f) {
-//        transform = glm::translate(transform, glm::vec3(lx/10, 0.0f, 0.0f));
-//    }
-//    if(std::abs(ly) > 0.05f) {
-//        transform = glm::translate(transform, glm::vec3(0.0f, ly/10, 0.0f));
-//    }
-//    float rt = mainJ.axesState(GLFW_JOYSTICK_AXES_RIGHT_TRIGGER) / 2 + 0.5;
-//    if(std::abs(rt) > 0.05f) {
-//        transform = glm::scale(transform, glm::vec3(1 + rt/10, 1 + rt/10, 0.0f));
-//    }
-//    float lt = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_TRIGGER) / 2 + 0.5;
-//    if(std::abs(lt) > 0.05f) {
-//        transform = glm::scale(transform, glm::vec3(1 + lt/10, 1 + lt/10, 0.0f));
-//    }
-//    std::cout << lx << ":" << ly << std::endl;
 }
 
