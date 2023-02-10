@@ -15,7 +15,7 @@
 #include "graphic/shader.hpp"
 #include "io/camera.hpp"
 #include "graphic/lights/light.hpp"
-
+#include <memory>
 #include <glm/glm.hpp>
 
 
@@ -62,13 +62,13 @@ public:
     
     /* lights */
     
-    std::vector<PointLight*> pointLights;
+    std::vector<std::shared_ptr<PointLight>> pointLights;
     unsigned int activePointLights;
     
-    std::vector<SpotLight*> spotLights;
+    std::vector<std::shared_ptr<SpotLight>> spotLights;
     unsigned int activeSpotLights;
     
-    DirLight* dirLight;
+    std::shared_ptr<DirLight> dirLight;
     bool dirLightActive;
     
     /* Cameras */
@@ -93,6 +93,8 @@ protected:
     // GLFW info
     int glfwVersionMajor;
     int glfwVersionMinor;
+    
+    bool needSpotLight;
     
 };
 

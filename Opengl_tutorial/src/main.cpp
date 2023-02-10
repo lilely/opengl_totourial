@@ -21,6 +21,8 @@
 #include "graphic/models/sphere.hpp"
 #include "physics/enviroment.hpp"
 #include "graphic/models/box.hpp"
+#include "scene.hpp"
+#include "algorithm/states.hpp"
 
 void processInput(float delta);
 
@@ -50,30 +52,38 @@ int main()
 {
     // glfw: initialize and configure
     // ------------------------------
+    Scene scene(3, 3, "opengl_tutorial", 800, 600);
+    scene.init();
+    for(auto camera : cameras) {
+        scene.cameras.push_back(camera);
+    }
+    scene.activeCamera = 0;
+    
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+//    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+//    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
 
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+//    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
     float lastTime = glfwGetTime();
     // glfw window creation
     // --------------------
-    if(!screen.init()) {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
+//    if(!screen.init()) {
+//        std::cout << "Failed to create GLFW window" << std::endl;
+//        glfwTerminate();
+//        return -1;
+//    }
     // glad: load all OpenGL function pointers
     // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-    screen.setParamters();
+//    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+//    {
+//        std::cout << "Failed to initialize GLAD" << std::endl;
+//        return -1;
+//    }
+//    screen.setParamters();
     // build and compile our shader zprogram
     // ------------------------------------
     Shader ourShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object_texture.fs.glsl");
@@ -94,7 +104,10 @@ int main()
     };
     
     for (unsigned int i = 0; i < 4; i++) {
-        lamps.pointLights.emplace_back(pointLightPositions[i], 1.0f, 0.07f, 0.05f, glm::vec3(0.5f),glm::vec3(0.5f),glm::vec3(0.5f));
+        std::shared_ptr<PointLight> pl = std::make_shared<PointLight>(pointLightPositions[i], 1.0f, 0.07f, 0.05f, glm::vec3(0.5f),glm::vec3(0.5f),glm::vec3(0.5f));
+        lamps.pointLights.push_back(pl);
+        scene.pointLights.push_back(pl);
+        States::activateIndex(&scene.activePointLights, i);
     }
     
     Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
@@ -103,6 +116,7 @@ int main()
     
     Box box;
     box.init();
+    
 //
 //    Gun gun;
 //    gun.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
@@ -111,13 +125,11 @@ int main()
     lamps.init();
     
     Camera::defaultCamera.updateCameraPos(CameraDirection::BACKWARD, 5.0f);
-
-    DirLight dirLight({
-        glm::vec3(-0.2, -1.0f, -0.3f),
-        glm::vec3(1.0f), glm::vec3(0.4f),
-        glm::vec3(0.75f)});
+    scene.dirLight = std::make_shared<DirLight>(glm::vec3(-0.2, -1.0f, -0.3f),
+                                                glm::vec3(1.0f), glm::vec3(0.4f),
+                                                glm::vec3(0.75f));
     
-    SpotLight spotLight({
+    SpotLight aSpotLight({
         cameras[activeCamera]->cameraPos,
         cameras[activeCamera]->cameraFront,
         1.0f,
@@ -129,6 +141,11 @@ int main()
         glm::vec3(1.0f),
         glm::vec3(1.0f)
     });
+    
+    auto spotLight = std::make_shared<SpotLight>(aSpotLight);
+    scene.spotLights.push_back(spotLight);
+    States::activateIndex(&scene.activeSpotLights, (unsigned int)0);
+    
     if(mainJ.isPresent()) {
         mainJ.update();
         std::cout << "joystick is preseted!" << std::endl;
@@ -136,7 +153,7 @@ int main()
 
     // render loop
     // -----------
-    while (!screen.shouldClose())
+    while (!scene.shouldClose())
     {
         float currentTime = glfwGetTime();
         float delta = currentTime - lastTime;
@@ -147,15 +164,16 @@ int main()
         box.sizeVecs.clear();
         // input
         // -----
+        scene.processInput(delta);
         processInput(delta);
         // render
         // ------
         screen.update();
+        scene.update();
         // bind textures on corresponding texture units
     
 //        ourShader.activate();
 //        ourShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
-        
         
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
@@ -165,12 +183,12 @@ int main()
         // render container
         
         // Dir Lights
-        dirLight.direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(dirLight.direction,1.0f));
+        scene.dirLight->direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(scene.dirLight->direction,1.0f));
         
         // Spot Lights
-        spotLight.position = cameras[activeCamera]->cameraPos;
-        spotLight.direction = cameras[activeCamera]->cameraFront;
-        
+        spotLight->position = cameras[activeCamera]->cameraPos;
+        spotLight->direction = cameras[activeCamera]->cameraFront;
+
 //        gun.render(ourShader);
         
         { // instance shader render
@@ -178,23 +196,7 @@ int main()
             
             // Set view position
             instanceShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
-            
-            // Dir Lights
-            dirLight.render(instanceShader);
-            
-            // Spot Lights
-            spotLight.render(instanceShader, 0);
-            if (needSpotLight) {
-                instanceShader.setInt("noSpotLights", 1);
-            } else {
-                instanceShader.setInt("noSpotLights", 0);
-            }
-            
-            // Point Lights
-            for(int i = 0; i < lamps.pointLights.size();i++) {
-                lamps.pointLights[i].render(instanceShader, i);
-            }
-            instanceShader.setInt("noPointLights", 4);
+            scene.render(instanceShader);
             
             // Render Sphere
             std::stack<int> toRemoveIndx;
@@ -208,8 +210,6 @@ int main()
             }
             
             if(spheres.instances.size() > 0) {
-                instanceShader.setMat4("view", view);
-                instanceShader.setMat4("projection", projection);
                 spheres.render(instanceShader, delta, &box);
             }
         }
@@ -217,28 +217,9 @@ int main()
         
         { // ourShader shader render
             ourShader.activate();
-            
             // Set view position
             ourShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
-            
-            // Dir Lights
-            dirLight.render(ourShader);
-            
-            // Spot Lights
-            spotLight.render(ourShader, 0);
-            if (needSpotLight) {
-                ourShader.setInt("noSpotLights", 1);
-            } else {
-                ourShader.setInt("noSpotLights", 0);
-            }
-            // Point Lights
-            for(int i = 0; i < lamps.pointLights.size();i++) {
-                lamps.pointLights[i].render(ourShader, i);
-            }
-            ourShader.setInt("noPointLights", 4);
-            
-            ourShader.setMat4("view", view);
-            ourShader.setMat4("projection", projection);
+            scene.render(ourShader);
             model.render(ourShader, delta, true, true, &box);
         }
 
@@ -253,8 +234,8 @@ int main()
             boxShader.setMat4("projection", projection);
             box.render(boxShader, delta);
         }
-
-        screen.newFrame();
+        
+        scene.newFrame();
     }
 
 
@@ -286,9 +267,9 @@ void addSphere() {
 // ---------------------------------------------------------------------------------------------------------
 void processInput(float delta)
 {
-    if(Keyboard::keyWentUp(GLFW_KEY_ESCAPE)) {
-        screen.setShouldClose(true);
-    }
+//    if(Keyboard::keyWentUp(GLFW_KEY_ESCAPE)) {
+//        screen.setShouldClose(true);
+//    }
     if(Keyboard::key(GLFW_KEY_W)) {
         cameras[activeCamera]->updateCameraPos(CameraDirection::FORWARD, delta);
     }
@@ -322,6 +303,7 @@ void processInput(float delta)
     if(Keyboard::key(GLFW_KEY_RIGHT)) {
         cameras[activeCamera]->updateCameraDirection(1.0f, 0);
     }
+    
     if(Keyboard::keyWentDown(GLFW_KEY_L)) {
         needSpotLight = !needSpotLight;
     }

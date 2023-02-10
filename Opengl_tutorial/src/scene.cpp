@@ -28,7 +28,8 @@ void Scene::frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
 Scene::Scene(int glfwVersionMajor, int glfwVersionMinor, const char *title, unsigned int scrWidth, unsigned int scrHeight) : glfwVersionMajor(glfwVersionMajor), glfwVersionMinor(glfwVersionMinor), title(title), activeCamera(-1) {
     Scene::SCR_WIDTH = scrWidth;
     Scene::SCR_HEIGHT = scrHeight;
-    
+    activeSpotLights = 0;
+    activePointLights = 0;
     setWindowColor(0.1f, 0.15f, 0.15f, 1.0f);
 }
 
@@ -144,6 +145,10 @@ void Scene::processInput(float delta)
         setShouldClose(true);
     }
     
+    if(Keyboard::keyWentDown(GLFW_KEY_L)) {
+        needSpotLight = !needSpotLight;
+    }
+    
 //    if(Keyboard::keyWentDown(GLFW_KEY_L)) {
 //        should = !needSpotLight;
 //    }
@@ -207,23 +212,29 @@ void Scene::render(Shader shader, bool applyLighting) {
         unsigned int noOfPointLights = static_cast<unsigned int>(pointLights.size());
         unsigned int noOfActiveLights = 0;
         for(unsigned int i = 0;i < noOfPointLights;i ++) {
-            if(States::isActive<unsigned int>(&activePointLights,i)) {
+            if(States::isIndexActive<unsigned int>(&activePointLights,i)) {
                 pointLights[i]->render(shader, noOfActiveLights);
                 noOfActiveLights++;
             }
         }
-        shader.setInt("noPointLights", noOfActiveLights);
         
+        shader.setInt("noPointLights", noOfActiveLights);
+
         // spot lights
-        unsigned int noOfSpotLights = static_cast<unsigned int>(spotLights.size());
-        noOfActiveLights = 0;
-        for(unsigned int i = 0;i < noOfSpotLights;i++) {
-            if(States::isActive(&activeSpotLights, i)) {
-                spotLights[i]->render(shader, i);
-                noOfActiveLights++;
+        if(needSpotLight) {
+            unsigned int noOfSpotLights = static_cast<unsigned int>(spotLights.size());
+            noOfActiveLights = 0;
+            for(unsigned int i = 0;i < noOfSpotLights;i++) {
+                if(States::isIndexActive(&activeSpotLights, i)) {
+                    spotLights[i]->render(shader, i);
+                    noOfActiveLights++;
+                }
             }
+            
+            shader.setInt("noSpotLights", noOfActiveLights);
+        } else {
+            shader.setInt("noSpotLights", 0);
         }
-        shader.setInt("noSpotLights", noOfActiveLights);
         
         dirLight->render(shader);
     }
@@ -250,6 +261,9 @@ void Scene::setShouldClose(bool shouldClose) {
 }
 
 void Scene::setWindowColor(float r, float g, float b, float a) {
-    setWindowColor(r, g, b, a);
+    bg[0] = r;
+    bg[1] = g;
+    bg[2] = b;
+    bg[3] = a;
 }
 

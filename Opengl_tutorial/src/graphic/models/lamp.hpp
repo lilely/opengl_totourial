@@ -13,6 +13,7 @@
 #include "../lights/light.hpp"
 #include "modelarray.hpp"
 #include "box.hpp"
+#include <memory>
 
 class Lamp : public Cube {
 public:
@@ -42,7 +43,7 @@ public:
 
 class LampArray : public ModelArray<Lamp> {
 public:
-    std::vector<PointLight> pointLights;
+    std::vector<std::shared_ptr<PointLight>> pointLights;
     
     void init() {
         model = Lamp(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(0.0f), 1.0f, 0.07f, 0.005f, glm::vec3(0.25f));
@@ -52,8 +53,8 @@ public:
     void render(Shader shader, float dt, Box *box = nullptr) {
         positions.clear();
         sizes.clear();
-        for(auto &light : pointLights) {
-            positions.push_back(light.position);
+        for(auto light : pointLights) {
+            positions.push_back(light->position);
             sizes.push_back(model.size);
         }
         ModelArray::render(shader, dt, box, false);

@@ -55,6 +55,8 @@ typedef struct DirLight {
     glm::vec3 diffuse;
     glm::vec3 specular;
     
+    DirLight(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular);
+    
     void render(Shader shader);
 } DirLight;
 

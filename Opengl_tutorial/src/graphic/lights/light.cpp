@@ -44,6 +44,8 @@ void SpotLight::render(Shader shader, int index) {
     shader.setFloat4(name + ".specular", glm::vec4(specular, 1.0f));
 }
 
+DirLight::DirLight(glm::vec3 direction, glm::vec3 ambient, glm::vec3 diffuse, glm::vec3 specular) : direction(direction), ambient(ambient), diffuse(diffuse), specular(specular) {}
+
 void DirLight::render(Shader shader) {
     std::string name = "dirLight";
 
