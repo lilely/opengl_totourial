@@ -118,7 +118,7 @@ public:
         ArrayObject::clear();
     }
     
-    void addInstance(BoudingRegion &rb, glm::vec3 pos, glm::vec3 size) {
+    void addInstance(BoundingRegion &rb, glm::vec3 pos, glm::vec3 size) {
         offsetVecs.push_back(rb.caculateCenter() * size + pos);
         sizeVecs.push_back(rb.caculateDimensions() * size);
     }

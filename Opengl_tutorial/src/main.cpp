@@ -177,9 +177,11 @@ int main()
         // Dir Lights
         scene.dirLight->direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(scene.dirLight->direction,1.0f));
         
-        // Spot Lights
-        spotLight->position = scene.getActiveCamera()->cameraPos;
-        spotLight->direction = scene.getActiveCamera()->cameraFront;
+        if(States::isIndexActive(&scene.activeSpotLights, (unsigned int)0)) {
+            // Spot Lights
+            spotLight->position = scene.getActiveCamera()->cameraPos;
+            spotLight->direction = scene.getActiveCamera()->cameraFront;
+        }
 
 //        gun.render(ourShader);
         
@@ -255,11 +257,7 @@ void addSphere() {
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 void processInput(float delta)
-{    
-    if(Keyboard::keyWentDown(GLFW_KEY_L)) {
-        needSpotLight = !needSpotLight;
-    }
-    
+{
     if(Keyboard::keyWentDown(GLFW_KEY_F)) {
         addSphere();
     }

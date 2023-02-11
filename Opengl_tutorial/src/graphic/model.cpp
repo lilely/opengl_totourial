@@ -43,7 +43,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     std::vector<unsigned int> indices;
     std::vector<Texture> textures;
     
-    BoudingRegion boundRange(boundType);
+    BoundingRegion boundRange(boundType);
     glm::vec3 max_bound(-float(~0));
     glm::vec3 min_bound(float(~0));
     // vertices

@@ -8,21 +8,21 @@
 
 #include "bounds.hpp"
 
-BoudingRegion::BoudingRegion(BoudingTypes type) : type(type){}
+BoundingRegion::BoundingRegion(BoudingTypes type) : type(type){}
 
-BoudingRegion::BoudingRegion(glm::vec3 center, float radius) : type(BoudingTypes::SPHERE), center(center) , radius(radius) {}
+BoundingRegion::BoundingRegion(glm::vec3 center, float radius) : type(BoudingTypes::SPHERE), center(center) , radius(radius) {}
 
-BoudingRegion::BoudingRegion(glm::vec3 min, glm::vec3 max) : type(BoudingTypes::AABB), min(min), max(max) {}
+BoundingRegion::BoundingRegion(glm::vec3 min, glm::vec3 max) : type(BoudingTypes::AABB), min(min), max(max) {}
 
-glm::vec3 BoudingRegion::caculateCenter() {
+glm::vec3 BoundingRegion::caculateCenter() {
     return type == BoudingTypes::AABB ? (max + min) / 2.0f : center;
 }
 
-glm::vec3 BoudingRegion::caculateDimensions() {
+glm::vec3 BoundingRegion::caculateDimensions() {
     return type == BoudingTypes::AABB ? (max - min) : glm::vec3(radius * 2);
 }
 
-bool BoudingRegion::containsPoint(glm::vec3 point) {
+bool BoundingRegion::containsPoint(glm::vec3 point) {
     if(type == BoudingTypes::AABB) {
         return (point.x > min.x && point.x < max.x) &&
         (point.y > min.y && point.y < max.y) &&
@@ -32,7 +32,7 @@ bool BoudingRegion::containsPoint(glm::vec3 point) {
     }
 }
 
-bool BoudingRegion::containsRegion(BoudingRegion br) {
+bool BoundingRegion::containsRegion(BoundingRegion br) {
     if(br.type == BoudingTypes::AABB) {
         return containsPoint(br.min) && containsPoint(br.max);
     } else if(type == BoudingTypes::SPHERE && br.type == BoudingTypes::SPHERE) {
@@ -56,7 +56,7 @@ bool BoudingRegion::containsRegion(BoudingRegion br) {
     }
 }
 
-bool BoudingRegion::intersectsWith(BoudingRegion br) {
+bool BoundingRegion::intersectsWith(BoundingRegion br) {
     
     if(type == BoudingTypes::AABB && br.type == BoudingTypes::AABB) {
         // both boxes
@@ -90,5 +90,16 @@ bool BoudingRegion::intersectsWith(BoudingRegion br) {
     } else {
         // this is a box, br is a shpere
         return br.intersectsWith(*this);
+    }
+}
+
+bool BoundingRegion::operator==(BoundingRegion value) {
+    if(type != value.type) {
+        return false;
+    }
+    if(type == BoudingTypes::AABB) {
+        return min == value.min && max == value.max;
+    } else {
+        return radius == value.radius && center == value.center;
     }
 }

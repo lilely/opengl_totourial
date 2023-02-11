@@ -32,7 +32,7 @@ typedef struct Vertex {
 
 class Mesh {
 public:
-    BoudingRegion boundRange;
+    BoundingRegion boundRange;
     
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -41,9 +41,9 @@ public:
     
     std::vector<Texture> textures;
     
-    Mesh(BoudingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures = {});
+    Mesh(BoundingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures = {});
     
-    Mesh(BoudingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, aiColor4D diffuse, aiColor4D specular);
+    Mesh(BoundingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, aiColor4D diffuse, aiColor4D specular);
     
     void render(Shader &shader,Box *box = nullptr, glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f), bool doRender = true);
     

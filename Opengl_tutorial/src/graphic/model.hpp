@@ -21,10 +21,10 @@
 
 #include <vector>
 
+#include "../algorithm/bounds.hpp"
 #include "material.hpp"
 #include "../physics/rigidbody.hpp"
 #include "mesh.hpp"
-#include "../algorithm/bounds.hpp"
 #include "./models/box.hpp"
 
 class Model {

@@ -31,7 +31,7 @@ public:
     
     void init() {
         int noVertices = 36;
-        BoudingRegion boundingRange(glm::vec3(-0.5f), glm::vec3(0.5f));
+        BoundingRegion boundingRange(glm::vec3(-0.5f), glm::vec3(0.5f));
         float vertices[] = {
             // position                 normal              texcoord
             -0.5f, -0.5f, -0.5f,     0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
