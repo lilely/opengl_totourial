@@ -34,12 +34,26 @@ class Mesh {
 public:
     BoundingRegion boundRange;
     
+    bool noTex;
+    
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     
     ArrayObject VAO;
     
     std::vector<Texture> textures;
+    
+    // default constructor
+    Mesh();
+ 
+    // initialize as textured object
+    Mesh(BoundingRegion br, std::vector<Texture> textures = {});
+ 
+    // initialize as material object
+    Mesh(BoundingRegion br, aiColor4D diff, aiColor4D spec);
+ 
+    // load vertex and index data
+    void loadData(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
     
     Mesh(BoundingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures = {});
     
@@ -52,8 +66,6 @@ public:
 private:
     
     unsigned int VBO, EBO;
-    
-    bool hasTexture;
     
     aiColor4D material_diffuse;
     

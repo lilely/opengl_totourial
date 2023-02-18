@@ -8,6 +8,7 @@
 
 #include "model.hpp"
 #include "../physics/enviroment.hpp"
+#include "../algorithm/states.hpp"
 
 Model::Model(glm::vec3 pos, glm::vec3 size, bool hasTex, BoudingTypes boundType) : boundType(boundType), size(size), hasTex(hasTex) {
     rb.pos = pos;
@@ -106,32 +107,63 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
     }
     
     // process material
-    if(mesh->mMaterialIndex >= 0) {
-        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
-        
+//    if(mesh->mMaterialIndex >= 0) {
+//        aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
+//
+//        if(!hasTex) {
+//            aiColor4D diffuse(1.0f);
+//            aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diffuse);
+//
+//            aiColor4D specular(1.0f);
+//            aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specular);
+//
+//            return Mesh(boundRange, vertices, indices, diffuse, specular);
+//        }
+//
+//        // diffuse maps
+//        std::vector<Texture> diffuseMaps = loadTextures(material, aiTextureType_DIFFUSE);
+//        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+//
+//        // specular maps
+//        std::vector<Texture> specularMaps = loadTextures(material, aiTextureType_SPECULAR);
+//        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+//
+//        std::vector<Texture> ambientMaps = loadTextures(material, aiTextureType_EMISSIVE);
+//        textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
+//    }
+//
+//    return Mesh(boundRange, vertices, indices, textures);
+    
+    Mesh ret;
+ 
+    // process material
+    if (mesh->mMaterialIndex >= 0) {
+        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+//        if (States::isActive<unsigned char>(&switches, NO_TEX)) {
         if(!hasTex) {
-            aiColor4D diffuse(1.0f);
-            aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diffuse);
-            
-            aiColor4D specular(1.0f);
-            aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &specular);
-            
-            return Mesh(boundRange, vertices, indices, diffuse, specular);
+            // 1. diffuse colors
+            aiColor4D diff(1.0f);
+            aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &diff);
+            // 2. specular colors
+            aiColor4D spec(1.0f);
+            aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &spec);
+ 
+            ret = Mesh(boundRange, diff, spec);
+        } else {
+            // 1. diffuse maps
+            std::vector<Texture> diffuseMaps = loadTextures(material, aiTextureType_DIFFUSE);
+            textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+            // 2. specular maps
+            std::vector<Texture> specularMaps = loadTextures(material, aiTextureType_SPECULAR);
+            textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+ 
+            ret = Mesh(boundRange, textures);
         }
-        
-        // diffuse maps
-        std::vector<Texture> diffuseMaps = loadTextures(material, aiTextureType_DIFFUSE);
-        textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
-        
-        // specular maps
-        std::vector<Texture> specularMaps = loadTextures(material, aiTextureType_SPECULAR);
-        textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
-        
-        std::vector<Texture> ambientMaps = loadTextures(material, aiTextureType_EMISSIVE);
-        textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
     }
     
-    return Mesh(boundRange, vertices, indices, textures);
+ 
+    ret.loadData(vertices, indices);
+    return ret;
 }
 
 std::vector<Texture> Model::loadTextures(aiMaterial *mat, aiTextureType type) {
