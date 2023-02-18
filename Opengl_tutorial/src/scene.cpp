@@ -16,6 +16,18 @@
 unsigned int Scene::SCR_WIDTH = 800;
 unsigned int Scene::SCR_HEIGHT = 600;
 
+std::string Scene::generateId() {
+    for(int i = currentId.length() - 1; i >=0; i--) {
+        if((int)currentId[i] != (int)'z') {
+            currentId[i] = (char)(((int)currentId[i]) + 1);
+            break;
+        } else {
+            currentId[i] = 'a';
+        }
+    }
+    return currentId;
+}
+
 void Scene::frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
@@ -24,8 +36,7 @@ void Scene::frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
     Scene::SCR_HEIGHT = height;
 }
 
-
-Scene::Scene(int glfwVersionMajor, int glfwVersionMinor, const char *title, unsigned int scrWidth, unsigned int scrHeight) : glfwVersionMajor(glfwVersionMajor), glfwVersionMinor(glfwVersionMinor), title(title), activeCamera(-1) {
+Scene::Scene(int glfwVersionMajor, int glfwVersionMinor, const char *title, unsigned int scrWidth, unsigned int scrHeight, std::string currentId) : glfwVersionMajor(glfwVersionMajor), glfwVersionMinor(glfwVersionMinor), title(title), activeCamera(-1), currentId(currentId) {
     Scene::SCR_WIDTH = scrWidth;
     Scene::SCR_HEIGHT = scrHeight;
     activeSpotLights = 0;
@@ -239,8 +250,48 @@ void Scene::render(Shader shader, bool applyLighting) {
     }
 }
 
+void Scene::renderInstance(std::string modelId, Shader shader, float dt) {
+    models[modelId]->render(shader, dt, this);
+}
+
+void Scene::registerModel(Model *model) {
+    models[model->id] = model;
+}
+
+std::string Scene::generateInstance(std::string modelId, glm::vec3 size, float mass, glm::vec3 pos) {
+    unsigned int idx = models[modelId]->generateInstance(pos, mass, size);
+    if(idx != -1) {
+        std::string id = generateId();
+        models[modelId]->instances[idx].instanceId = id;
+        instances[id] = std::pair<std::string, int>(modelId, idx);
+        return id;
+    }
+    return "";
+}
+
+void Scene::initInstances() {
+    for(auto & pair : models) {
+        pair.second->initInstances();
+    }
+}
+
+void Scene::loadModels() {
+    
+}
+
+void Scene::removeInstance(std::string instanceId) {
+    std::string targetModelId = instances[instanceId].first;
+    unsigned int targetIdx = instances[instanceId].second;
+    
+    models[targetModelId]->removeInstance(targetIdx);
+    instances.erase(instanceId);
+}
+
 /* clean up methods */
 void Scene::cleanup() {
+    for(auto &pair : models) {
+        pair.second->cleanup();
+    }
     glfwTerminate();
 }
 

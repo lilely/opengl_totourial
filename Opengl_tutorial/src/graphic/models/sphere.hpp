@@ -16,21 +16,12 @@
 
 class Sphere : public Model {
 public:
-    Sphere(glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f)) : Model(pos, size, false, BoudingTypes::AABB) {}
+    Sphere(unsigned int maxNoInstances) : Model("Sphere", BoudingTypes::AABB, maxNoInstances, DYNAMIC | NO_TEX) {}
     
     void init() {
         Model::loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/sphere/scene.gltf");
         
     }
 };
-
-class SphereArray : public ModelArray<Sphere> {
-public:
-    void init() {
-        model = Sphere(glm::vec3(0.0f), glm::vec3(0.5f));
-        ModelArray::init();
-    }
-};
-
 
 #endif /* sphere_h */

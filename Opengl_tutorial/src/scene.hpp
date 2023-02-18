@@ -17,18 +17,22 @@
 #include "graphic/lights/light.hpp"
 #include <memory>
 #include <glm/glm.hpp>
+#include "graphic/model.hpp"
 
 
 #include <vector>
 
+// Forword delcaration
+class Model;
+
 class Scene {
 public:
+    std::map<std::string, Model*> models;
+    std::map<std::string, std::pair<std::string, unsigned int>> instances;
     
     static void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
     
-    Scene(){};
-    
-    Scene(int glfwVersionMajor, int glfwVersionMinor, const char *title, unsigned int scrWidth, unsigned int scrHeight);
+    Scene(int glfwVersionMajor, int glfwVersionMinor, const char *title, unsigned int scrWidth, unsigned int scrHeight, std::string currentId = "aaaaaaaa");
     
     bool init();
     
@@ -43,6 +47,25 @@ public:
     void newFrame();
     
     void render(Shader shader, bool applyLighting = true);
+    
+    void renderInstance(std::string modelId, Shader shader, float dt);
+    
+    /*
+        Model/instance methods
+     */
+    
+    void registerModel(Model *model);
+    
+    std::string generateInstance(std::string modelId, glm::vec3 size, float mass, glm::vec3 pos);
+    
+    void initInstances();
+    
+    void loadModels();
+    
+    void removeInstance(std::string instanceId);
+    
+    std::string currentId;
+    std::string generateId();
     
     /* clean up methods */
     void cleanup();

@@ -88,6 +88,38 @@ void Mesh::loadData(std::vector<Vertex> _vertices, std::vector<unsigned int> _in
   */
 }
 
+void Mesh::render(Shader &shader, unsigned int noInstances) {
+    if(noTex) {
+        shader.setFloat4("material.diffuse", material_diffuse);
+        shader.setFloat4("material.specular", material_specular);
+        shader.setInt("hasTexture", 0);
+    } else {
+        unsigned int diffuseTextureIndex = 0;
+        unsigned int specularTexutreIndex = 0;
+        shader.setInt("hasTexture", 1);
+        for(unsigned int i = 0;i < textures.size();i++) {
+            glActiveTexture(GL_TEXTURE0 + i);
+            std::string name;
+            switch (textures[i].type) {
+                case aiTextureType_DIFFUSE:
+                    name = "diffuse" + std::to_string(diffuseTextureIndex++);
+                    break;
+                case aiTextureType_SPECULAR:
+                    name = "specular" + std::to_string(specularTexutreIndex++);
+                    break;
+            }
+            shader.setInt(name, i);
+            textures[i].bind();
+        }
+    }
+
+    VAO.bind();
+    VAO.draw(GL_TRIANGLES, static_cast<int>(indices.size()), GL_UNSIGNED_INT, 0, noInstances);
+    ArrayObject::clear();
+
+    glActiveTexture(GL_TEXTURE0);
+}
+
 
 void Mesh::render(Shader &shader,Box *box, glm::vec3 pos, glm::vec3 size, bool doRender) {
     if(noTex) {

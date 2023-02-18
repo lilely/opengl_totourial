@@ -26,8 +26,7 @@ public:
 //        material(material),
 //        pos(pos),
 //        size(size) {}
-    
-    Cube(glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f)) : Model(pos, size) {}
+    Cube(unsigned int maxNoInstances) : Model("Cube", BoudingTypes::AABB, maxNoInstances, CONST_INSTANCES | NO_TEX) {}
     
     void init() {
         int noVertices = 36;
@@ -95,8 +94,8 @@ public:
         meshes.push_back(Mesh(boundingRange, Vertex::genList(vertices, noVertices), indices));
     }
     
-    void render(Shader &shader, float dt, bool setModel = true, bool doRender = true) {
-        Model::render(shader, dt, setModel, doRender);
+    void render(Shader &shader, float dt, Scene *scene ,bool setModel = true) {
+        Model::render(shader, dt, scene, setModel);
     }
 };
 

@@ -112,7 +112,7 @@ namespace States {
     // tell if state is active
     template<typename T>
     bool isActive(T* states, T state) {
-        return (*states & state);
+        return (*states & state) == state;
     }
 
     // activate state

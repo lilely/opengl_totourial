@@ -61,6 +61,8 @@ public:
     
     void render(Shader &shader,Box *box = nullptr, glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f), bool doRender = true);
     
+    void render(Shader &shader, unsigned int noInstances);
+    
     void cleanup();
     
 private:

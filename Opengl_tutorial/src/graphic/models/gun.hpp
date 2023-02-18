@@ -16,8 +16,8 @@
 class Gun : public Model
 {
 public:
-    Gun() : Model(glm::vec3(0.0f), glm::vec3(0.05f), false) {}
-    
+    Gun() : Model("Gun", BoudingTypes::AABB, 100, CONST_INSTANCES | NO_TEX) {}
+
     void render(Shader &shader, float dt, Scene &scene) {
         rb.update(dt);
         glm::mat4 model = glm::mat4(1.0f);
@@ -34,7 +34,7 @@ public:
         model = glm::rotate(model, scene.getActiveCamera()->cameraFront.z < 0 ? theta : -theta, scene.getActiveCamera()->worldUp);
         
         shader.setMat4("model", model);
-        Model::render(shader, false);
+        Model::render(shader, dt, &scene, false);
     }
 };
 

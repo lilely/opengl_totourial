@@ -34,14 +34,13 @@ glm::mat4 transform = glm::mat4(1.0f);
 
 Joystick mainJ(0);
 
-SphereArray spheres;
-LampArray lamps;
-
 bool needSpotLight = false;
 
 Scene scene(3, 3, "opengl_tutorial", 800, 600);
 
 int activeCamera = 0;
+
+Sphere sphere(10);
 
 int main()
 {
@@ -62,32 +61,33 @@ int main()
 //    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
     float lastTime = glfwGetTime();
-    // glfw window creation
-    // --------------------
-//    if(!screen.init()) {
-//        std::cout << "Failed to create GLFW window" << std::endl;
-//        glfwTerminate();
-//        return -1;
-//    }
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-//    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-//    {
-//        std::cout << "Failed to initialize GLAD" << std::endl;
-//        return -1;
-//    }
-//    screen.setParamters();
-    // build and compile our shader zprogram
-    // ------------------------------------
-    Shader ourShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object_texture.fs.glsl");
     
+    /*
+        Shaders
+     */
+    // Object Shader
     Shader instanceShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/instance.vs.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object_texture.fs.glsl");
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
+    
+    // Light Shader
     Shader lampShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/instance.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/lamp.fs.glsl");
     
+    // Box Shader
     Shader boxShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/box.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/box.fs.glsl");
     
+    
+    /*
+        Models=================
+     */
+    Lamp lamp(4);
+    lamp.init();
+    scene.registerModel(&lamp);
+    sphere.init();
+    scene.registerModel(&sphere);
+    Model tyrannosarus("Tyrannosarus", BoudingTypes::AABB, 3, CONST_INSTANCES);
+    tyrannosarus.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
+    tyrannosarus.init();
+    scene.registerModel(&tyrannosarus);
+    scene.generateInstance(tyrannosarus.id, glm::vec3(1.0f), 1.0f, glm::vec3(8.0f,0.0f,0.0f));
      
     glm::vec3 pointLightPositions[] = {
         glm::vec3(0.7f,  0.2f,  2.0f),
@@ -98,24 +98,22 @@ int main()
     
     for (unsigned int i = 0; i < 4; i++) {
         std::shared_ptr<PointLight> pl = std::make_shared<PointLight>(pointLightPositions[i], 1.0f, 0.07f, 0.05f, glm::vec3(0.5f),glm::vec3(0.5f),glm::vec3(0.5f));
-        lamps.pointLights.push_back(pl);
+        scene.generateInstance(lamp.id, glm::vec3(0.25f), 0.25f, pl->position);
         scene.pointLights.push_back(pl);
         States::activateIndex(&scene.activePointLights, i);
     }
     
-    Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
-    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
-    model.init();
+//    Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
+//    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
+//    model.init();
     
     Box box;
     box.init();
     
+    scene.initInstances();
 //
 //    Gun gun;
 //    gun.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
-
-    spheres.init();
-    lamps.init();
     
     scene.getActiveCamera()->updateCameraPos(CameraDirection::BACKWARD, 5.0f);
     scene.dirLight = std::make_shared<DirLight>(glm::vec3(-0.2, -1.0f, -0.3f),
@@ -172,7 +170,6 @@ int main()
         
         view = scene.getActiveCamera()->getViewMatrix();
         projection = glm::perspective(scene.getActiveCamera()->getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.01f, 1000.0f);
-        // render container
         
         // Dir Lights
         scene.dirLight->direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(scene.dirLight->direction,1.0f));
@@ -182,44 +179,26 @@ int main()
             spotLight->position = scene.getActiveCamera()->cameraPos;
             spotLight->direction = scene.getActiveCamera()->cameraFront;
         }
-
-//        gun.render(ourShader);
         
-        { // instance shader render
-            instanceShader.activate();
-            
-            // Set view position
-            instanceShader.setFloat3("viewPos", scene.getActiveCamera()->cameraPos);
-            
-            // Render Sphere
-            std::stack<int> toRemoveIndx;
-            for(int i = 0;i < spheres.instances.size();i ++) {
-                if(glm::length(scene.getActiveCamera()->cameraPos - spheres.instances[i].pos) > 100.f) {
-                    toRemoveIndx.push(i);
-                }
-            }
-            if(toRemoveIndx.size() > 0) {
-                spheres.instances.erase(spheres.instances.begin(),spheres.instances.begin()+toRemoveIndx.top()+1);
-            }
-            
-            if(spheres.instances.size() > 0) {
-                scene.render(instanceShader);
-                spheres.render(instanceShader, delta, &box);
+        std::stack<unsigned int> removeObjects;
+        for(int i = 0; i < sphere.currentNoInstances;i++) {
+            if(glm::length(sphere.instances[i].pos - scene.getActiveCamera()->cameraPos) > 250.f) {
+                removeObjects.push(i);
             }
         }
-        
-        
-        { // ourShader shader render
-            ourShader.activate();
-            // Set view position
-            ourShader.setFloat3("viewPos", scene.getActiveCamera()->cameraPos);
-            scene.render(ourShader);
-            model.render(ourShader, delta, true, true, &box);
+        while(removeObjects.size() > 0) {
+            sphere.removeInstance(removeObjects.top());
+            removeObjects.pop();
         }
-
-        scene.render(lampShader, false);
-        lamps.render(lampShader, delta, &box);
         
+        // render lanuch objcets
+        scene.render(instanceShader);
+        scene.renderInstance(sphere.id, instanceShader, delta);
+        scene.renderInstance(tyrannosarus.id, instanceShader, delta);
+        
+        scene.render(lampShader);
+        scene.renderInstance(lamp.id, lampShader, delta);
+
         if(box.offsetVecs.size() > 0) {
             scene.render(boxShader, false);
             box.render(boxShader, delta);
@@ -234,9 +213,7 @@ int main()
 //    shpere.cleanup();
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
-    lamps.cleanup();
     box.cleanup();
-    spheres.cleanup();
     
     scene.cleanup();
     // glfw: terminate, clearing all previously allocated GLFW resources.
@@ -247,11 +224,12 @@ int main()
 }
 
 void addSphere() {
-    RigidBody rb;
-    rb.pos = scene.getActiveCamera()->cameraPos;
-    rb.applyAcceleration(Enviroment::gravitationalAcceleration);
-    rb.applyImpulse(scene.getActiveCamera()->cameraFront, 50.0f);
-    spheres.instances.emplace_back(rb);
+    std::string id = scene.generateInstance(sphere.id, glm::vec3(0.25f), 1.0f, scene.getActiveCamera()->cameraPos);
+    if(id != "") {
+        // instance generated
+        sphere.instances[scene.instances[id].second].transferEnergy(300.0f, scene.getActiveCamera()->cameraFront);
+        sphere.instances[scene.instances[id].second].applyAcceleration(Enviroment::gravitationalAcceleration);
+    }
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly

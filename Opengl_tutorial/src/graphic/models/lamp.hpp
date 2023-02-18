@@ -18,48 +18,16 @@
 class Lamp : public Cube {
 public:
     glm::vec3 lightColor;
-    PointLight pointLight;
     
-    Lamp(){};
-    
-    Lamp(glm::vec3 lightColor,
-         glm::vec3 ambient,
-         glm::vec3 diffuse,
-         glm::vec3 specular,
-         glm::vec3 pos,
-         float k1,
-         float k2,
-         float k3,
-         glm::vec3 size) : lightColor(lightColor),
-        pointLight({pos, k1, k2, k3, ambient, diffuse, specular}),
-        Cube(pos, size) {};
+    Lamp(unsigned int maxNoInstances, glm::vec3 lightColor = glm::vec3(1.0f)) : Cube(maxNoInstances){
+        id = "Lamp";
+        this->lightColor = lightColor;
+    };
 
-    void render(Shader shader, float dt, bool setModel = true, bool doRender = true) {
+    void render(Shader &shader, float dt, Scene *scene, bool setModel = true) {
         shader.setFloat3("lightColor", lightColor);
-        Cube::render(shader, dt, setModel, doRender);
-        
+        Cube::render(shader, dt, scene, setModel);
     }
-};
-
-class LampArray : public ModelArray<Lamp> {
-public:
-    std::vector<std::shared_ptr<PointLight>> pointLights;
-    
-    void init() {
-        model = Lamp(glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(1.0f),glm::vec3(0.0f), 1.0f, 0.07f, 0.005f, glm::vec3(0.25f));
-        ModelArray::init();
-    }
-    
-    void render(Shader shader, float dt, Box *box = nullptr) {
-        positions.clear();
-        sizes.clear();
-        for(auto light : pointLights) {
-            positions.push_back(light->position);
-            sizes.push_back(model.size);
-        }
-        ModelArray::render(shader, dt, box, false);
-    }
-    
 };
 
 #endif /* lamp_h */
