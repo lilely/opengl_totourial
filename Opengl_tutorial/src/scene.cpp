@@ -258,15 +258,27 @@ void Scene::registerModel(Model *model) {
     models.insert(model->id, model);
 }
 
-std::string Scene::generateInstance(std::string modelId, glm::vec3 size, float mass, glm::vec3 pos) {
-    unsigned int idx = models[modelId]->generateInstance(pos, mass, size);
-    if(idx != -1) {
+RigidBody *Scene::generateInstance(std::string modelId, glm::vec3 size, float mass, glm::vec3 pos) {
+    RigidBody *rb = models[modelId]->generateInstance(pos, mass, size);
+    if(rb != nullptr) {
         std::string id = generateId();
-        models[modelId]->instances[idx].instanceId = id;
-        instances.insert(id, modelId);
-        return id;
+        rb->instanceId = id;
+        instances.insert(id, rb);
+        return rb;
     }
-    return "";
+    return nullptr;
+}
+
+void Scene::markForDeletion(std::string instanceId) {
+    States::activate(&instances[instanceId]->state, INSTANCE_DEAD);
+    instancesToDelete.push_back(instances[instanceId]);
+}
+
+void Scene::clearDeadInstances() {
+    for(auto rb : instancesToDelete) {
+        removeInstance(rb->instanceId);
+    }
+    instancesToDelete.clear();
 }
 
 void Scene::initInstances() {
@@ -281,10 +293,14 @@ void Scene::loadModels() {
     });
 }
 
+
 void Scene::removeInstance(std::string instanceId) {
-    std::string modelId = instances[instanceId];
+    RigidBody *rb = instances[instanceId];
+    std::string modelId = instances[instanceId]->modelId;
     models[modelId]->removeInstance(instanceId);
+    instances[instanceId] = nullptr;
     instances.erase(instanceId);
+    delete rb;
 }
 
 /* clean up methods */

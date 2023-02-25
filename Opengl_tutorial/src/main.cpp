@@ -179,16 +179,11 @@ int main()
             spotLight->position = scene.getActiveCamera()->cameraPos;
             spotLight->direction = scene.getActiveCamera()->cameraFront;
         }
-        
-        std::stack<unsigned int> removeObjects;
+
         for(int i = 0; i < sphere.currentNoInstances;i++) {
-            if(glm::length(sphere.instances[i].pos - scene.getActiveCamera()->cameraPos) > 250.f) {
-                removeObjects.push(i);
+            if(glm::length(sphere.instances[i]->pos - scene.getActiveCamera()->cameraPos) > 250.f) {
+                scene.markForDeletion(sphere.instances[i]->instanceId);
             }
-        }
-        while(removeObjects.size() > 0) {
-            sphere.removeInstance(removeObjects.top());
-            removeObjects.pop();
         }
         
         // render lanuch objcets
@@ -203,7 +198,8 @@ int main()
             scene.render(boxShader, false);
             box.render(boxShader, delta);
         }
-
+        
+        scene.clearDeadInstances();
         scene.newFrame();
     }
 
@@ -224,11 +220,11 @@ int main()
 }
 
 void addSphere() {
-    std::string id = scene.generateInstance(sphere.id, glm::vec3(0.25f), 1.0f, scene.getActiveCamera()->cameraPos);
-    if(id != "") {
+    RigidBody *rb = scene.generateInstance(sphere.id, glm::vec3(0.25f), 1.0f, scene.getActiveCamera()->cameraPos);
+    if(rb != nullptr) {
         // instance generated
-        sphere.instances[sphere.getIdx(id)].transferEnergy(300.0f, scene.getActiveCamera()->cameraFront);
-        sphere.instances[sphere.getIdx(id)].applyAcceleration(Enviroment::gravitationalAcceleration);
+        rb->transferEnergy(300.0f, scene.getActiveCamera()->cameraFront);
+        rb->applyAcceleration(Enviroment::gravitationalAcceleration);
     }
 }
 

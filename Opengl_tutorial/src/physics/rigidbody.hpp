@@ -12,9 +12,14 @@
 #include <glm/glm.hpp>
 #include <string>
 
+#define INSTANCE_DEAD (unsigned char)0b00000001
+#define INSTANCE_MOVED (unsigned char)0b00000010
+
 class RigidBody {
     
 public:
+    unsigned char state;
+    
     std::string instanceId;
     std::string modelId;
     float mass;

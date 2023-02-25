@@ -29,7 +29,9 @@ class Model;
 class Scene {
 public:
     trie::Trie<Model *> models;
-    trie::Trie<std::string> instances;
+    trie::Trie<RigidBody *> instances;
+    
+    std::vector<RigidBody *> instancesToDelete;
     
     static void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
     
@@ -57,7 +59,11 @@ public:
     
     void registerModel(Model *model);
     
-    std::string generateInstance(std::string modelId, glm::vec3 size, float mass, glm::vec3 pos);
+    RigidBody * generateInstance(std::string modelId, glm::vec3 size, float mass, glm::vec3 pos);
+    
+    void markForDeletion(std::string instanceId);
+    
+    void clearDeadInstances();
     
     void initInstances();
     

@@ -48,7 +48,7 @@ public:
     
     std::vector<Mesh> meshes;
     
-    std::vector<RigidBody> instances;
+    std::vector<RigidBody *> instances;
     
     unsigned int maxNoInstances;
     
@@ -63,7 +63,7 @@ public:
     
     Model(std::string id, BoudingTypes boundType, unsigned int maxNoInstances, unsigned int flag = 0);
     
-    unsigned int generateInstance(glm::vec3 pos, float mass, glm::vec3 size);
+    RigidBody *generateInstance(glm::vec3 pos, float mass, glm::vec3 size);
     
     void loadModel(std::string path);
     
