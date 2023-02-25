@@ -203,7 +203,7 @@ int main()
             scene.render(boxShader, false);
             box.render(boxShader, delta);
         }
-        
+
         scene.newFrame();
     }
 
@@ -227,8 +227,8 @@ void addSphere() {
     std::string id = scene.generateInstance(sphere.id, glm::vec3(0.25f), 1.0f, scene.getActiveCamera()->cameraPos);
     if(id != "") {
         // instance generated
-        sphere.instances[scene.instances[id].second].transferEnergy(300.0f, scene.getActiveCamera()->cameraFront);
-        sphere.instances[scene.instances[id].second].applyAcceleration(Enviroment::gravitationalAcceleration);
+        sphere.instances[sphere.getIdx(id)].transferEnergy(300.0f, scene.getActiveCamera()->cameraFront);
+        sphere.instances[sphere.getIdx(id)].applyAcceleration(Enviroment::gravitationalAcceleration);
     }
 }
 

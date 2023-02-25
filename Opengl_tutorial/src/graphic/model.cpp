@@ -44,6 +44,14 @@ void Model::removeInstance(unsigned int idx) {
     currentNoInstances--;
 }
 
+void Model::removeInstance(std::string instanceId) {
+    int index = getIdx(instanceId);
+    if (index > 0) {
+        removeInstance(index);
+        currentNoInstances--;
+    }
+}
+
 void Model::initInstances() {
     glm::vec3 *posData = nullptr;
     glm::vec3 *sizeData = nullptr;

@@ -71,6 +71,8 @@ public:
     
     void removeInstance(unsigned int idx);
     
+    void removeInstance(std::string instanceId);
+    
     unsigned int getIdx(std::string id);
     
     virtual void init();

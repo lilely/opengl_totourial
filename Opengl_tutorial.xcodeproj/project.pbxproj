@@ -83,6 +83,7 @@
 		E273E0C12997902000E0FB43 /* list.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = list.hpp; sourceTree = "<group>"; };
 		E273E0C22997905300E0FB43 /* octree.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = octree.cpp; sourceTree = "<group>"; };
 		E273E0C32997905300E0FB43 /* octree.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = octree.hpp; sourceTree = "<group>"; };
+		E273E0C529AA606B00E0FB43 /* trie.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = trie.hpp; sourceTree = "<group>"; };
 		E2B2E97C2972F0DD004304BC /* vec4.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vec4.hpp; sourceTree = "<group>"; };
 		E2B2E97D2972F0DD004304BC /* integer.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = integer.hpp; sourceTree = "<group>"; };
 		E2B2E97E2972F0DD004304BC /* vector_relational.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = vector_relational.hpp; sourceTree = "<group>"; };
@@ -763,6 +764,7 @@
 				E273E0C12997902000E0FB43 /* list.hpp */,
 				E273E0C22997905300E0FB43 /* octree.cpp */,
 				E273E0C32997905300E0FB43 /* octree.hpp */,
+				E273E0C529AA606B00E0FB43 /* trie.hpp */,
 			);
 			path = algorithm;
 			sourceTree = "<group>";

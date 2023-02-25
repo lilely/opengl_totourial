@@ -18,6 +18,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include "graphic/model.hpp"
+#include "algorithm/trie.hpp"
 
 
 #include <vector>
@@ -27,8 +28,8 @@ class Model;
 
 class Scene {
 public:
-    std::map<std::string, Model*> models;
-    std::map<std::string, std::pair<std::string, unsigned int>> instances;
+    trie::Trie<Model *> models;
+    trie::Trie<std::string> instances;
     
     static void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
     

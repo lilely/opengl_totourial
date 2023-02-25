@@ -255,7 +255,7 @@ void Scene::renderInstance(std::string modelId, Shader shader, float dt) {
 }
 
 void Scene::registerModel(Model *model) {
-    models[model->id] = model;
+    models.insert(model->id, model);
 }
 
 std::string Scene::generateInstance(std::string modelId, glm::vec3 size, float mass, glm::vec3 pos) {
@@ -263,35 +263,35 @@ std::string Scene::generateInstance(std::string modelId, glm::vec3 size, float m
     if(idx != -1) {
         std::string id = generateId();
         models[modelId]->instances[idx].instanceId = id;
-        instances[id] = std::pair<std::string, int>(modelId, idx);
+        instances.insert(id, modelId);
         return id;
     }
     return "";
 }
 
 void Scene::initInstances() {
-    for(auto & pair : models) {
-        pair.second->initInstances();
-    }
+    models.traverse([](Model *model) {
+        model->initInstances();
+    });
 }
 
 void Scene::loadModels() {
-    
+    models.traverse([](Model *model) {
+        model->init();
+    });
 }
 
 void Scene::removeInstance(std::string instanceId) {
-    std::string targetModelId = instances[instanceId].first;
-    unsigned int targetIdx = instances[instanceId].second;
-    
-    models[targetModelId]->removeInstance(targetIdx);
+    std::string modelId = instances[instanceId];
+    models[modelId]->removeInstance(instanceId);
     instances.erase(instanceId);
 }
 
 /* clean up methods */
 void Scene::cleanup() {
-    for(auto &pair : models) {
-        pair.second->cleanup();
-    }
+    models.traverse([](Model *model) {
+        model->cleanup();
+    });
     glfwTerminate();
 }
 
