@@ -10,29 +10,48 @@
 #define bounds_hpp
 
 #include <glm/glm.hpp>
+#include "../physics/rigidbody.hpp"
+
+// forward declaration
+namespace Octree {
+    class Node;
+};
 
 enum BoudingTypes : unsigned char {
     AABB = 0x01,
     SPHERE = 0x02,
 };
 
-class BoudingRegion {
+class BoundingRegion {
 public:
     BoudingTypes type;
+    
+    RigidBody *instance;
+    
+    // Cell
+    Octree::Node *cell;
     
     // Sphere region
     glm::vec3 center;
     float radius;
     
+    glm::vec3 ogCenter;
+    float ogRadius;
+    
     // Cube region
     glm::vec3 min;
     glm::vec3 max;
     
-    BoudingRegion(BoudingTypes type);
+    glm::vec3 ogMin;
+    glm::vec3 ogMax;
     
-    BoudingRegion(glm::vec3 center, float radius);
+    void transform();
     
-    BoudingRegion(glm::vec3 min, glm::vec3 max);
+    BoundingRegion(BoudingTypes type = BoudingTypes::AABB);
+    
+    BoundingRegion(glm::vec3 center, float radius);
+    
+    BoundingRegion(glm::vec3 min, glm::vec3 max);
     
     glm::vec3 caculateCenter();
     
@@ -40,9 +59,11 @@ public:
     
     bool containsPoint(glm::vec3);
     
-    bool containsRegion(BoudingRegion br);
+    bool containsRegion(BoundingRegion br);
     
-    bool intersectsWith(BoudingRegion br);
+    bool intersectsWith(BoundingRegion br);
+    
+    bool operator==(BoundingRegion value);
     
 private:
     

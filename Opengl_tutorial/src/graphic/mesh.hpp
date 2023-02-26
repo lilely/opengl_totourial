@@ -32,7 +32,9 @@ typedef struct Vertex {
 
 class Mesh {
 public:
-    BoudingRegion boundRange;
+    BoundingRegion boundRange;
+    
+    bool noTex;
     
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
@@ -41,19 +43,31 @@ public:
     
     std::vector<Texture> textures;
     
-    Mesh(BoudingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures = {});
+    // default constructor
+    Mesh();
+ 
+    // initialize as textured object
+    Mesh(BoundingRegion br, std::vector<Texture> textures = {});
+ 
+    // initialize as material object
+    Mesh(BoundingRegion br, aiColor4D diff, aiColor4D spec);
+ 
+    // load vertex and index data
+    void loadData(std::vector<Vertex> vertices, std::vector<unsigned int> indices);
     
-    Mesh(BoudingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, aiColor4D diffuse, aiColor4D specular);
+    Mesh(BoundingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures = {});
+    
+    Mesh(BoundingRegion boundRange, std::vector<Vertex> vertices, std::vector<unsigned int> indices, aiColor4D diffuse, aiColor4D specular);
     
     void render(Shader &shader,Box *box = nullptr, glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f), bool doRender = true);
+    
+    void render(Shader &shader, unsigned int noInstances);
     
     void cleanup();
     
 private:
     
     unsigned int VBO, EBO;
-    
-    bool hasTexture;
     
     aiColor4D material_diffuse;
     

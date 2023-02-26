@@ -71,10 +71,15 @@ double Mouse::getDY() {
 }
 
 double Mouse::getScrollDX() {
-    return scrollDx;
+    auto dx = scrollDx;
+    scrollDx = 0;
+    return dx;
 }
+
 double Mouse::getScrollDY() {
-    return scrollDy;
+    auto dy = scrollDy;
+    scrollDy = 0;
+    return dy;
 }
 
 bool Mouse::button(int button) {

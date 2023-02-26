@@ -15,20 +15,27 @@
 #include "graphic/shader.hpp"
 #include "io/camera.hpp"
 #include "graphic/lights/light.hpp"
-
+#include <memory>
 #include <glm/glm.hpp>
+#include "graphic/model.hpp"
+#include "algorithm/trie.hpp"
 
 
 #include <vector>
 
+// Forword delcaration
+class Model;
+
 class Scene {
 public:
+    trie::Trie<Model *> models;
+    trie::Trie<RigidBody *> instances;
+    
+    std::vector<RigidBody *> instancesToDelete;
     
     static void frameBufferSizeCallback(GLFWwindow *window, int width, int height);
     
-    Scene(){};
-    
-    Scene(int glfwVersionMajor, int glfwVersionMinor, const char *title, unsigned int scrWidth, unsigned int scrHeight);
+    Scene(int glfwVersionMajor, int glfwVersionMinor, const char *title, unsigned int scrWidth, unsigned int scrHeight, std::string currentId = "aaaaaaaa");
     
     bool init();
     
@@ -43,6 +50,29 @@ public:
     void newFrame();
     
     void render(Shader shader, bool applyLighting = true);
+    
+    void renderInstance(std::string modelId, Shader shader, float dt);
+    
+    /*
+        Model/instance methods
+     */
+    
+    void registerModel(Model *model);
+    
+    RigidBody * generateInstance(std::string modelId, glm::vec3 size, float mass, glm::vec3 pos);
+    
+    void markForDeletion(std::string instanceId);
+    
+    void clearDeadInstances();
+    
+    void initInstances();
+    
+    void loadModels();
+    
+    void removeInstance(std::string instanceId);
+    
+    std::string currentId;
+    std::string generateId();
     
     /* clean up methods */
     void cleanup();
@@ -62,13 +92,13 @@ public:
     
     /* lights */
     
-    std::vector<PointLight*> pointLights;
+    std::vector<std::shared_ptr<PointLight>> pointLights;
     unsigned int activePointLights;
     
-    std::vector<SpotLight*> spotLights;
+    std::vector<std::shared_ptr<SpotLight>> spotLights;
     unsigned int activeSpotLights;
     
-    DirLight* dirLight;
+    std::shared_ptr<DirLight> dirLight;
     bool dirLightActive;
     
     /* Cameras */
@@ -93,6 +123,8 @@ protected:
     // GLFW info
     int glfwVersionMajor;
     int glfwVersionMinor;
+    
+    bool needSpotLight;
     
 };
 

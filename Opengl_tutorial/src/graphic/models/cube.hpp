@@ -26,12 +26,11 @@ public:
 //        material(material),
 //        pos(pos),
 //        size(size) {}
-    
-    Cube(glm::vec3 pos = glm::vec3(0.0f), glm::vec3 size = glm::vec3(1.0f)) : Model(pos, size) {}
+    Cube(unsigned int maxNoInstances) : Model("Cube", BoudingTypes::AABB, maxNoInstances, CONST_INSTANCES | NO_TEX) {}
     
     void init() {
         int noVertices = 36;
-        BoudingRegion boundingRange(glm::vec3(-0.5f), glm::vec3(0.5f));
+        BoundingRegion boundingRange(glm::vec3(-0.5f), glm::vec3(0.5f));
         float vertices[] = {
             // position                 normal              texcoord
             -0.5f, -0.5f, -0.5f,     0.0f,  0.0f, -1.0f,    0.0f, 0.0f,
@@ -92,11 +91,12 @@ public:
 //            texture2.load();
 //            textures.emplace_back(texture2);
 //        }
+        boundingRegions.push_back(boundingRange);
         meshes.push_back(Mesh(boundingRange, Vertex::genList(vertices, noVertices), indices));
     }
     
-    void render(Shader &shader, float dt, bool setModel = true, bool doRender = true) {
-        Model::render(shader, dt, setModel, doRender);
+    void render(Shader &shader, float dt, Scene *scene ,bool setModel = true) {
+        Model::render(shader, dt, scene, setModel);
     }
 };
 

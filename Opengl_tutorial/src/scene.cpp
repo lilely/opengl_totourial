@@ -16,6 +16,18 @@
 unsigned int Scene::SCR_WIDTH = 800;
 unsigned int Scene::SCR_HEIGHT = 600;
 
+std::string Scene::generateId() {
+    for(int i = currentId.length() - 1; i >=0; i--) {
+        if((int)currentId[i] != (int)'z') {
+            currentId[i] = (char)(((int)currentId[i]) + 1);
+            break;
+        } else {
+            currentId[i] = 'a';
+        }
+    }
+    return currentId;
+}
+
 void Scene::frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
     // make sure the viewport matches the new window dimensions; note that width and
     // height will be significantly larger than specified on retina displays.
@@ -24,11 +36,11 @@ void Scene::frameBufferSizeCallback(GLFWwindow *window, int width, int height) {
     Scene::SCR_HEIGHT = height;
 }
 
-
-Scene::Scene(int glfwVersionMajor, int glfwVersionMinor, const char *title, unsigned int scrWidth, unsigned int scrHeight) : glfwVersionMajor(glfwVersionMajor), glfwVersionMinor(glfwVersionMinor), title(title), activeCamera(-1) {
+Scene::Scene(int glfwVersionMajor, int glfwVersionMinor, const char *title, unsigned int scrWidth, unsigned int scrHeight, std::string currentId) : glfwVersionMajor(glfwVersionMajor), glfwVersionMinor(glfwVersionMinor), title(title), activeCamera(-1), currentId(currentId) {
     Scene::SCR_WIDTH = scrWidth;
     Scene::SCR_HEIGHT = scrHeight;
-    
+    activeSpotLights = 0;
+    activePointLights = 0;
     setWindowColor(0.1f, 0.15f, 0.15f, 1.0f);
 }
 
@@ -144,6 +156,14 @@ void Scene::processInput(float delta)
         setShouldClose(true);
     }
     
+    if(Keyboard::keyWentDown(GLFW_KEY_L)) {
+        States::toggleIndex(&activeSpotLights, (unsigned int)0);
+    }
+    
+    if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
+        activeCamera = (activeCamera + 1) % cameras.size();
+    }
+    
 //    if(Keyboard::keyWentDown(GLFW_KEY_L)) {
 //        should = !needSpotLight;
 //    }
@@ -207,18 +227,19 @@ void Scene::render(Shader shader, bool applyLighting) {
         unsigned int noOfPointLights = static_cast<unsigned int>(pointLights.size());
         unsigned int noOfActiveLights = 0;
         for(unsigned int i = 0;i < noOfPointLights;i ++) {
-            if(States::isActive<unsigned int>(&activePointLights,i)) {
+            if(States::isIndexActive<unsigned int>(&activePointLights,i)) {
                 pointLights[i]->render(shader, noOfActiveLights);
                 noOfActiveLights++;
             }
         }
-        shader.setInt("noPointLights", noOfActiveLights);
         
+        shader.setInt("noPointLights", noOfActiveLights);
+
         // spot lights
         unsigned int noOfSpotLights = static_cast<unsigned int>(spotLights.size());
         noOfActiveLights = 0;
         for(unsigned int i = 0;i < noOfSpotLights;i++) {
-            if(States::isActive(&activeSpotLights, i)) {
+            if(States::isIndexActive(&activeSpotLights, i)) {
                 spotLights[i]->render(shader, i);
                 noOfActiveLights++;
             }
@@ -229,9 +250,65 @@ void Scene::render(Shader shader, bool applyLighting) {
     }
 }
 
+void Scene::renderInstance(std::string modelId, Shader shader, float dt) {
+    models[modelId]->render(shader, dt, this);
+}
+
+void Scene::registerModel(Model *model) {
+    models.insert(model->id, model);
+}
+
+RigidBody *Scene::generateInstance(std::string modelId, glm::vec3 size, float mass, glm::vec3 pos) {
+    RigidBody *rb = models[modelId]->generateInstance(pos, mass, size);
+    if(rb != nullptr) {
+        std::string id = generateId();
+        rb->instanceId = id;
+        instances.insert(id, rb);
+        return rb;
+    }
+    return nullptr;
+}
+
+void Scene::markForDeletion(std::string instanceId) {
+    States::activate(&instances[instanceId]->state, INSTANCE_DEAD);
+    instancesToDelete.push_back(instances[instanceId]);
+}
+
+void Scene::clearDeadInstances() {
+    for(auto rb : instancesToDelete) {
+        removeInstance(rb->instanceId);
+    }
+    instancesToDelete.clear();
+}
+
+void Scene::initInstances() {
+    models.traverse([](Model *model) {
+        model->initInstances();
+    });
+}
+
+void Scene::loadModels() {
+    models.traverse([](Model *model) {
+        model->init();
+    });
+}
+
+
+void Scene::removeInstance(std::string instanceId) {
+    RigidBody *rb = instances[instanceId];
+    std::string modelId = instances[instanceId]->modelId;
+    models[modelId]->removeInstance(instanceId);
+    instances[instanceId] = nullptr;
+    instances.erase(instanceId);
+    delete rb;
+}
+
 /* clean up methods */
 void Scene::cleanup() {
-    
+    models.traverse([](Model *model) {
+        model->cleanup();
+    });
+    glfwTerminate();
 }
 
 /* accessors */
@@ -250,6 +327,9 @@ void Scene::setShouldClose(bool shouldClose) {
 }
 
 void Scene::setWindowColor(float r, float g, float b, float a) {
-    setWindowColor(r, g, b, a);
+    bg[0] = r;
+    bg[1] = g;
+    bg[2] = b;
+    bg[3] = a;
 }
 

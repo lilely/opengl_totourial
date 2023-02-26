@@ -21,6 +21,8 @@
 #include "graphic/models/sphere.hpp"
 #include "physics/enviroment.hpp"
 #include "graphic/models/box.hpp"
+#include "scene.hpp"
+#include "algorithm/states.hpp"
 
 void processInput(float delta);
 
@@ -32,59 +34,60 @@ glm::mat4 transform = glm::mat4(1.0f);
 
 Joystick mainJ(0);
 
-Camera *cameras[] = {
-    &Camera::defaultCamera,
-    new Camera(glm::vec3(0.0f, 0.0f, 7.0f)),
-};
-
-SphereArray spheres;
-LampArray lamps;
-
 bool needSpotLight = false;
 
-Screen screen;
+Scene scene(3, 3, "opengl_tutorial", 800, 600);
 
 int activeCamera = 0;
+
+Sphere sphere(10);
 
 int main()
 {
     // glfw: initialize and configure
     // ------------------------------
+    scene.init();
+    scene.cameras.push_back(&Camera::defaultCamera);
+    scene.cameras.emplace_back(new Camera(glm::vec3(0.0f, 0.0f, 7.0f)));
+    scene.activeCamera = 0;
+    
     glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+//    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+//    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+//    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    
 
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+//    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
     float lastTime = glfwGetTime();
-    // glfw window creation
-    // --------------------
-    if(!screen.init()) {
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-    screen.setParamters();
-    // build and compile our shader zprogram
-    // ------------------------------------
-    Shader ourShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object.vs.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object_texture.fs.glsl");
     
+    /*
+        Shaders
+     */
+    // Object Shader
     Shader instanceShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/instance.vs.glsl", "/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/object_texture.fs.glsl");
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
+    
+    // Light Shader
     Shader lampShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/instance.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/lamp.fs.glsl");
     
+    // Box Shader
     Shader boxShader("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/box.vs.glsl","/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/instance/box.fs.glsl");
     
+    
+    /*
+        Models=================
+     */
+    Lamp lamp(4);
+    lamp.init();
+    scene.registerModel(&lamp);
+    sphere.init();
+    scene.registerModel(&sphere);
+    Model tyrannosarus("Tyrannosarus", BoudingTypes::AABB, 3, CONST_INSTANCES);
+    tyrannosarus.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
+    tyrannosarus.init();
+    scene.registerModel(&tyrannosarus);
+    scene.generateInstance(tyrannosarus.id, glm::vec3(1.0f), 1.0f, glm::vec3(8.0f,0.0f,0.0f));
      
     glm::vec3 pointLightPositions[] = {
         glm::vec3(0.7f,  0.2f,  2.0f),
@@ -94,32 +97,32 @@ int main()
     };
     
     for (unsigned int i = 0; i < 4; i++) {
-        lamps.pointLights.emplace_back(pointLightPositions[i], 1.0f, 0.07f, 0.05f, glm::vec3(0.5f),glm::vec3(0.5f),glm::vec3(0.5f));
+        std::shared_ptr<PointLight> pl = std::make_shared<PointLight>(pointLightPositions[i], 1.0f, 0.07f, 0.05f, glm::vec3(0.5f),glm::vec3(0.5f),glm::vec3(0.5f));
+        scene.generateInstance(lamp.id, glm::vec3(0.25f), 0.25f, pl->position);
+        scene.pointLights.push_back(pl);
+        States::activateIndex(&scene.activePointLights, i);
     }
     
-    Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
-    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
-    model.init();
+//    Model model(glm::vec3(8.0f,0.0f,0.0f), glm::vec3(1.0f), true);
+//    model.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
+//    model.init();
     
     Box box;
     box.init();
+    
+    scene.initInstances();
 //
 //    Gun gun;
 //    gun.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/m4a1/scene.gltf");
-
-    spheres.init();
-    lamps.init();
     
-    Camera::defaultCamera.updateCameraPos(CameraDirection::BACKWARD, 5.0f);
-
-    DirLight dirLight({
-        glm::vec3(-0.2, -1.0f, -0.3f),
-        glm::vec3(1.0f), glm::vec3(0.4f),
-        glm::vec3(0.75f)});
+    scene.getActiveCamera()->updateCameraPos(CameraDirection::BACKWARD, 5.0f);
+    scene.dirLight = std::make_shared<DirLight>(glm::vec3(-0.2, -1.0f, -0.3f),
+                                                glm::vec3(1.0f), glm::vec3(0.4f),
+                                                glm::vec3(0.75f));
     
-    SpotLight spotLight({
-        cameras[activeCamera]->cameraPos,
-        cameras[activeCamera]->cameraFront,
+    SpotLight aSpotLight({
+        scene.getActiveCamera()->cameraPos,
+        scene.getActiveCamera()->cameraFront,
         1.0f,
         0.07f,
         0.005f,
@@ -129,6 +132,11 @@ int main()
         glm::vec3(1.0f),
         glm::vec3(1.0f)
     });
+    
+    auto spotLight = std::make_shared<SpotLight>(aSpotLight);
+    scene.spotLights.push_back(spotLight);
+    States::activateIndex(&scene.activeSpotLights, (unsigned int)0);
+    
     if(mainJ.isPresent()) {
         mainJ.update();
         std::cout << "joystick is preseted!" << std::endl;
@@ -136,7 +144,7 @@ int main()
 
     // render loop
     // -----------
-    while (!screen.shouldClose())
+    while (!scene.shouldClose())
     {
         float currentTime = glfwGetTime();
         float delta = currentTime - lastTime;
@@ -147,114 +155,52 @@ int main()
         box.sizeVecs.clear();
         // input
         // -----
+        scene.processInput(delta);
         processInput(delta);
         // render
         // ------
-        screen.update();
+        scene.update();
         // bind textures on corresponding texture units
     
 //        ourShader.activate();
 //        ourShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
         
-        
         glm::mat4 view = glm::mat4(1.0f);
         glm::mat4 projection = glm::mat4(1.0f);
         
-        view = cameras[activeCamera]->getViewMatrix();
-        projection = glm::perspective(cameras[activeCamera]->getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.01f, 1000.0f);
-        // render container
+        view = scene.getActiveCamera()->getViewMatrix();
+        projection = glm::perspective(scene.getActiveCamera()->getZoom(),(float)Screen::SCR_WIDTH/(float)Screen::SCR_HEIGHT, 0.01f, 1000.0f);
         
         // Dir Lights
-        dirLight.direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(dirLight.direction,1.0f));
+        scene.dirLight->direction = glm::vec3(glm::rotate(glm::mat4(1.0f), 0.05f, glm::vec3(1.0f,0.0f,0.0f)) * glm::vec4(scene.dirLight->direction,1.0f));
         
-        // Spot Lights
-        spotLight.position = cameras[activeCamera]->cameraPos;
-        spotLight.direction = cameras[activeCamera]->cameraFront;
-        
-//        gun.render(ourShader);
-        
-        { // instance shader render
-            instanceShader.activate();
-            
-            // Set view position
-            instanceShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
-            
-            // Dir Lights
-            dirLight.render(instanceShader);
-            
+        if(States::isIndexActive(&scene.activeSpotLights, (unsigned int)0)) {
             // Spot Lights
-            spotLight.render(instanceShader, 0);
-            if (needSpotLight) {
-                instanceShader.setInt("noSpotLights", 1);
-            } else {
-                instanceShader.setInt("noSpotLights", 0);
-            }
-            
-            // Point Lights
-            for(int i = 0; i < lamps.pointLights.size();i++) {
-                lamps.pointLights[i].render(instanceShader, i);
-            }
-            instanceShader.setInt("noPointLights", 4);
-            
-            // Render Sphere
-            std::stack<int> toRemoveIndx;
-            for(int i = 0;i < spheres.instances.size();i ++) {
-                if(glm::length(cameras[activeCamera]->cameraPos - spheres.instances[i].pos) > 100.f) {
-                    toRemoveIndx.push(i);
-                }
-            }
-            if(toRemoveIndx.size() > 0) {
-                spheres.instances.erase(spheres.instances.begin(),spheres.instances.begin()+toRemoveIndx.top()+1);
-            }
-            
-            if(spheres.instances.size() > 0) {
-                instanceShader.setMat4("view", view);
-                instanceShader.setMat4("projection", projection);
-                spheres.render(instanceShader, delta, &box);
-            }
-        }
-        
-        
-        { // ourShader shader render
-            ourShader.activate();
-            
-            // Set view position
-            ourShader.setFloat3("viewPos", cameras[activeCamera]->cameraPos);
-            
-            // Dir Lights
-            dirLight.render(ourShader);
-            
-            // Spot Lights
-            spotLight.render(ourShader, 0);
-            if (needSpotLight) {
-                ourShader.setInt("noSpotLights", 1);
-            } else {
-                ourShader.setInt("noSpotLights", 0);
-            }
-            // Point Lights
-            for(int i = 0; i < lamps.pointLights.size();i++) {
-                lamps.pointLights[i].render(ourShader, i);
-            }
-            ourShader.setInt("noPointLights", 4);
-            
-            ourShader.setMat4("view", view);
-            ourShader.setMat4("projection", projection);
-            model.render(ourShader, delta, true, true, &box);
+            spotLight->position = scene.getActiveCamera()->cameraPos;
+            spotLight->direction = scene.getActiveCamera()->cameraFront;
         }
 
-        lampShader.activate();
-        lampShader.setMat4("view", view);
-        lampShader.setMat4("projection", projection);
-        lamps.render(lampShader, delta, &box);
+        for(int i = 0; i < sphere.currentNoInstances;i++) {
+            if(glm::length(sphere.instances[i]->pos - scene.getActiveCamera()->cameraPos) > 250.f) {
+                scene.markForDeletion(sphere.instances[i]->instanceId);
+            }
+        }
         
+        // render lanuch objcets
+        scene.render(instanceShader);
+        scene.renderInstance(sphere.id, instanceShader, delta);
+        scene.renderInstance(tyrannosarus.id, instanceShader, delta);
+        
+        scene.render(lampShader);
+        scene.renderInstance(lamp.id, lampShader, delta);
+
         if(box.offsetVecs.size() > 0) {
-            boxShader.activate();
-            boxShader.setMat4("view", view);
-            boxShader.setMat4("projection", projection);
+            scene.render(boxShader, false);
             box.render(boxShader, delta);
         }
-
-        screen.newFrame();
+        
+        scene.clearDeadInstances();
+        scene.newFrame();
     }
 
 
@@ -263,103 +209,32 @@ int main()
 //    shpere.cleanup();
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
-    lamps.cleanup();
     box.cleanup();
-    spheres.cleanup();
-
+    
+    scene.cleanup();
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
-    glfwTerminate();
+    
     return 0;
     
 }
 
 void addSphere() {
-    RigidBody rb;
-    rb.pos = Camera::defaultCamera.cameraPos;
-    rb.applyAcceleration(Enviroment::gravitationalAcceleration);
-    rb.applyImpulse(Camera::defaultCamera.cameraFront, 50.0f);
-    spheres.instances.emplace_back(rb);
+    RigidBody *rb = scene.generateInstance(sphere.id, glm::vec3(0.25f), 1.0f, scene.getActiveCamera()->cameraPos);
+    if(rb != nullptr) {
+        // instance generated
+        rb->transferEnergy(300.0f, scene.getActiveCamera()->cameraFront);
+        rb->applyAcceleration(Enviroment::gravitationalAcceleration);
+    }
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
 void processInput(float delta)
 {
-    if(Keyboard::keyWentUp(GLFW_KEY_ESCAPE)) {
-        screen.setShouldClose(true);
-    }
-    if(Keyboard::key(GLFW_KEY_W)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::FORWARD, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_S)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::BACKWARD, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_A)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::LEFT, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_D)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::RIGHT, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_E)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::UP, delta);
-    }
-    if(Keyboard::key(GLFW_KEY_X)) {
-        cameras[activeCamera]->updateCameraPos(CameraDirection::DOWN, delta);
-    }
-    if(Keyboard::keyWentDown(GLFW_KEY_TAB)) {
-        activeCamera += activeCamera == 0 ? 1 : -1;
-    }
-    if(Keyboard::key(GLFW_KEY_UP)) {
-        cameras[activeCamera]->updateCameraDirection(0, 1.0f);
-    }
-    if(Keyboard::key(GLFW_KEY_DOWN)) {
-        cameras[activeCamera]->updateCameraDirection(0, -1.0f);
-    }
-    if(Keyboard::key(GLFW_KEY_LEFT)) {
-        cameras[activeCamera]->updateCameraDirection(-1.0f, 0);
-    }
-    if(Keyboard::key(GLFW_KEY_RIGHT)) {
-        cameras[activeCamera]->updateCameraDirection(1.0f, 0);
-    }
-    if(Keyboard::keyWentDown(GLFW_KEY_L)) {
-        needSpotLight = !needSpotLight;
-    }
-    
     if(Keyboard::keyWentDown(GLFW_KEY_F)) {
         addSphere();
     }
     
-    
-//    double dx = Mouse::getDX(), dy = Mouse::getDY();
-//    if(dx != 0 && dy != 0) {
-//        cameras[activeCamera].updateCameraDirection(dx/10, dy/10);
-//    }
-
-//    double scrollDy = Mouse::getScrollDY();
-//    if(scrollDy != 0) {
-//        std::cout << scrollDy << std::endl;
-//        camera.updateCameraZoom(scrollDy);
-//    }
-    
-    mainJ.update();
-
-//    float lx = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_STICK_X);
-//    float ly = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_STICK_Y);
-//    if(std::abs(lx) > 0.05f) {
-//        transform = glm::translate(transform, glm::vec3(lx/10, 0.0f, 0.0f));
-//    }
-//    if(std::abs(ly) > 0.05f) {
-//        transform = glm::translate(transform, glm::vec3(0.0f, ly/10, 0.0f));
-//    }
-//    float rt = mainJ.axesState(GLFW_JOYSTICK_AXES_RIGHT_TRIGGER) / 2 + 0.5;
-//    if(std::abs(rt) > 0.05f) {
-//        transform = glm::scale(transform, glm::vec3(1 + rt/10, 1 + rt/10, 0.0f));
-//    }
-//    float lt = mainJ.axesState(GLFW_JOYSTICK_AXES_LEFT_TRIGGER) / 2 + 0.5;
-//    if(std::abs(lt) > 0.05f) {
-//        transform = glm::scale(transform, glm::vec3(1 + lt/10, 1 + lt/10, 0.0f));
-//    }
-//    std::cout << lx << ":" << ly << std::endl;
 }
 
