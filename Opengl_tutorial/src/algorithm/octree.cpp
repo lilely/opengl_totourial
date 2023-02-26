@@ -229,7 +229,7 @@ void Octree::Node::processPending() {
         build();
     } else {
         while(queue.size() > 0) {
-//            queue.front().transform();
+            queue.front().transform();
             insert(queue.front());
             queue.pop();
         }
@@ -266,9 +266,9 @@ bool Octree::Node::insert(BoundingRegion obj) {
             caclulateBounds(octants[i], (Octant)(1 << i), region);
         }
     }
-
-    objects.push_back(obj);
     // determine which octants to put objects in
+    
+    objects.push_back(obj);
     std::vector<BoundingRegion> octLists[NO_CHILDREN]; // array of list of objects in each octant
     for (int i = 0, len = objects.size(); i < len; i++) {
         objects[i].cell = this;
@@ -301,6 +301,21 @@ bool Octree::Node::insert(BoundingRegion obj) {
             }
         }
     }
+    
+//    for (int i = 0; i < NO_CHILDREN; i++) {
+//        if(octants[i].containsRegion(obj)) {
+//            if(children[i] != nullptr) {
+//                return children[i]->insert(obj);
+//            } else {
+//                children[i] = new Node(octants[i], {obj});
+//                children[i]->parent = this;
+//                States::activateIndex(&activeOctants, i);
+//                children[i]->build();
+//                return true;
+//            }
+//        }
+//    }
+//    objects.push_back(obj);
     
     return true;
 }
