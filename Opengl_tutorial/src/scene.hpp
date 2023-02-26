@@ -19,9 +19,14 @@
 #include <glm/glm.hpp>
 #include "graphic/model.hpp"
 #include "algorithm/trie.hpp"
-
+#include "algorithm/octree.hpp"
+#include "graphic/models/box.hpp"
 
 #include <vector>
+
+namespace Octree {
+    class Node;
+}
 
 // Forword delcaration
 class Model;
@@ -47,7 +52,7 @@ public:
     
     void update();
     
-    void newFrame();
+    void newFrame(Box &box);
     
     void render(Shader shader, bool applyLighting = true);
     
@@ -90,6 +95,8 @@ public:
     
     void setParamters();
     
+    void prepare(Box &box);
+    
     /* lights */
     
     std::vector<std::shared_ptr<PointLight>> pointLights;
@@ -111,6 +118,8 @@ public:
 protected:
     // window object
     GLFWwindow* window;
+    
+    Octree::Node *octree;
     
     // window vals
     const char *title;

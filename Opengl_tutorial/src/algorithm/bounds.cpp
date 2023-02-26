@@ -93,6 +93,7 @@ bool BoundingRegion::intersectsWith(BoundingRegion br) {
     }
 }
 
+
 void BoundingRegion::transform() {
     if(instance) {
         if (type == BoudingTypes::AABB) {

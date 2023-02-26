@@ -89,6 +89,10 @@ bool Scene::init() {
     glEnable(GL_DEPTH_TEST); // dosen't show verices not visible
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     
+    /*
+        init octree
+     */
+    octree = new Octree::Node(BoundingRegion(glm::vec3(-32.0f), glm::vec3(32.0f)));
     return true;
 }
 
@@ -210,7 +214,14 @@ void Scene::update() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Scene::newFrame() {
+void Scene::newFrame(Box &box) {
+    box.offsetVecs.clear();
+    box.sizeVecs.clear();
+    // process pending
+    octree->processPending();
+    octree->update(box);
+    
+    // send new frame to window
     glfwSwapBuffers(window);
     glfwPollEvents();
 }
@@ -258,12 +269,17 @@ void Scene::registerModel(Model *model) {
     models.insert(model->id, model);
 }
 
+void Scene::prepare(Box &box) {
+    octree->update(box);
+}
+
 RigidBody *Scene::generateInstance(std::string modelId, glm::vec3 size, float mass, glm::vec3 pos) {
     RigidBody *rb = models[modelId]->generateInstance(pos, mass, size);
     if(rb != nullptr) {
         std::string id = generateId();
         rb->instanceId = id;
         instances.insert(id, rb);
+        octree->addToPending(rb, models);
         return rb;
     }
     return nullptr;

@@ -41,10 +41,10 @@ void Octree::caclulateBounds(BoundingRegion &out, Octant octant, BoundingRegion 
 Octree::Node::Node() : region(BoudingTypes::AABB) {}
 
 // initialize with bounds (no objects yet)
-Octree::Node::Node(BoundingRegion bounds) : region(bounds) {}
+Octree::Node::Node(BoundingRegion bounds) : region(bounds), activeOctants(0), children(std::vector<Node*>(NO_CHILDREN, nullptr)) {}
 
 // initialize with bounds and list of objects
-Octree::Node::Node(BoundingRegion bounds, std::vector<BoundingRegion> objectList) : region(bounds) {
+Octree::Node::Node(BoundingRegion bounds, std::vector<BoundingRegion> objectList) : region(bounds), activeOctants(0), children(std::vector<Node*>(NO_CHILDREN, nullptr)) {
     objects.insert(objects.end(), objectList.begin(), objectList.end());
 }
      
@@ -123,8 +123,10 @@ void Octree::Node::addToPending(RigidBody *instance, trie::Trie<Model *> models)
     }
 }
 
-void Octree::Node::update() {
+void Octree::Node::update(Box &box) {
     if(treeBuilt && treeReady) {
+        box.offsetVecs.push_back(region.caculateCenter());
+        box.sizeVecs.push_back(region.caculateDimensions());
         if(objects.size() == 0) {
             if(!activeOctants) {
                 if(currentLifespan == -1) {
@@ -155,13 +157,16 @@ void Octree::Node::update() {
         for(int i = 0, listSize = objects.size(); i < listSize; i++ ) {
             if(States::isActive(&objects[i].instance->state, INSTANCE_MOVED)) {
                 movedObjects.push({i, objects[i]});
+                objects[i].transform();
             }
+            box.offsetVecs.push_back(objects[i].caculateCenter());
+            box.sizeVecs.push_back(objects[i].caculateDimensions());
         }
         
         // remove dead branches
         for(unsigned char flags = activeOctants, i = 0;
             flags > 0;
-            flags >>= i, i++) {
+            flags >>= 1, i++) {
             if(States::isIndexActive(&flags, 0) && children[i]->currentLifespan == 0) {
                 if(children[i]->objects.size() > 0) {
                     children[i]->currentLifespan = -1;
@@ -169,6 +174,18 @@ void Octree::Node::update() {
                     free(children[i]);
                     children[i] = nullptr;
                     States::deactivateIndex(&activeOctants, i);
+                }
+            }
+        }
+        
+        if(children.size() > 0) {
+            for(unsigned char flags = activeOctants, i = 0;
+                flags > 0;
+                flags >>= 1, i++) {
+                if(States::isIndexActive(&flags, 0)) {
+                    if(children[i] != nullptr) {
+                        children[i]->update(box);
+                    }
                 }
             }
         }
@@ -213,6 +230,7 @@ void Octree::Node::processPending() {
         build();
     } else {
         while(queue.size() > 0) {
+            queue.front().transform();
             insert(queue.front());
             queue.pop();
         }
@@ -289,15 +307,17 @@ bool Octree::Node::insert(BoundingRegion obj) {
     return true;
 }
 
+
 // destroy object (free memory)
 void Octree::Node::drestroy() {
-    if(children != nullptr) {
+    if(children.size() > 0) {
         for(int flags = activeOctants, i = 0;
             flags > 0;
             flags >>= 1, i++) {
             if(States::isIndexActive(&flags, 0)){
                 if(children[i] != nullptr) {
                     children[i]->drestroy();
+                    free(children[i]);
                     children[i] = nullptr;
                 }
             }

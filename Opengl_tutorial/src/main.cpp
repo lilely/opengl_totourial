@@ -141,7 +141,7 @@ int main()
         mainJ.update();
         std::cout << "joystick is preseted!" << std::endl;
     }
-
+    scene.prepare(box);
     // render loop
     // -----------
     while (!scene.shouldClose())
@@ -151,8 +151,8 @@ int main()
         lastTime = currentTime;
         
         // clear box vertices and sizes
-        box.offsetVecs.clear();
-        box.sizeVecs.clear();
+//        box.offsetVecs.clear();
+//        box.sizeVecs.clear();
         // input
         // -----
         scene.processInput(delta);
@@ -199,11 +199,10 @@ int main()
             box.render(boxShader, delta);
         }
         
+        scene.newFrame(box);
         scene.clearDeadInstances();
-        scene.newFrame();
     }
-
-
+    
 //    model.cleanup();
 //    gun.cleanup();
 //    shpere.cleanup();

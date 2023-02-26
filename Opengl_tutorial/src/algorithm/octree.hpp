@@ -18,9 +18,12 @@
 #include "bounds.hpp"
 #include "../physics/rigidbody.hpp"
 #include "../graphic/model.hpp"
+#include "../graphic/models/box.hpp"
 
 #define NO_CHILDREN 8
 #define MIN_BOUNDS 0.5
+
+class Model;
 
 class BoundingRegion;
 
@@ -47,7 +50,7 @@ namespace Octree {
         // parent pointer
         Node *parent;
         // array of children (8)
-        Node *children[NO_CHILDREN];
+        std::vector<Node *>children;
         
         // switch for active octants
         unsigned char activeOctants;
@@ -89,7 +92,7 @@ namespace Octree {
         // build tree (called during initialization)
         void build();
         
-        void update();
+        void update(Box &box);
         
         // process pending queue
         void processPending();
