@@ -109,7 +109,9 @@ void Model::processNode(aiNode *node, const aiScene *scene){
     // process all meshes
     for(unsigned int i = 0;i < node->mNumMeshes; i++) {
         aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-        meshes.push_back(processMesh(mesh, scene));
+        Mesh newMesh = processMesh(mesh, scene);
+        boundingRegions.push_back(newMesh.boundRange);
+        meshes.push_back(newMesh);
     }
     
     // process all child node
@@ -159,9 +161,12 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         // assign min and max
         boundRange.min = min_bound;
         boundRange.max = max_bound;
+        boundRange.ogMin = min_bound;
+        boundRange.ogMax = max_bound;
     } else {
         // caculate max distance from the center
         boundRange.center = (min_bound + max_bound) / 2.0f;
+        boundRange.ogCenter = boundRange.center;
         float maxRadiusSquared = 0.0f;
         for (unsigned int i = 0; i < mesh->mNumVertices; i++) {
             float radiusSquared = 0.0f; // distance for this vertex
@@ -176,6 +181,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene) {
         }
 
         boundRange.radius = sqrt(maxRadiusSquared);
+        boundRange.ogRadius = boundRange.radius;
     }
     
     // process indices

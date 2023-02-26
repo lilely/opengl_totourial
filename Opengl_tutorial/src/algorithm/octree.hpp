@@ -57,6 +57,9 @@ namespace Octree {
         // if tree is built
         bool treeBuilt = false;
         
+        short maxLifespan = 8;
+        short currentLifespan = -1;
+        
         // list of objects in node
         std::vector<BoundingRegion> objects;
         // queue of objects to be dynamically inserted
@@ -75,6 +78,8 @@ namespace Octree {
         
         // initialize with bounds and list of objects
         Node(BoundingRegion bounds, std::vector<BoundingRegion> objectList);
+        
+        void addToPending(RigidBody *instance, trie::Trie<Model *> models);
         
         /*
             functionality

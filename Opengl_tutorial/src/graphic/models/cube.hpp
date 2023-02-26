@@ -91,6 +91,7 @@ public:
 //            texture2.load();
 //            textures.emplace_back(texture2);
 //        }
+        boundingRegions.push_back(boundingRange);
         meshes.push_back(Mesh(boundingRange, Vertex::genList(vertices, noVertices), indices));
     }
     

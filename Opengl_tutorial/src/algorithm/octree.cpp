@@ -114,24 +114,61 @@ void Octree::Node::build() {
     return;
 }
 
+void Octree::Node::addToPending(RigidBody *instance, trie::Trie<Model *> models) {
+    // get all bounding regions of model
+    for(BoundingRegion br : models[instance->modelId]->boundingRegions) {
+        br.instance = instance;
+        br.transform();
+        queue.push(br);
+    }
+}
+
 void Octree::Node::update() {
     if(treeBuilt && treeReady) {
-        std::vector<BoundingRegion> movedObjects(objects.size());
+        if(objects.size() == 0) {
+            if(!activeOctants) {
+                if(currentLifespan == -1) {
+                    currentLifespan = maxLifespan;
+                } else if(currentLifespan > 0) {
+                    currentLifespan--;
+                }
+            }
+        } else {
+            if(currentLifespan != -1) {
+                if(maxLifespan <= 64) {
+                    // extend lifespan becuase of hot pot.
+                    maxLifespan <<= 2;
+                }
+            }
+        }
         
         // remove objects that don't exist anymore
         for(int i = 0, listSize = objects.size(); i < listSize; i++ ) {
-            
+            if(States::isActive(&objects[i].instance->state, INSTANCE_DEAD)) {
+                objects.erase(objects.begin()+i);
+                i--;
+                listSize--;
+            }
         }
         
-        // update child nodes
-        if(children != nullptr) {
-            for(unsigned char flags = activeOctants, i = 0;
-                flags > 0;
-                flags >>= i, i++) {
-                if(States::isIndexActive(&flags, 0)) {
-                    if(children[i] != nullptr) {
-                        
-                    }
+        std::stack<std::pair<int, BoundingRegion>> movedObjects;
+        for(int i = 0, listSize = objects.size(); i < listSize; i++ ) {
+            if(States::isActive(&objects[i].instance->state, INSTANCE_MOVED)) {
+                movedObjects.push({i, objects[i]});
+            }
+        }
+        
+        // remove dead branches
+        for(unsigned char flags = activeOctants, i = 0;
+            flags > 0;
+            flags >>= i, i++) {
+            if(States::isIndexActive(&flags, 0) && children[i]->currentLifespan == 0) {
+                if(children[i]->objects.size() > 0) {
+                    children[i]->currentLifespan = -1;
+                } else {
+                    free(children[i]);
+                    children[i] = nullptr;
+                    States::deactivateIndex(&activeOctants, i);
                 }
             }
         }
@@ -143,7 +180,7 @@ void Octree::Node::update() {
             for each moved object
              -tranverse up tree (start with current node) until find a node  that completly enclose the node
              */
-            movedObj = movedObjects[0];
+            movedObj = movedObjects.top().second;
             Node *current = this;
             while(!current->region.containsRegion(movedObj)) {
                 if(current->parent != nullptr) {
@@ -153,12 +190,9 @@ void Octree::Node::update() {
                 }
             }
             
-            
             // remove first object, second object now becomes first
-            movedObjects.erase(movedObjects.begin());
-            auto iter = std::find(objects.begin(), objects.end(), movedObj);
-            auto index = iter - objects.begin();
-            objects.erase(objects.begin() + index);
+            objects.erase(objects.begin() + movedObjects.top().first);
+            movedObjects.pop();
             current->insert(movedObj);
             
             // collistion detection

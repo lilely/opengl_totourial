@@ -10,6 +10,7 @@
 #define bounds_hpp
 
 #include <glm/glm.hpp>
+#include "../physics/rigidbody.hpp"
 
 // forward declaration
 namespace Octree {
@@ -25,6 +26,8 @@ class BoundingRegion {
 public:
     BoudingTypes type;
     
+    RigidBody *instance;
+    
     // Cell
     Octree::Node *cell;
     
@@ -32,9 +35,17 @@ public:
     glm::vec3 center;
     float radius;
     
+    glm::vec3 ogCenter;
+    float ogRadius;
+    
     // Cube region
     glm::vec3 min;
     glm::vec3 max;
+    
+    glm::vec3 ogMin;
+    glm::vec3 ogMax;
+    
+    void transform();
     
     BoundingRegion(BoudingTypes type = BoudingTypes::AABB);
     

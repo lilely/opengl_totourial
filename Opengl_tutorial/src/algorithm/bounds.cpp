@@ -10,9 +10,9 @@
 
 BoundingRegion::BoundingRegion(BoudingTypes type) : type(type){}
 
-BoundingRegion::BoundingRegion(glm::vec3 center, float radius) : type(BoudingTypes::SPHERE), center(center) , radius(radius) {}
+BoundingRegion::BoundingRegion(glm::vec3 center, float radius) : type(BoudingTypes::SPHERE), center(center) , radius(radius), ogCenter(center), ogRadius(radius) {}
 
-BoundingRegion::BoundingRegion(glm::vec3 min, glm::vec3 max) : type(BoudingTypes::AABB), min(min), max(max) {}
+BoundingRegion::BoundingRegion(glm::vec3 min, glm::vec3 max) : type(BoudingTypes::AABB), min(min), max(max), ogMin(min), ogMax(max) {}
 
 glm::vec3 BoundingRegion::caculateCenter() {
     return type == BoudingTypes::AABB ? (max + min) / 2.0f : center;
@@ -90,6 +90,18 @@ bool BoundingRegion::intersectsWith(BoundingRegion br) {
     } else {
         // this is a box, br is a shpere
         return br.intersectsWith(*this);
+    }
+}
+
+void BoundingRegion::transform() {
+    if(instance) {
+        if (type == BoudingTypes::AABB) {
+            min = ogMin * instance->size + instance->pos;
+            max = ogMax * instance->size + instance->pos;
+        } else {
+            center = ogCenter * instance->size + instance->pos;
+            radius = ogRadius * instance->size.x;
+        }
     }
 }
 
