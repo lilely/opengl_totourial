@@ -62,9 +62,9 @@ void Octree::Node::addToPending(RigidBody* instance, Model *model) {
 void Octree::Node::build() {
     
     BoundingRegion octans[NO_CHILDREN];
-    glm::vec3 dimesions = region.caculateCenter();
+    glm::vec3 dimesions = region.caculateDimensions();
     std::vector<BoundingRegion> octList[NO_CHILDREN];
-    
+
     if(objects.size() <= 1) {
         goto setVars;
     }
@@ -100,7 +100,6 @@ void Octree::Node::build() {
             children[i]->build();
         }
     }
-    
     
     setVars:
     
@@ -230,7 +229,7 @@ void Octree::Node::processPending() {
         build();
     } else {
         while(queue.size() > 0) {
-            queue.front().transform();
+//            queue.front().transform();
             insert(queue.front());
             queue.pop();
         }
@@ -269,7 +268,6 @@ bool Octree::Node::insert(BoundingRegion obj) {
     }
 
     objects.push_back(obj);
-
     // determine which octants to put objects in
     std::vector<BoundingRegion> octLists[NO_CHILDREN]; // array of list of objects in each octant
     for (int i = 0, len = objects.size(); i < len; i++) {

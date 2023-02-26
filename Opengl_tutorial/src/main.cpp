@@ -83,11 +83,11 @@ int main()
     scene.registerModel(&lamp);
     sphere.init();
     scene.registerModel(&sphere);
-    Model tyrannosarus("Tyrannosarus", BoudingTypes::AABB, 3, CONST_INSTANCES);
-    tyrannosarus.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
-    tyrannosarus.init();
-    scene.registerModel(&tyrannosarus);
-    scene.generateInstance(tyrannosarus.id, glm::vec3(1.0f), 1.0f, glm::vec3(8.0f,0.0f,0.0f));
+//    Model tyrannosarus("Tyrannosarus", BoudingTypes::AABB, 3, CONST_INSTANCES);
+//    tyrannosarus.loadModel("/Users/xingjin/Projects/MacProject/opengl_totourial/Opengl_tutorial/asset/models/tyrannosarus/scene.gltf");
+//    tyrannosarus.init();
+//    scene.registerModel(&tyrannosarus);
+//    scene.generateInstance(tyrannosarus.id, glm::vec3(1.0f), 1.0f, glm::vec3(8.0f,0.0f,0.0f));
      
     glm::vec3 pointLightPositions[] = {
         glm::vec3(0.7f,  0.2f,  2.0f),
@@ -189,7 +189,7 @@ int main()
         // render lanuch objcets
         scene.render(instanceShader);
         scene.renderInstance(sphere.id, instanceShader, delta);
-        scene.renderInstance(tyrannosarus.id, instanceShader, delta);
+//        scene.renderInstance(tyrannosarus.id, instanceShader, delta);
         
         scene.render(lampShader);
         scene.renderInstance(lamp.id, lampShader, delta);

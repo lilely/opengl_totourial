@@ -92,7 +92,7 @@ bool Scene::init() {
     /*
         init octree
      */
-    octree = new Octree::Node(BoundingRegion(glm::vec3(-32.0f), glm::vec3(32.0f)));
+    octree = new Octree::Node(BoundingRegion(glm::vec3(-16.0f), glm::vec3(16.0f)));
     return true;
 }
 
