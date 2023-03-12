@@ -77,16 +77,16 @@ bool BoundingRegion::intersectsWith(BoundingRegion br) {
         // Both sphere
         return glm::distance(center, br.center) < radius + br.radius;
     } else if(type == BoudingTypes::SPHERE) {
+        // this is a sphere, br is a box
         float distSquared = 0.0f;
-        for(int i = 0;i < 3;i++) {
-            if(center[i] < br.min[i]) {
-                distSquared += (br.min[i] - center[i]) * (br.min[i] - center[i]);
-            } else if(center[i] > br.max[i]) {
-                distSquared += (center[i] - br.max[i]) * (center[i] - br.max[i]);
-            }
+        for (int i = 0; i < 3; i++) {
+            // determine closest side
+            float closestPt = std::max(br.min[i], std::min(center[i], br.max[i]));
+            // add squared distance
+            distSquared += (closestPt - center[i]) * (closestPt - center[i]);
         }
         
-        return distSquared < radius * radius;
+        return distSquared < (radius * radius);
     } else {
         // this is a box, br is a shpere
         return br.intersectsWith(*this);
