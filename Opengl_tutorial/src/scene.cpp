@@ -324,6 +324,7 @@ void Scene::cleanup() {
     models.traverse([](Model *model) {
         model->cleanup();
     });
+    octree->drestroy();
     glfwTerminate();
 }
 

@@ -152,11 +152,11 @@ void Octree::Node::update(Box &box) {
             }
         }
         
-        std::stack<std::pair<int, BoundingRegion>> movedObjects;
+        std::stack<int> movedObjects;
         for(int i = 0, listSize = objects.size(); i < listSize; i++ ) {
             if(States::isActive(&objects[i].instance->state, INSTANCE_MOVED)) {
-                movedObjects.push({i, objects[i]});
                 objects[i].transform();
+                movedObjects.push(i);
             }
             box.offsetVecs.push_back(objects[i].caculateCenter());
             box.sizeVecs.push_back(objects[i].caculateDimensions());
@@ -196,7 +196,7 @@ void Octree::Node::update(Box &box) {
             for each moved object
              -tranverse up tree (start with current node) until find a node  that completly enclose the node
              */
-            movedObj = movedObjects.top().second;
+            movedObj = objects[movedObjects.top()];
             Node *current = this;
             while(!current->region.containsRegion(movedObj)) {
                 if(current->parent != nullptr) {
@@ -207,12 +207,22 @@ void Octree::Node::update(Box &box) {
             }
             
             // remove first object, second object now becomes first
-            objects.erase(objects.begin() + movedObjects.top().first);
+            objects.erase(objects.begin() + movedObjects.top());
             movedObjects.pop();
             current->insert(movedObj);
             
+            
             // collistion detection
             // TODO
+            current = movedObj.cell;
+            current->checkCollisionSelf(movedObj);
+            
+            current->checkCollisionChildren(movedObj);
+            
+            while(current->parent) {
+                current = current->parent;
+                current->checkCollisionSelf(movedObj);
+            }
         }
         
     }
@@ -231,6 +241,16 @@ void Octree::Node::processPending() {
         while(queue.size() > 0) {
             queue.front().transform();
             insert(queue.front());
+            queue.pop();
+        }
+        for(int i = 0, len = queue.size();i < len;i++) {
+            BoundingRegion br =  queue.front();
+            if(region.containsRegion(br)) {
+                insert(br);
+            } else {
+                br.transform();
+                queue.push(br);
+            }
             queue.pop();
         }
     }
@@ -266,8 +286,8 @@ bool Octree::Node::insert(BoundingRegion obj) {
             caclulateBounds(octants[i], (Octant)(1 << i), region);
         }
     }
-    // determine which octants to put objects in
     
+    // determine which octants to put objects in
     objects.push_back(obj);
     std::vector<BoundingRegion> octLists[NO_CHILDREN]; // array of list of objects in each octant
     for (int i = 0, len = objects.size(); i < len; i++) {
@@ -302,24 +322,31 @@ bool Octree::Node::insert(BoundingRegion obj) {
         }
     }
     
-//    for (int i = 0; i < NO_CHILDREN; i++) {
-//        if(octants[i].containsRegion(obj)) {
-//            if(children[i] != nullptr) {
-//                return children[i]->insert(obj);
-//            } else {
-//                children[i] = new Node(octants[i], {obj});
-//                children[i]->parent = this;
-//                States::activateIndex(&activeOctants, i);
-//                children[i]->build();
-//                return true;
-//            }
-//        }
-//    }
-//    objects.push_back(obj);
-    
     return true;
 }
 
+void Octree::Node::checkCollisionSelf(BoundingRegion obj) {
+    for(BoundingRegion br : objects) {
+        if(br.intersectsWith(obj)) {
+            if(br.instance->instanceId != obj.instance->instanceId) {
+                std::cout << "Instance " << br.instance->instanceId << "(" << br.instance->modelId << ")" << "collide with : " << obj.instance->instanceId << "(" << obj.instance->modelId << ")" << std::endl;
+            }
+        }
+    }
+}
+
+void Octree::Node::checkCollisionChildren(BoundingRegion obj) {
+    if (children.size() > 0) {
+        for (int flags = activeOctants, i = 0;
+            flags > 0;
+            flags >>= 1, i++) {
+            if (States::isIndexActive(&flags, 0) && children[i]) {
+                children[i]->checkCollisionSelf(obj);
+                children[i]->checkCollisionChildren(obj);
+            }
+        }
+    }
+}
 
 // destroy object (free memory)
 void Octree::Node::drestroy() {

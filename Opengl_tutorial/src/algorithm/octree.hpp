@@ -100,6 +100,10 @@ namespace Octree {
         // dynamically insert object into node
         bool insert(BoundingRegion obj);
         
+        void checkCollisionSelf(BoundingRegion obj);
+        
+        void checkCollisionChildren(BoundingRegion obj);
+        
         // destroy object (free memory)
         void drestroy();
         

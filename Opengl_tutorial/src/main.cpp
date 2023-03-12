@@ -141,6 +141,7 @@ int main()
         mainJ.update();
         std::cout << "joystick is preseted!" << std::endl;
     }
+    
     scene.prepare(box);
     // render loop
     // -----------
